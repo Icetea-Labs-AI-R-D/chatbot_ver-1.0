@@ -18,6 +18,4 @@ class ApiRouter(BaseRouter):
             data = await request.json()
             conversation_dto = ConversationRequest(**data)
             data_qa = await self.chat_controller._qa_conversation(conversation_dto)
-            if data_qa['call'] == "qa_conversation":
-                return StreamingResponse(self.openai_service._handle_irrelevant_message(data_qa['user_question'], conversation= data_qa['conversation'], context=data_qa['context']), media_type="text/event-stream")
             return StreamingResponse(self.openai_service._ask_OpenAI_with_RAG(data_qa['user_question'], conversation= data_qa['conversation'], context=data_qa['context']), media_type="text/event-stream")
