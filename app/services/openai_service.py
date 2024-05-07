@@ -2,19 +2,20 @@ from openai import OpenAI
 import os
 from time import sleep
 from .chroma_service import ChromaService
-from .conversation_service import ConversationService
+from .mongo_service import MongoService
 
-global_topic = {'api': 'overview_gamehub', 'source': '', 'topic': 'gamehub', 'type': 'topic'}
+
 
 class OpenAIService:
     openai_client: OpenAI
     chroma_service: ChromaService
-    conversation_service: ConversationService
-
+    mongo_service: MongoService
+    global_topic: dict
     def __init__(self) -> None:
         self.openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
         self.chroma_service = ChromaService()
-        self.conversation_service = ConversationService()
+        self.mongo_service = MongoService()
+        self.global_topic = {'api': 'overview_gamehub', 'source': '', 'topic': 'gamehub', 'type': 'topic'}
 
     def _rewrite_and_extract_keyword(self, message: str, conversation: list = []):
         fe = []
@@ -25,8 +26,7 @@ class OpenAIService:
                 )   
         fe.extend(fe1) 
         fe = list(set([k[0].metadata['source'] for k in fe]))
-        global global_topic
-        fe.append(global_topic['source'])
+        fe.append(self.global_topic['source'])
         
         conversation = conversation[-2:]
         
@@ -122,6 +122,7 @@ class OpenAIService:
         return str(response.choices[0].message.content)
     
     def _ask_OpenAI_with_RAG(self, question: str, conversation: dict, context: str = "[]", rewrite_question: str = ""):
+        print(conversation)
         history = conversation['history']
         system_message = f"""
         You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
@@ -158,21 +159,12 @@ class OpenAIService:
         user = {
             "role": "user",
             "content": question, 
-            "rewrite_question": rewrite_question
         }
         
         assistant = {
             "role": "assistant",
-            "content": answer,
-            "context": context 
+            "content": answer
         }
         
-        history = conversation['history']
-        history.append(user)
-        history.append(assistant)
-        
-        n_conversation = {
-            'conversation_id': conversation['conversation_id'],
-            'history': history
-        }
-        self.conversation_service.add_conversation(n_conversation)
+        self.mongo_service.add_conversation(conversation['conversation_id'], user)
+        self.mongo_service.add_conversation(conversation['conversation_id'], assistant)

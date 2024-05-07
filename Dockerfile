@@ -13,5 +13,3 @@ COPY ./data /code/data
 COPY ./app /code/app
 
 COPY ./.env /code/.env
-
-EXPOSE 8080
