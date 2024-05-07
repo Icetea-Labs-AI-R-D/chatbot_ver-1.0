@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  mongodb:
+    image: mongo:7.0.8
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - "MONGO_INITDB_DATABASE=chatbot"
+    volumes:
+      - mongodb:/data/db
+    networks:
+      - app-network
+
   chatbot:
     build: 
       dockerfile: Dockerfile
@@ -11,14 +24,27 @@ services:
       - data:/code/data
       - .env:/code/.env
     ports:
-      - "8080:8080"
       - "9191:9191"
-    command: python /code/app/app.py
-    network_mode: host
+    command: python3 ./app/app.py
+    networks:
+      - app-network
+  fe:
+    build: 
+      dockerfile: Dockerfile
+    container_name: fe
+    restart: always
+    ports:
+      - "8000:8000"
+    command: python3 ./app/client.py
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
 volumes:
   db:
-    driver: local
   data:
-    driver: local
   .env:
-    driver: local
+  mongodb:

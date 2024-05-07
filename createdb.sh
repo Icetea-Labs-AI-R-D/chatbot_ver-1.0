@@ -1,0 +1,1 @@
+python3 ./script/create_database.py

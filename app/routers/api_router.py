@@ -14,7 +14,7 @@ class ApiRouter(BaseRouter):
 
     def _init_routes(self, app: FastAPI) -> None:
         @app.post("/backend/v1/request")
-        async def conversation(request: Request):
+        async def _conversation(request: Request):
             data = await request.json()
             conversation_dto = ConversationRequest(**data)
             data_qa = await self.chat_controller._qa_conversation(conversation_dto)
