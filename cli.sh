@@ -1,2 +1,1 @@
-cd app
-uvicorn app:app --host 127.0.0.1 --port 8080 --reload
+python3 ./app/client.py

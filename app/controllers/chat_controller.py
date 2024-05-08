@@ -29,7 +29,6 @@ class ChatController:
         features_keywords = await self.chroma_service._retrieve_keyword(keywords_dict, previous_topic)
         
         context = await call_tools_async(features_keywords)
-        print(context)
 
         return {
             "user_question": user_question,
