@@ -1,6 +1,5 @@
 import datetime
 from db.database import Database, get_db
-import re
     
 class MongoService():
     mongd: Database
@@ -8,10 +7,9 @@ class MongoService():
         self.mongd = get_db()
 
     def add_conversation(self, conversation_id, message):
-        id_conversation = f'^{conversation_id}'
         return self.mongd.db['conversation'].find_one_and_update(
             {
-                'conversation_id': {'$regex': id_conversation},
+                'conversation_id': conversation_id,
                 'count': {'$lt': 20}
             }
             ,
@@ -25,8 +23,7 @@ class MongoService():
                 },
                 "$inc": { "count": 1 },
                 "$setOnInsert": {
-                    "conversation_id": f"{conversation_id}_{str(datetime.datetime.now())}",
-                    "_id": conversation_id,
+                    "conversation_id": conversation_id,
                     "start_date": datetime.datetime.now(),
                 }
             },
@@ -35,10 +32,9 @@ class MongoService():
         )
     
     def get_conversation(self, conversation_id):
-        id_conversation = f'^{conversation_id}_'
         conver = self.mongd.db['conversation'].find(
             {
-                'conversation_id': {'$regex': id_conversation},
+                'conversation_id': conversation_id,
                 'start_date': {'$gte': datetime.datetime.now() - datetime.timedelta(days=3)}
             }
         )

@@ -422,15 +422,6 @@
         "documentation": {}
     },
     {
-        "label": "re",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "re",
-        "description": "re",
-        "detail": "re",
-        "documentation": {}
-    },
-    {
         "label": "OpenAI",
         "importPath": "openai",
         "description": "openai",
@@ -542,7 +533,7 @@
         "kind": 6,
         "importPath": "app.db.database",
         "description": "app.db.database",
-        "peekOfCode": "class Database:\n    _instance = None\n    def __new__(cls):\n        print(\"hello world\")\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n            cls._instance.client = MongoClient(\"localhost\", 27017)\n            cls._instance.db = cls._instance.client[\"chatbot\"]\n            print(cls._instance.db)\n        return cls._instance",
+        "peekOfCode": "class Database:\n    _instance = None\n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n            cls._instance.client = MongoClient(\"localhost\", 27017)\n            cls._instance.db = cls._instance.client[\"chatbot\"]\n        return cls._instance\ndef get_db() -> Optional[Database]:\n    return Database()",
         "detail": "app.db.database",
         "documentation": {}
     },
@@ -650,7 +641,7 @@
         "kind": 6,
         "importPath": "app.services.mongo_service",
         "description": "app.services.mongo_service",
-        "peekOfCode": "class MongoService():\n    mongd: Database\n    def __init__(self):\n        self.mongd = get_db()\n    def add_conversation(self, conversation_id, message):\n        id_conversation = f'^{conversation_id}'\n        return self.mongd.db['conversation'].find_one_and_update(\n            {\n                'conversation_id': {'$regex': id_conversation},\n                'count': {'$lt': 20}",
+        "peekOfCode": "class MongoService():\n    mongd: Database\n    def __init__(self):\n        self.mongd = get_db()\n    def add_conversation(self, conversation_id, message):\n        return self.mongd.db['conversation'].find_one_and_update(\n            {\n                'conversation_id': conversation_id,\n                'count': {'$lt': 20}\n            }",
         "detail": "app.services.mongo_service",
         "documentation": {}
     },
