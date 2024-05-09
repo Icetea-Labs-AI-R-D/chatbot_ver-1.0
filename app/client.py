@@ -16,4 +16,4 @@ static_middleware(app_client)
 PageRouter(app_client)
 
 if __name__ == '__main__':
-    uvicorn.run(app_client, host='localhost', port=8080)
+    uvicorn.run(app_client, host='0.0.0.0', port=8080)
