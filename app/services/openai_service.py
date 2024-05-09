@@ -4,6 +4,9 @@ from time import sleep
 from .chroma_service import ChromaService
 from .mongo_service import MongoService
 import json
+from langsmith.wrappers import wrap_openai
+from langsmith import traceable
+from utils import get_price
 
 class OpenAIService:
     openai_client: OpenAI
@@ -11,11 +14,11 @@ class OpenAIService:
     mongo_service: MongoService
     global_topic: dict
     def __init__(self) -> None:
-        self.openai_client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+        self.openai_client = wrap_openai(OpenAI(api_key=os.environ.get("OPENAI_API_KEY")))
         self.chroma_service = ChromaService()
         self.mongo_service = MongoService()
-        self.global_topic = {'api': 'overview_gamehub', 'source': '', 'topic': 'gamehub', 'type': 'topic'}
-
+        
+    @traceable
     def _rewrite_and_extract_keyword(self, message: str, conversation: list = []):
         previous_message = ""
         if len(conversation) > 2: previous_message = conversation[-2]['content']
@@ -62,6 +65,7 @@ class OpenAIService:
         )
         return str(response.choices[0].message.content)
     
+    @traceable
     def generate_suggestion(self, context: str = "[]"):
         system_prompt = '''
         You are a helpful agent designed to provide suggestions based on the user's message and context.
@@ -87,9 +91,12 @@ class OpenAIService:
             },
             messages=messages 
         )
+        
+        # print(get_price(response.usage))
+        
         return str(response.choices[0].message.content)
     
-    def _ask_OpenAI_with_RAG(self, question: str, conversation: dict, context: str = "[]", rewrite_question: str = ""):
+    def _ask_OpenAI_with_RAG(self, question: str, conversation: dict, context: str = "[]", previous_topic: dict = {'api': '', 'source': '', 'topic': '', 'type': ''}):
         history = conversation['history']
         system_message = f"""
         You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
@@ -129,15 +136,19 @@ class OpenAIService:
             "follow_up": suggestion['suggestions']
         }
         yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
-                
+        
+        print(previous_topic)        
+        
         user = {
             "role": "user",
             "content": question, 
+            "previous_topic": previous_topic
         }
         
         assistant = {
             "role": "assistant",
-            "content": answer
+            "content": answer,
+            "previous_topic": previous_topic
         }
         
         self.mongo_service.add_conversation(conversation['conversation_id'], user)

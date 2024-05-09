@@ -2,6 +2,7 @@ from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 import os
 import asyncio
+from langsmith import traceable
 class ChromaService:
     persist_directory: str
     embedding: OpenAIEmbeddings
@@ -38,6 +39,7 @@ class ChromaService:
                 k=1
             )[0], index)
 
+    @traceable(run_type="retriever")
     async def _retrieve_keyword(self, keyword: dict, global_topic:dict) -> dict:
         try:     
             keyword = keyword['keywords']
