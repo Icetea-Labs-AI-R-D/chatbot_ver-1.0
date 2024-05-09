@@ -7,8 +7,6 @@ from routers import ApiRouter
 
 load_dotenv()
 
-print(os.getenv('OPENAI_API_KEY'))
-
 app = FastAPI()
 
 # middleware configuration

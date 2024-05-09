@@ -471,18 +471,18 @@
     },
     {
         "label": "Database",
-        "importPath": "db.database",
-        "description": "db.database",
+        "importPath": "database.database",
+        "description": "database.database",
         "isExtraImport": true,
-        "detail": "db.database",
+        "detail": "database.database",
         "documentation": {}
     },
     {
         "label": "get_db",
-        "importPath": "db.database",
-        "description": "db.database",
+        "importPath": "database.database",
+        "description": "database.database",
         "isExtraImport": true,
-        "detail": "db.database",
+        "detail": "database.database",
         "documentation": {}
     },
     {
