@@ -786,7 +786,7 @@
         "kind": 5,
         "importPath": "app.client",
         "description": "app.client",
-        "peekOfCode": "app_client = FastAPI()\n# middleware configuration\nstatic_middleware(app_client)\n# Routes\nPageRouter(app_client)\nif __name__ == '__main__':\n    uvicorn.run(app_client, host='localhost', port=8000)",
+        "peekOfCode": "app_client = FastAPI()\n# middleware configuration\nstatic_middleware(app_client)\n# Routes\nPageRouter(app_client)\nif __name__ == '__main__':\n    uvicorn.run(app_client, host='localhost', port=8080)",
         "detail": "app.client",
         "documentation": {}
     },
