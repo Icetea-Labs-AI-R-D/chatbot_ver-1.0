@@ -7,8 +7,6 @@ from routers import PageRouter
 
 load_dotenv()
 
-print(os.getenv('OPENAI_API_KEY'))
-
 app_client = FastAPI()
 
 # middleware configuration

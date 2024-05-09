@@ -3,6 +3,8 @@ from services import OpenAIService, ChromaService, MongoService
 from models.dto import ConversationRequest
 import json
 from utils import call_tools_async
+from langsmith import traceable
+from langsmith.wrappers import wrap_openai
 
 class ChatController:
     openai_service: OpenAIService
@@ -14,6 +16,7 @@ class ChatController:
         self.chroma_service = ChromaService()
         self.mongo_service = MongoService()
 
+    @traceable
     async def _qa_conversation(self, request_data: ConversationRequest):
         conversation_id = request_data.conversation_id
         prompt = request_data.meta.content.parts[0]
@@ -22,7 +25,7 @@ class ChatController:
         user_question = prompt.content
         keywords_text = self.openai_service._rewrite_and_extract_keyword(user_question, history)
         keywords_dict = json.loads(keywords_text)
-        if (len(history) > 2): 
+        if (len(history) > 1): 
             previous_topic = history[-1].get('previous_topic', {'api': '', 'source': '', 'topic': '', 'type': ''})
         else:
             previous_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}
