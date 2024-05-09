@@ -595,19 +595,19 @@
     {
         "label": "Database",
         "kind": 6,
-        "importPath": "app.db.database",
-        "description": "app.db.database",
+        "importPath": "app.database.database",
+        "description": "app.database.database",
         "peekOfCode": "class Database:\n    _instance = None\n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n            cls._instance.client = MongoClient(\"localhost\", 27017)\n            cls._instance.db = cls._instance.client[\"chatbot\"]\n        return cls._instance\ndef get_db() -> Optional[Database]:\n    return Database()",
-        "detail": "app.db.database",
+        "detail": "app.database.database",
         "documentation": {}
     },
     {
         "label": "get_db",
         "kind": 2,
-        "importPath": "app.db.database",
-        "description": "app.db.database",
+        "importPath": "app.database.database",
+        "description": "app.database.database",
         "peekOfCode": "def get_db() -> Optional[Database]:\n    return Database()",
-        "detail": "app.db.database",
+        "detail": "app.database.database",
         "documentation": {}
     },
     {
