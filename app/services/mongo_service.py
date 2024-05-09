@@ -1,5 +1,5 @@
 import datetime
-from db.database import Database, get_db
+from database.database import Database, get_db
     
 class MongoService():
     mongd: Database
