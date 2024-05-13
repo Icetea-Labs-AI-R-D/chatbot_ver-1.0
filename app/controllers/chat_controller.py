@@ -25,7 +25,7 @@ class ChatController:
         user_question = prompt.content
         keywords_text = self.openai_service._rewrite_and_extract_keyword(user_question, history)
         keywords_dict = json.loads(keywords_text)
-        if (len(history) > 1): 
+        if len(history) > 1: 
             previous_topic = history[-1].get('previous_topic', {'api': '', 'source': '', 'topic': '', 'type': ''})
         else:
             previous_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}

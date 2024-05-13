@@ -42,6 +42,7 @@ class ChromaService:
     @traceable(run_type="retriever")
     async def _retrieve_keyword(self, keyword: dict, global_topic:dict) -> dict:
         try:     
+            previous_topic = global_topic
             keyword = keyword['keywords']
             topics = []
             contents = []
@@ -67,7 +68,7 @@ class ChromaService:
                 contents.extend(task)
             contents = list(map(lambda x: x.metadata, contents))
             return {
-                "topic": topic,
+                "topic": global_topic,
                 "content": contents,
                 "previous_topic": global_topic
             }
@@ -76,5 +77,5 @@ class ChromaService:
             return {
                 "topic": "",
                 "content": [],
-                "previous_topic": global_topic
+                "previous_topic": previous_topic
             }

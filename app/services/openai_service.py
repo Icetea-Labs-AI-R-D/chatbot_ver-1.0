@@ -71,7 +71,8 @@ class OpenAIService:
         You are a helpful agent designed to provide suggestions based on the user's message and context.
         Your suggestions are question prompts that can help the user to get more information about the game on GameFi.org. 
         The provided context contains a json string, so you should parse it and give suggestions based on ONLY the keys of the json.
-        Generate exactly 4 question prompts.
+        Generate exactly 3 question prompts.
+        Suggest questions are in short, concise form, with upto 64 characters.
         Return the suggestions in JSON format contains 1 keys: "suggestions"
         '''
 
@@ -99,18 +100,44 @@ class OpenAIService:
     def _ask_OpenAI_with_RAG(self, question: str, conversation: dict, context: str = "[]", previous_topic: dict = {'api': '', 'source': '', 'topic': '', 'type': ''}):
         history = conversation['history']
         system_message = f"""
+        <Task>
         You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
-        Your role is to help user to know more about games and IDO projects which are available on the GameFi platform. 
-        Give information in a clear, concise and structured way.
-        List of things should be listed with Bulleted list.
-        
+        YOUR TASK is to accurately answer information about games and IDO projects available on the GameFi platform, helping users better understand those information. 
         Use the following pieces of information to response the user's message: 
-        {context}
-        -----------------   
+        <Information>
+            {context}
+        <Information>
+        The information in this <Information> section is assigned "Context", please remember it.
+        The user's question is assigned "User question", please remember to get it.
+    </Task>
+   <Instructions>
+        Please rely on the information of "Context" to answer "User question".
+        Let's carefully analyze "Context" and "User question" to provide the best answer.
+        When combining "Context" and "User question" to give the answer, the following possibilities arise:
+        1. In "Context" there is information to answer the "User Question".
+        - In this case, you can directly answer the "User question" based on the information in "Context".
+        - Respond in a clear, concise and structured manner with all the information the user needs.
+        - Do not answer questions like "This information is based on the data provided in the context", because information in "Context" is realtime.
+        - Please present your answer as clearly and easily as possible to read, paragraphs that can have line breaks should be given line breaks
+        2. In "Context" there is no information to answer the "User Question".
+        - In this case, you should answer that there is no information, and you can ask the user to provide more information or ask for clarification.
+        - You can also ask the user if they have any other questions or need help with anything else.
+        - Please respond in a friendly manner.
+        3. "User question" are just normal communication questions (eg hello, thank you,...) that do not require information about games and IDO projects available on the GameFi platform
+        - In this case, please respond as normal communication.
+        - You can also ask the user if they have any other questions or need help with anything else.
+        - Please respond in a friendly manner.
+   </Instructions>
+   <Note>
+        Respond in a concise and structured manner and include all the information the user needs.
+        Please present your answer as clearly and legibly as possible.
         
-        If the question does not specify game's name, ask for the name of the game.
-        If the user greet you in any languages, greet back and introduce your self as 'GameFi Assistant'.
+   </Note>
         """
+        # Use the format below to response:
+        #     - For BOLD text, use "**<text>**". Ex: **bold text**
+        #     - For ITALIC text, use "__<text>__". Ex: __itatlic text__
+        #     Do not use other markdown format.
         messages = [{"role": "system", "content":system_message }] + history + [{"role": "user", "content": question}]
 
         stream = self.openai_client.chat.completions.create(
@@ -132,8 +159,8 @@ class OpenAIService:
         suggestion = self.generate_suggestion(context)
         suggestion = json.loads(suggestion)
         reply_markup = {
-            "text": "Maybe you want know ⬇️:",
-            "follow_up": suggestion['suggestions']
+            "text": "Maybe you want to know ⬇️:",
+            "follow_up": suggestion['suggestions'][:3]
         }
         yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
         
