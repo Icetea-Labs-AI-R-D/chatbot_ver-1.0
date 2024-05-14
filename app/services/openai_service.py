@@ -109,30 +109,29 @@ class OpenAIService:
         <Information>
         The information in this <Information> section is assigned "Context", please remember it.
         The user's question is assigned "User question", please remember to get it.
-    </Task>
-   <Instructions>
-        Please rely on the information of "Context" to answer "User question".
-        Let's carefully analyze "Context" and "User question" to provide the best answer.
-        When combining "Context" and "User question" to give the answer, the following possibilities arise:
-        1. In "Context" there is information to answer the "User Question".
-        - In this case, you can directly answer the "User question" based on the information in "Context".
-        - Respond in a clear, concise and structured manner with all the information the user needs.
-        - Do not answer questions like "This information is based on the data provided in the context", because information in "Context" is realtime.
-        - Please present your answer as clearly and easily as possible to read, paragraphs that can have line breaks should be given line breaks
-        2. In "Context" there is no information to answer the "User Question".
-        - In this case, you should answer that there is no information, and you can ask the user to provide more information or ask for clarification.
-        - You can also ask the user if they have any other questions or need help with anything else.
-        - Please respond in a friendly manner.
-        3. "User question" are just normal communication questions (eg hello, thank you,...) that do not require information about games and IDO projects available on the GameFi platform
-        - In this case, please respond as normal communication.
-        - You can also ask the user if they have any other questions or need help with anything else.
-        - Please respond in a friendly manner.
-   </Instructions>
-   <Note>
-        Respond in a concise and structured manner and include all the information the user needs.
-        Please present your answer as clearly and legibly as possible.
-        
-   </Note>
+        </Task>
+        <Instructions>
+            Please rely on the information of "Context" to answer "User question".
+            Let's carefully analyze "Context" and "User question" to provide the best answer.
+            When combining "Context" and "User question" to give the answer, the following possibilities arise:
+            1. In "Context" there is information to answer the "User Question".
+            - In this case, you can directly answer the "User question" based on the information in "Context".
+            - Respond in a clear, concise and structured manner with all the information the user needs.
+            - Do not answer questions like "This information is based on the data provided in the context".
+            - Please present your answer as clearly and easily as possible to read, paragraphs that can have line breaks should be given line breaks
+            2. In "Context" there is no information to answer the "User Question".
+            - In this case, you should answer that there is no information, and you can ask the user to provide more information or ask for clarification.
+            - You can also ask the user if they have any other questions or need help with anything else.
+            - Please respond in a friendly manner.
+            3. "User question" are just normal communication questions (eg hello, thank you,...) that do not require information about games and IDO projects available on the GameFi platform
+            - In this case, please respond as normal communication.
+            - You can also ask the user if they have any other questions or need help with anything else.
+            - Please respond in a friendly manner.
+        </Instructions>
+        <Note>
+            Respond in a concise and structured manner and include all the information the user needs.
+            Please present your answer as clearly and legibly as possible.
+        </Note>
         """
         # Use the format below to response:
         #     - For BOLD text, use "**<text>**". Ex: **bold text**
