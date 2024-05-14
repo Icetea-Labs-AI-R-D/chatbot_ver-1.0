@@ -67,7 +67,7 @@ class ChromaService:
                 contents.extend(task)
             contents = list(map(lambda x: x.metadata, contents))
             return {
-                "topic": topic,
+                "topic": global_topic,
                 "content": contents,
                 "previous_topic": global_topic
             }

@@ -20,8 +20,7 @@ class OpenAIService:
         
     @traceable
     def _rewrite_and_extract_keyword(self, message: str, conversation: list = []):
-        previous_message = ""
-        if len(conversation) > 2: previous_message = conversation[-2]['content']
+        previous_topic = conversation[-1]['previous_topic'] if len(conversation) > 0 else ""
         
         system_prompt = f'''
         ### Task ###
@@ -48,7 +47,7 @@ class OpenAIService:
         '''
 
         user_message = f"""
-            Previous user's message:{previous_message}
+            Previous user's topic:{previous_topic}
             Current user's message: 
                 - User: {message}
         """
@@ -96,8 +95,11 @@ class OpenAIService:
         
         return str(response.choices[0].message.content)
     
+    @traceable
     def _ask_OpenAI_with_RAG(self, question: str, conversation: dict, context: str = "[]", previous_topic: dict = {'api': '', 'source': '', 'topic': '', 'type': ''}):
-        history = conversation['history']
+        history = conversation.get('history', [])
+        if len(history) > 0:
+            history = history[-2:]
         system_message = f"""
         You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
         Your role is to help user to know more about games and IDO projects which are available on the GameFi platform. 

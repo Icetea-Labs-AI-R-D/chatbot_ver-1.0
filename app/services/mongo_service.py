@@ -35,7 +35,7 @@ class MongoService():
         conver = self.mongd.db['conversation'].find(
             {
                 'conversation_id': conversation_id,
-                'start_date': {'$gte': datetime.datetime.now() - datetime.timedelta(days=3)}
+                'start_date': {'$gte': datetime.datetime.now() - datetime.timedelta(minutes=30)}
             }
         )
         conversation = []

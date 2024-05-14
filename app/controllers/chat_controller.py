@@ -21,23 +21,25 @@ class ChatController:
         conversation_id = request_data.conversation_id
         prompt = request_data.meta.content.parts[0]
         history = self.mongo_service.get_conversation(conversation_id)
-        history = list(map(lambda x: {'role': x['role'], 'content': x['content'], 'previous_topic': x['previous_topic']}, history))
+        history = list(map(lambda x: {'role': x.get('role', ''), 'content': x.get('content', ''), 'previous_topic': x.get('previous_topic', {'api': '', 'source': '', 'topic': '', 'type': ''})}, history))
         user_question = prompt.content
         keywords_text = self.openai_service._rewrite_and_extract_keyword(user_question, history)
         keywords_dict = json.loads(keywords_text)
-        if (len(history) > 1): 
+        if (len(history) > 0):
             previous_topic = history[-1].get('previous_topic', {'api': '', 'source': '', 'topic': '', 'type': ''})
         else:
             previous_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}
         features_keywords = await self.chroma_service._retrieve_keyword(keywords_dict, previous_topic)
+        
+        # print(features_keywords)
         
         context = await call_tools_async(features_keywords)
 
         return {
             "user_question": user_question,
             "conversation": {
-                "conversation_id": conversation_id, 
-                "history": history    
+                "conversation_id": conversation_id,
+                "history": history  
             },
             "context": context,
             "rewrite_question": keywords_dict['rewritten_message'],

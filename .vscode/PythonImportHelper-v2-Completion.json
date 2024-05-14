@@ -768,7 +768,7 @@
         "kind": 5,
         "importPath": "app.utils.tools_async",
         "description": "app.utils.tools_async",
-        "peekOfCode": "tools_fn = dict(map(lambda x: (x['name'], x['tool_fn']), tools_info))\nasync def call_tools_async(feature_dict : dict) -> str:\n    # try:\n        topic : dict  = feature_dict[\"topic\"]\n        content : list = feature_dict[\"content\"]\n        if topic == '':\n            return \"\"\n        apis = {\n            'social-scores_gamehub' : 'get_social_score_gamehub',\n            'daily-index_gamehub' : 'get_daily_index_gamehub',",
+        "peekOfCode": "tools_fn = dict(map(lambda x: (x['name'], x['tool_fn']), tools_info))\nasync def call_tools_async(feature_dict : dict) -> str:\n    # try:\n        topic : dict  = feature_dict[\"previous_topic\"]\n        content : list = feature_dict[\"content\"]\n        if topic == '':\n            return \"\"\n        apis = {\n            'social-scores_gamehub' : 'get_social_score_gamehub',\n            'daily-index_gamehub' : 'get_daily_index_gamehub',",
         "detail": "app.utils.tools_async",
         "documentation": {}
     },

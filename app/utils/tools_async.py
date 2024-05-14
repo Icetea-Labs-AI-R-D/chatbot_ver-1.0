@@ -600,7 +600,7 @@ tools_fn = dict(map(lambda x: (x['name'], x['tool_fn']), tools_info))
 
 async def call_tools_async(feature_dict : dict) -> str:
     # try:
-        topic : dict  = feature_dict["topic"]
+        topic : dict  = feature_dict["previous_topic"]
         content : list = feature_dict["content"]
         
         if topic == '':
