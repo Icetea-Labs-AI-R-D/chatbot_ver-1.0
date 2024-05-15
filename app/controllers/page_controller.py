@@ -28,7 +28,7 @@ class PageController:
         return RedirectResponse(url="/chat/")
     
     async def _stream_response(self, data):
-        url = 'http://127.0.0.1:9191/backend/v1/request'
+        url = 'http://localhost:9191/backend/v1/request'
         async with httpx.AsyncClient(timeout=None) as client:
             async with client.stream("POST", url, json=data) as r:
                 async for chunk in r.aiter_bytes():
