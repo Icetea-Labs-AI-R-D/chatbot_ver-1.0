@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from fastapi import Depends
 from openai import OpenAI
 import os
@@ -6,6 +7,8 @@ from langsmith.wrappers import wrap_openai
 from langsmith import traceable
 from crud.conversation import add_conversation
 from asgiref.sync import async_to_sync
+
+load_dotenv()
 
 class OpenAIService:
     openai_client: OpenAI
