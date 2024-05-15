@@ -1,27 +1,22 @@
+from fastapi import Depends
 from openai import OpenAI
 import os
-from time import sleep
-from .chroma_service import ChromaService
-from .mongo_service import MongoService
 import json
 from langsmith.wrappers import wrap_openai
 from langsmith import traceable
-from utils import get_price
+from crud.conversation import add_conversation
+from asgiref.sync import async_to_sync
 
 class OpenAIService:
     openai_client: OpenAI
-    chroma_service: ChromaService
-    mongo_service: MongoService
-    global_topic: dict
     def __init__(self) -> None:
         self.openai_client = wrap_openai(OpenAI(api_key=os.environ.get("OPENAI_API_KEY")))
-        self.chroma_service = ChromaService()
-        self.mongo_service = MongoService()
         
     @traceable
-    def _rewrite_and_extract_keyword(self, message: str, conversation: list = []):
-        previous_message = ""
-        if len(conversation) > 2: previous_message = conversation[-2]['content']
+    def rewrite_and_extract_keyword(self, message: str, conversation: list = [], global_topic: dict = None):
+        if global_topic is None:
+            global_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}
+        global_topic = global_topic.get('topic', "")
         
         system_prompt = f'''
         ### Task ###
@@ -48,9 +43,12 @@ class OpenAIService:
         '''
 
         user_message = f"""
-            Previous user's message:{previous_message}
-            Current user's message: 
-                - User: {message}
+            ## Chat History ##
+            {conversation}
+            ## Global user's topic ##
+            {global_topic}
+            ## Current user's message ### 
+            {message}
         """
         
         messages = [{"role": "system", "content": system_prompt}] + [{"role": "user", "content": user_message}]
@@ -93,12 +91,16 @@ class OpenAIService:
             messages=messages 
         )
         
-        # print(get_price(response.usage))
-        
         return str(response.choices[0].message.content)
     
-    def _ask_OpenAI_with_RAG(self, question: str, conversation: dict, context: str = "[]", previous_topic: dict = {'api': '', 'source': '', 'topic': '', 'type': ''}):
-        history = conversation['history']
+    @async_to_sync
+    async def add_conversation_to_db(self, conversation_id, message):
+            await add_conversation(conversation_id, message)
+    @traceable
+    def ask_openai_with_rag(self, question: str, conversation: list = [], context: str = "[]", global_topic: dict = None):
+        if global_topic is None:
+            global_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}
+        history = conversation.get('history', [])[-4:]
         system_message = f"""
         ###Task###
             You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
@@ -132,16 +134,20 @@ class OpenAIService:
             Respond in a concise and structured manner and include all the information the user needs.
             Please present your answer as clearly and legibly as possible.
         """
-        # Use the format below to response:
-        #     - For BOLD text, use "**<text>**". Ex: **bold text**
-        #     - For ITALIC text, use "__<text>__". Ex: __itatlic text__
-        #     Do not use other markdown format.
-        messages = [{"role": "system", "content":system_message }] + history + [{"role": "user", "content": question}]
+        
+        user_message = f"""
+        ## Chat History ##
+        {history}
+        ## Current user's question ### 
+        {question}
+        """
+        
+        messages = [{"role": "system", "content":system_message }] + [{"role": "user", "content": user_message}]
+
 
         stream = self.openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             messages=messages,
-            # temperature=0.2,
             stream=True,
         )
         
@@ -151,7 +157,6 @@ class OpenAIService:
             token = chunk.choices[0].delta.content
             if token is not None:
                 answer += token
-                print(token)
                 yield token
                 
         suggestion = self.generate_suggestion(context)
@@ -160,21 +165,16 @@ class OpenAIService:
             "text": "Maybe you want to know ⬇️:",
             "follow_up": suggestion['suggestions'][:3]
         }
-        yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
+        yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"     
         
-        print(previous_topic)        
-        
-        user = {
-            "role": "user",
-            "content": question, 
-            "previous_topic": previous_topic
+        message = {
+            "role_user": "user",
+            "content_user": question, 
+            "role_assistant": "assistant",
+            "content_assistant": answer, 
+            "previous_topic": global_topic
         }
         
-        assistant = {
-            "role": "assistant",
-            "content": answer,
-            "previous_topic": previous_topic
-        }
-        
-        self.mongo_service.add_conversation(conversation['conversation_id'], user)
-        self.mongo_service.add_conversation(conversation['conversation_id'], assistant)
+
+        self.add_conversation_to_db(conversation['conversation_id'], message)
+

@@ -121,14 +121,8 @@ const ask_gpt = async (message) => {
       body: JSON.stringify({
         conversation_id: window.conversation_id,
         action: `_ask`,
-        model: model.options[model.selectedIndex].value,
-        jailbreak: jailbreak.options[jailbreak.selectedIndex].value,
         meta: {
-          id: window.token,
           content: {
-            conversation: "",
-            internet_access: "",
-            content_type: "text",
             parts: [
               {
                 content: message,

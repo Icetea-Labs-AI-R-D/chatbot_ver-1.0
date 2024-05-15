@@ -1,6 +1,14 @@
 [
     {
-        "label": "Request",
+        "label": "APIRouter",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "Depends",
         "importPath": "fastapi",
         "description": "fastapi",
         "isExtraImport": true,
@@ -16,7 +24,7 @@
         "documentation": {}
     },
     {
-        "label": "FastAPI",
+        "label": "APIRouter",
         "importPath": "fastapi",
         "description": "fastapi",
         "isExtraImport": true,
@@ -24,15 +32,7 @@
         "documentation": {}
     },
     {
-        "label": "FastAPI",
-        "importPath": "fastapi",
-        "description": "fastapi",
-        "isExtraImport": true,
-        "detail": "fastapi",
-        "documentation": {}
-    },
-    {
-        "label": "FastAPI",
+        "label": "Depends",
         "importPath": "fastapi",
         "description": "fastapi",
         "isExtraImport": true,
@@ -48,7 +48,7 @@
         "documentation": {}
     },
     {
-        "label": "FastAPI",
+        "label": "Depends",
         "importPath": "fastapi",
         "description": "fastapi",
         "isExtraImport": true,
@@ -64,7 +64,15 @@
         "documentation": {}
     },
     {
-        "label": "FastAPI",
+        "label": "Depends",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "HTTPException",
         "importPath": "fastapi",
         "description": "fastapi",
         "isExtraImport": true,
@@ -80,35 +88,35 @@
         "documentation": {}
     },
     {
-        "label": "OpenAIService",
-        "importPath": "services",
-        "description": "services",
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "detail": "services",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
-        "label": "ChromaService",
-        "importPath": "services",
-        "description": "services",
+        "label": "Depends",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "detail": "services",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
-        "label": "MongoService",
-        "importPath": "services",
-        "description": "services",
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "detail": "services",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
-        "label": "OpenAIService",
-        "importPath": "services",
-        "description": "services",
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
         "isExtraImport": true,
-        "detail": "services",
+        "detail": "fastapi",
         "documentation": {}
     },
     {
@@ -125,103 +133,6 @@
         "description": "models.dto",
         "isExtraImport": true,
         "detail": "models.dto",
-        "documentation": {}
-    },
-    {
-        "label": "json",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "json",
-        "description": "json",
-        "detail": "json",
-        "documentation": {}
-    },
-    {
-        "label": "call_tools_async",
-        "importPath": "utils",
-        "description": "utils",
-        "isExtraImport": true,
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "get_price",
-        "importPath": "utils",
-        "description": "utils",
-        "isExtraImport": true,
-        "detail": "utils",
-        "documentation": {}
-    },
-    {
-        "label": "traceable",
-        "importPath": "langsmith",
-        "description": "langsmith",
-        "isExtraImport": true,
-        "detail": "langsmith",
-        "documentation": {}
-    },
-    {
-        "label": "traceable",
-        "importPath": "langsmith",
-        "description": "langsmith",
-        "isExtraImport": true,
-        "detail": "langsmith",
-        "documentation": {}
-    },
-    {
-        "label": "traceable",
-        "importPath": "langsmith",
-        "description": "langsmith",
-        "isExtraImport": true,
-        "detail": "langsmith",
-        "documentation": {}
-    },
-    {
-        "label": "traceable",
-        "importPath": "langsmith",
-        "description": "langsmith",
-        "isExtraImport": true,
-        "detail": "langsmith",
-        "documentation": {}
-    },
-    {
-        "label": "wrap_openai",
-        "importPath": "langsmith.wrappers",
-        "description": "langsmith.wrappers",
-        "isExtraImport": true,
-        "detail": "langsmith.wrappers",
-        "documentation": {}
-    },
-    {
-        "label": "wrap_openai",
-        "importPath": "langsmith.wrappers",
-        "description": "langsmith.wrappers",
-        "isExtraImport": true,
-        "detail": "langsmith.wrappers",
-        "documentation": {}
-    },
-    {
-        "label": "wrap_openai",
-        "importPath": "langsmith.wrappers",
-        "description": "langsmith.wrappers",
-        "isExtraImport": true,
-        "detail": "langsmith.wrappers",
-        "documentation": {}
-    },
-    {
-        "label": "RedirectResponse",
-        "importPath": "fastapi.responses",
-        "description": "fastapi.responses",
-        "isExtraImport": true,
-        "detail": "fastapi.responses",
-        "documentation": {}
-    },
-    {
-        "label": "StreamingResponse",
-        "importPath": "fastapi.responses",
-        "description": "fastapi.responses",
-        "isExtraImport": true,
-        "detail": "fastapi.responses",
         "documentation": {}
     },
     {
@@ -249,70 +160,131 @@
         "documentation": {}
     },
     {
-        "label": "httpx",
-        "kind": 6,
+        "label": "RedirectResponse",
+        "importPath": "fastapi.responses",
+        "description": "fastapi.responses",
         "isExtraImport": true,
-        "importPath": "httpx",
-        "description": "httpx",
-        "detail": "httpx",
+        "detail": "fastapi.responses",
         "documentation": {}
     },
     {
-        "label": "requests",
-        "kind": 6,
+        "label": "StreamingResponse",
+        "importPath": "fastapi.responses",
+        "description": "fastapi.responses",
         "isExtraImport": true,
-        "importPath": "requests",
-        "description": "requests",
-        "detail": "requests",
+        "detail": "fastapi.responses",
         "documentation": {}
     },
     {
-        "label": "time",
-        "importPath": "time",
-        "description": "time",
+        "label": "OpenAIService",
+        "importPath": "services.openai_service",
+        "description": "services.openai_service",
         "isExtraImport": true,
-        "detail": "time",
+        "detail": "services.openai_service",
         "documentation": {}
     },
     {
-        "label": "sleep",
-        "importPath": "time",
-        "description": "time",
+        "label": "OpenAIService",
+        "importPath": "services.openai_service",
+        "description": "services.openai_service",
         "isExtraImport": true,
-        "detail": "time",
+        "detail": "services.openai_service",
         "documentation": {}
     },
     {
-        "label": "os",
-        "kind": 6,
+        "label": "ChatController",
+        "importPath": "controllers.chat_controller",
+        "description": "controllers.chat_controller",
         "isExtraImport": true,
-        "importPath": "os",
-        "description": "os",
-        "detail": "os",
+        "detail": "controllers.chat_controller",
         "documentation": {}
     },
     {
-        "label": "urandom",
-        "importPath": "os",
-        "description": "os",
+        "label": "traceable",
+        "importPath": "langsmith",
+        "description": "langsmith",
         "isExtraImport": true,
-        "detail": "os",
+        "detail": "langsmith",
         "documentation": {}
     },
     {
-        "label": "Jinja2Templates",
-        "importPath": "fastapi.templating",
-        "description": "fastapi.templating",
+        "label": "traceable",
+        "importPath": "langsmith",
+        "description": "langsmith",
         "isExtraImport": true,
-        "detail": "fastapi.templating",
+        "detail": "langsmith",
         "documentation": {}
     },
     {
-        "label": "MongoClient",
-        "importPath": "pymongo",
-        "description": "pymongo",
+        "label": "traceable",
+        "importPath": "langsmith",
+        "description": "langsmith",
         "isExtraImport": true,
-        "detail": "pymongo",
+        "detail": "langsmith",
+        "documentation": {}
+    },
+    {
+        "label": "traceable",
+        "importPath": "langsmith",
+        "description": "langsmith",
+        "isExtraImport": true,
+        "detail": "langsmith",
+        "documentation": {}
+    },
+    {
+        "label": "deps",
+        "importPath": "help",
+        "description": "help",
+        "isExtraImport": true,
+        "detail": "help",
+        "documentation": {}
+    },
+    {
+        "label": "deps",
+        "importPath": "help",
+        "description": "help",
+        "isExtraImport": true,
+        "detail": "help",
+        "documentation": {}
+    },
+    {
+        "label": "PageController",
+        "importPath": "controllers.page_controller",
+        "description": "controllers.page_controller",
+        "isExtraImport": true,
+        "detail": "controllers.page_controller",
+        "documentation": {}
+    },
+    {
+        "label": "Annotated",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Generator",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Annotated",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
         "documentation": {}
     },
     {
@@ -356,6 +328,195 @@
         "documentation": {}
     },
     {
+        "label": "OpenAIService",
+        "importPath": "services",
+        "description": "services",
+        "isExtraImport": true,
+        "detail": "services",
+        "documentation": {}
+    },
+    {
+        "label": "ChromaService",
+        "importPath": "services",
+        "description": "services",
+        "isExtraImport": true,
+        "detail": "services",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "call_tools_async",
+        "importPath": "utils",
+        "description": "utils",
+        "isExtraImport": true,
+        "detail": "utils",
+        "documentation": {}
+    },
+    {
+        "label": "get_conversation",
+        "importPath": "crud.conversation",
+        "description": "crud.conversation",
+        "isExtraImport": true,
+        "detail": "crud.conversation",
+        "documentation": {}
+    },
+    {
+        "label": "add_conversation",
+        "importPath": "crud.conversation",
+        "description": "crud.conversation",
+        "isExtraImport": true,
+        "detail": "crud.conversation",
+        "documentation": {}
+    },
+    {
+        "label": "httpx",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "httpx",
+        "description": "httpx",
+        "detail": "httpx",
+        "documentation": {}
+    },
+    {
+        "label": "requests",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "requests",
+        "description": "requests",
+        "detail": "requests",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "importPath": "time",
+        "description": "time",
+        "isExtraImport": true,
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "urandom",
+        "importPath": "os",
+        "description": "os",
+        "isExtraImport": true,
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "Jinja2Templates",
+        "importPath": "fastapi.templating",
+        "description": "fastapi.templating",
+        "isExtraImport": true,
+        "detail": "fastapi.templating",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "datetime",
+        "description": "datetime",
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "AgnosticDatabase",
+        "importPath": "motor.core",
+        "description": "motor.core",
+        "isExtraImport": true,
+        "detail": "motor.core",
+        "documentation": {}
+    },
+    {
+        "label": "MongoDatabase",
+        "importPath": "database.session",
+        "description": "database.session",
+        "isExtraImport": true,
+        "detail": "database.session",
+        "documentation": {}
+    },
+    {
+        "label": "MongoDatabase",
+        "importPath": "database.session",
+        "description": "database.session",
+        "isExtraImport": true,
+        "detail": "database.session",
+        "documentation": {}
+    },
+    {
+        "label": "MongoClient",
+        "importPath": "pymongo",
+        "description": "pymongo",
+        "isExtraImport": true,
+        "detail": "pymongo",
+        "documentation": {}
+    },
+    {
+        "label": "motor_asyncio",
+        "importPath": "motor",
+        "description": "motor",
+        "isExtraImport": true,
+        "detail": "motor",
+        "documentation": {}
+    },
+    {
+        "label": "core",
+        "importPath": "motor",
+        "description": "motor",
+        "isExtraImport": true,
+        "detail": "motor",
+        "documentation": {}
+    },
+    {
+        "label": "DriverInfo",
+        "importPath": "pymongo.driver_info",
+        "description": "pymongo.driver_info",
+        "isExtraImport": true,
+        "detail": "pymongo.driver_info",
+        "documentation": {}
+    },
+    {
+        "label": "ChromaService",
+        "importPath": "services.chroma_service",
+        "description": "services.chroma_service",
+        "isExtraImport": true,
+        "detail": "services.chroma_service",
+        "documentation": {}
+    },
+    {
         "label": "CORSMiddleware",
         "importPath": "fastapi.middleware.cors",
         "description": "fastapi.middleware.cors",
@@ -385,22 +546,6 @@
         "description": "pydantic",
         "isExtraImport": true,
         "detail": "pydantic",
-        "documentation": {}
-    },
-    {
-        "label": "ChatController",
-        "importPath": "controllers.chat_controller",
-        "description": "controllers.chat_controller",
-        "isExtraImport": true,
-        "detail": "controllers.chat_controller",
-        "documentation": {}
-    },
-    {
-        "label": "PageController",
-        "importPath": "controllers.page_controller",
-        "description": "controllers.page_controller",
-        "isExtraImport": true,
-        "detail": "controllers.page_controller",
         "documentation": {}
     },
     {
@@ -445,52 +590,27 @@
         "documentation": {}
     },
     {
-        "label": "datetime",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "datetime",
-        "description": "datetime",
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "timezone",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "Database",
-        "importPath": "database.database",
-        "description": "database.database",
-        "isExtraImport": true,
-        "detail": "database.database",
-        "documentation": {}
-    },
-    {
-        "label": "get_db",
-        "importPath": "database.database",
-        "description": "database.database",
-        "isExtraImport": true,
-        "detail": "database.database",
-        "documentation": {}
-    },
-    {
         "label": "OpenAI",
         "importPath": "openai",
         "description": "openai",
         "isExtraImport": true,
         "detail": "openai",
+        "documentation": {}
+    },
+    {
+        "label": "wrap_openai",
+        "importPath": "langsmith.wrappers",
+        "description": "langsmith.wrappers",
+        "isExtraImport": true,
+        "detail": "langsmith.wrappers",
+        "documentation": {}
+    },
+    {
+        "label": "async_to_sync",
+        "importPath": "asgiref.sync",
+        "description": "asgiref.sync",
+        "isExtraImport": true,
+        "detail": "asgiref.sync",
         "documentation": {}
     },
     {
@@ -551,19 +671,19 @@
         "documentation": {}
     },
     {
-        "label": "ApiRouter",
-        "importPath": "routers",
-        "description": "routers",
+        "label": "router",
+        "importPath": "api.v1.api_router",
+        "description": "api.v1.api_router",
         "isExtraImport": true,
-        "detail": "routers",
+        "detail": "api.v1.api_router",
         "documentation": {}
     },
     {
-        "label": "PageRouter",
-        "importPath": "routers",
-        "description": "routers",
+        "label": "router",
+        "importPath": "api.v1.page_router",
+        "description": "api.v1.page_router",
         "isExtraImport": true,
-        "detail": "routers",
+        "detail": "api.v1.page_router",
         "documentation": {}
     },
     {
@@ -575,11 +695,56 @@
         "documentation": {}
     },
     {
+        "label": "router",
+        "kind": 5,
+        "importPath": "app.api.v1.api_router",
+        "description": "app.api.v1.api_router",
+        "peekOfCode": "router = APIRouter()\n@router.post(\"/backend/v1/request\")\n@traceable\nasync def conversation(request: Request, openai_service: OpenAIService = Depends(deps.get_openai_service)):\n    data = await request.json()\n    conversation_dto = ConversationRequest(**data)\n    data_qa = await ChatController.get_data_for_rag(conversation_dto)\n    return StreamingResponse(openai_service.ask_openai_with_rag(data_qa['user_question'], conversation= data_qa['conversation'], context=data_qa['context'], global_topic=data_qa['global_topic']), media_type=\"text/event-stream\")",
+        "detail": "app.api.v1.api_router",
+        "documentation": {}
+    },
+    {
+        "label": "index",
+        "kind": 2,
+        "importPath": "app.api.v1.page_router",
+        "description": "app.api.v1.page_router",
+        "peekOfCode": "def index(request: Request, page_controller: PageController = Depends()):\n    return page_controller._index(request)\n@router.get(\"/\", response_class=HTMLResponse)\ndef root(page_controller: PageController = Depends()):\n    return page_controller._root()\n@router.get(\"/chat/{conversation_id}\", response_class=HTMLResponse)\ndef chat(request: Request, conversation_id: str, page_controller: PageController = Depends()):\n    return page_controller._chat(request, conversation_id)\n@router.post(\"/backend-api/v1/conversation\")\nasync def conversation(request: Request, page_controller: PageController = Depends()):",
+        "detail": "app.api.v1.page_router",
+        "documentation": {}
+    },
+    {
+        "label": "root",
+        "kind": 2,
+        "importPath": "app.api.v1.page_router",
+        "description": "app.api.v1.page_router",
+        "peekOfCode": "def root(page_controller: PageController = Depends()):\n    return page_controller._root()\n@router.get(\"/chat/{conversation_id}\", response_class=HTMLResponse)\ndef chat(request: Request, conversation_id: str, page_controller: PageController = Depends()):\n    return page_controller._chat(request, conversation_id)\n@router.post(\"/backend-api/v1/conversation\")\nasync def conversation(request: Request, page_controller: PageController = Depends()):\n    data = await request.json()\n    return StreamingResponse(page_controller._stream_response(data), media_type=\"text/event-stream\")",
+        "detail": "app.api.v1.page_router",
+        "documentation": {}
+    },
+    {
+        "label": "chat",
+        "kind": 2,
+        "importPath": "app.api.v1.page_router",
+        "description": "app.api.v1.page_router",
+        "peekOfCode": "def chat(request: Request, conversation_id: str, page_controller: PageController = Depends()):\n    return page_controller._chat(request, conversation_id)\n@router.post(\"/backend-api/v1/conversation\")\nasync def conversation(request: Request, page_controller: PageController = Depends()):\n    data = await request.json()\n    return StreamingResponse(page_controller._stream_response(data), media_type=\"text/event-stream\")",
+        "detail": "app.api.v1.page_router",
+        "documentation": {}
+    },
+    {
+        "label": "router",
+        "kind": 5,
+        "importPath": "app.api.v1.page_router",
+        "description": "app.api.v1.page_router",
+        "peekOfCode": "router = APIRouter()\n@router.get(\"/chat/\", response_class=HTMLResponse)\ndef index(request: Request, page_controller: PageController = Depends()):\n    return page_controller._index(request)\n@router.get(\"/\", response_class=HTMLResponse)\ndef root(page_controller: PageController = Depends()):\n    return page_controller._root()\n@router.get(\"/chat/{conversation_id}\", response_class=HTMLResponse)\ndef chat(request: Request, conversation_id: str, page_controller: PageController = Depends()):\n    return page_controller._chat(request, conversation_id)",
+        "detail": "app.api.v1.page_router",
+        "documentation": {}
+    },
+    {
         "label": "ChatController",
         "kind": 6,
         "importPath": "app.controllers.chat_controller",
         "description": "app.controllers.chat_controller",
-        "peekOfCode": "class ChatController:\n    openai_service: OpenAIService\n    chroma_service: ChromaService\n    mongo_service: MongoService\n    def __init__(self):\n        self.openai_service = OpenAIService()\n        self.chroma_service = ChromaService()\n        self.mongo_service = MongoService()\n    @traceable\n    async def _qa_conversation(self, request_data: ConversationRequest):",
+        "peekOfCode": "class ChatController:\n    def __init__(self):\n        pass\n    @traceable\n    @staticmethod\n    async def get_data_for_rag(request_data: ConversationRequest, openai_service: OpenAIService = deps.get_openai_service(), chroma_service: ChromaService = deps.get_chroma_service()):\n        conversation_id = request_data.conversation_id\n        prompt = request_data.meta.content.parts[0]\n        conversation = await get_conversation(conversation_id)\n        history = [] ",
         "detail": "app.controllers.chat_controller",
         "documentation": {}
     },
@@ -611,6 +776,60 @@
         "documentation": {}
     },
     {
+        "label": "_MongoClientSingleton",
+        "kind": 6,
+        "importPath": "app.database.session",
+        "description": "app.database.session",
+        "peekOfCode": "class _MongoClientSingleton:\n    mongo_client: motor_asyncio.AsyncIOMotorClient = None\n    def __new__(cls):\n        if not hasattr(cls, 'instance'):\n            cls.instance = super(_MongoClientSingleton, cls).__new__(cls)\n            cls.instance.mongo_client = motor_asyncio.AsyncIOMotorClient(\n                'mongodb://localhost:27017',\n                driver=DRIVER_INFO\n            )\n        return cls.instance",
+        "detail": "app.database.session",
+        "documentation": {}
+    },
+    {
+        "label": "MongoDatabase",
+        "kind": 2,
+        "importPath": "app.database.session",
+        "description": "app.database.session",
+        "peekOfCode": "def MongoDatabase() -> core.AgnosticClient:\n        return _MongoClientSingleton().mongo_client['chatbot']",
+        "detail": "app.database.session",
+        "documentation": {}
+    },
+    {
+        "label": "DRIVER_INFO",
+        "kind": 5,
+        "importPath": "app.database.session",
+        "description": "app.database.session",
+        "peekOfCode": "DRIVER_INFO = DriverInfo(name=\"chatbot\", version=\"1.0.0\")\nclass _MongoClientSingleton:\n    mongo_client: motor_asyncio.AsyncIOMotorClient = None\n    def __new__(cls):\n        if not hasattr(cls, 'instance'):\n            cls.instance = super(_MongoClientSingleton, cls).__new__(cls)\n            cls.instance.mongo_client = motor_asyncio.AsyncIOMotorClient(\n                'mongodb://localhost:27017',\n                driver=DRIVER_INFO\n            )",
+        "detail": "app.database.session",
+        "documentation": {}
+    },
+    {
+        "label": "get_openai_service",
+        "kind": 2,
+        "importPath": "app.help.deps",
+        "description": "app.help.deps",
+        "peekOfCode": "def get_openai_service():\n    return OpenAIService()\ndef get_chroma_service():\n    return ChromaService()\ndef get_db():\n    return MongoDatabase()",
+        "detail": "app.help.deps",
+        "documentation": {}
+    },
+    {
+        "label": "get_chroma_service",
+        "kind": 2,
+        "importPath": "app.help.deps",
+        "description": "app.help.deps",
+        "peekOfCode": "def get_chroma_service():\n    return ChromaService()\ndef get_db():\n    return MongoDatabase()",
+        "detail": "app.help.deps",
+        "documentation": {}
+    },
+    {
+        "label": "get_db",
+        "kind": 2,
+        "importPath": "app.help.deps",
+        "description": "app.help.deps",
+        "peekOfCode": "def get_db():\n    return MongoDatabase()",
+        "detail": "app.help.deps",
+        "documentation": {}
+    },
+    {
         "label": "cors_middleware",
         "kind": 2,
         "importPath": "app.middlewares.cors_middleware",
@@ -633,7 +852,7 @@
         "kind": 6,
         "importPath": "app.models.dto",
         "description": "app.models.dto",
-        "peekOfCode": "class Part(BaseModel):\n    content: str\n    role: str\nclass MetaContent(BaseModel):\n    # conversation: List[Dict[str, Any]] = []\n    # internet_access: bool = Field(default=False)\n    # content_type: str = Field(default=\"text\")\n    parts: List[Part]\nclass Meta(BaseModel):\n    id: int",
+        "peekOfCode": "class Part(BaseModel):\n    content: str\n    role: str\nclass MetaContent(BaseModel):\n    parts: List[Part]\nclass Meta(BaseModel):\n    content: MetaContent\nclass ConversationRequest(BaseModel):\n    conversation_id: str\n    action: str",
         "detail": "app.models.dto",
         "documentation": {}
     },
@@ -642,7 +861,7 @@
         "kind": 6,
         "importPath": "app.models.dto",
         "description": "app.models.dto",
-        "peekOfCode": "class MetaContent(BaseModel):\n    # conversation: List[Dict[str, Any]] = []\n    # internet_access: bool = Field(default=False)\n    # content_type: str = Field(default=\"text\")\n    parts: List[Part]\nclass Meta(BaseModel):\n    id: int\n    content: MetaContent\nclass ConversationRequest(BaseModel):\n    conversation_id: str",
+        "peekOfCode": "class MetaContent(BaseModel):\n    parts: List[Part]\nclass Meta(BaseModel):\n    content: MetaContent\nclass ConversationRequest(BaseModel):\n    conversation_id: str\n    action: str\n    meta: Meta",
         "detail": "app.models.dto",
         "documentation": {}
     },
@@ -651,7 +870,7 @@
         "kind": 6,
         "importPath": "app.models.dto",
         "description": "app.models.dto",
-        "peekOfCode": "class Meta(BaseModel):\n    id: int\n    content: MetaContent\nclass ConversationRequest(BaseModel):\n    conversation_id: str\n    action: str\n    model: str\n    jailbreak: str\n    meta: Meta",
+        "peekOfCode": "class Meta(BaseModel):\n    content: MetaContent\nclass ConversationRequest(BaseModel):\n    conversation_id: str\n    action: str\n    meta: Meta",
         "detail": "app.models.dto",
         "documentation": {}
     },
@@ -660,35 +879,8 @@
         "kind": 6,
         "importPath": "app.models.dto",
         "description": "app.models.dto",
-        "peekOfCode": "class ConversationRequest(BaseModel):\n    conversation_id: str\n    action: str\n    model: str\n    jailbreak: str\n    meta: Meta",
+        "peekOfCode": "class ConversationRequest(BaseModel):\n    conversation_id: str\n    action: str\n    meta: Meta",
         "detail": "app.models.dto",
-        "documentation": {}
-    },
-    {
-        "label": "ApiRouter",
-        "kind": 6,
-        "importPath": "app.routers.api_router",
-        "description": "app.routers.api_router",
-        "peekOfCode": "class ApiRouter(BaseRouter):\n    openai_service: OpenAIService\n    def __init__(self, app: FastAPI) -> None:\n        super().__init__()\n        self._init_routes(app)\n        self.openai_service = OpenAIService()\n    def _init_routes(self, app: FastAPI) -> None:\n        @app.post(\"/backend/v1/request\")\n        @traceable\n        async def _conversation(request: Request):",
-        "detail": "app.routers.api_router",
-        "documentation": {}
-    },
-    {
-        "label": "BaseRouter",
-        "kind": 6,
-        "importPath": "app.routers.base_router",
-        "description": "app.routers.base_router",
-        "peekOfCode": "class BaseRouter:\n    chat_controller: ChatController\n    page_controller: PageController\n    def __init__(self) -> None:\n        self.chat_controller = ChatController()\n        self.page_controller = PageController()",
-        "detail": "app.routers.base_router",
-        "documentation": {}
-    },
-    {
-        "label": "PageRouter",
-        "kind": 6,
-        "importPath": "app.routers.page_router",
-        "description": "app.routers.page_router",
-        "peekOfCode": "class PageRouter(BaseRouter):\n    def __init__(self, app: FastAPI) -> None:\n        super().__init__()\n        self._init_routes(app)\n    def _init_routes(self, app: FastAPI) -> None:\n        @app.get(\"/chat/\", response_class=HTMLResponse)\n        def index(request: Request):\n            return self.page_controller._index(request)\n        @app.get(\"/\", response_class=HTMLResponse)\n        def root():",
-        "detail": "app.routers.page_router",
         "documentation": {}
     },
     {
@@ -696,17 +888,8 @@
         "kind": 6,
         "importPath": "app.services.chroma_service",
         "description": "app.services.chroma_service",
-        "peekOfCode": "class ChromaService:\n    persist_directory: str\n    embedding: OpenAIEmbeddings\n    vectordb_topic: Chroma\n    vectordb_content: Chroma\n    vectordb_docs: Chroma\n    def __init__(self) -> None:\n        self._load_config()\n        # OpenAI embeddings\n        self.embedding = OpenAIEmbeddings()",
+        "peekOfCode": "class ChromaService:\n    persist_directory: str\n    embedding: OpenAIEmbeddings\n    vectordb_topic: Chroma\n    vectordb_content: Chroma\n    vectordb_docs: Chroma\n    def __init__(self) -> None:\n        self.load_config()\n        # OpenAI embeddings\n        self.embedding = OpenAIEmbeddings()",
         "detail": "app.services.chroma_service",
-        "documentation": {}
-    },
-    {
-        "label": "MongoService",
-        "kind": 6,
-        "importPath": "app.services.mongo_service",
-        "description": "app.services.mongo_service",
-        "peekOfCode": "class MongoService():\n    mongd: Database\n    def __init__(self):\n        self.mongd = get_db()\n    def add_conversation(self, conversation_id, message):\n        return self.mongd.db['conversation'].find_one_and_update(\n            {\n                'conversation_id': conversation_id,\n                'count': {'$lt': 20}\n            }",
-        "detail": "app.services.mongo_service",
         "documentation": {}
     },
     {
@@ -714,7 +897,7 @@
         "kind": 6,
         "importPath": "app.services.openai_service",
         "description": "app.services.openai_service",
-        "peekOfCode": "class OpenAIService:\n    openai_client: OpenAI\n    chroma_service: ChromaService\n    mongo_service: MongoService\n    global_topic: dict\n    def __init__(self) -> None:\n        self.openai_client = wrap_openai(OpenAI(api_key=os.environ.get(\"OPENAI_API_KEY\")))\n        self.chroma_service = ChromaService()\n        self.mongo_service = MongoService()\n    @traceable",
+        "peekOfCode": "class OpenAIService:\n    openai_client: OpenAI\n    def __init__(self) -> None:\n        self.openai_client = wrap_openai(OpenAI(api_key=os.environ.get(\"OPENAI_API_KEY\")))\n    @traceable\n    def rewrite_and_extract_keyword(self, message: str, conversation: list = [], global_topic: dict = None):\n        if global_topic is None:\n            global_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}\n        global_topic = global_topic.get('topic', \"\")\n        system_prompt = f'''",
         "detail": "app.services.openai_service",
         "documentation": {}
     },
@@ -768,8 +951,17 @@
         "kind": 5,
         "importPath": "app.utils.tools_async",
         "description": "app.utils.tools_async",
-        "peekOfCode": "tools_fn = dict(map(lambda x: (x['name'], x['tool_fn']), tools_info))\nasync def call_tools_async(feature_dict : dict) -> str:\n    # try:\n        topic : dict  = feature_dict[\"topic\"]\n        content : list = feature_dict[\"content\"]\n        if topic == '':\n            return \"\"\n        apis = {\n            'social-scores_gamehub' : 'get_social_score_gamehub',\n            'daily-index_gamehub' : 'get_daily_index_gamehub',",
+        "peekOfCode": "tools_fn = dict(map(lambda x: (x['name'], x['tool_fn']), tools_info))\nasync def call_tools_async(feature_dict : dict) -> str:\n    # try:\n        topic : dict  = feature_dict[\"global_topic\"]\n        content : list = feature_dict[\"content\"]\n        if topic == '':\n            return \"\"\n        apis = {\n            'social-scores_gamehub' : 'get_social_score_gamehub',\n            'daily-index_gamehub' : 'get_daily_index_gamehub',",
         "detail": "app.utils.tools_async",
+        "documentation": {}
+    },
+    {
+        "label": "get_application",
+        "kind": 2,
+        "importPath": "app.app",
+        "description": "app.app",
+        "peekOfCode": "def get_application() -> FastAPI:\n    application = FastAPI()\n    cors_middleware(application)\n    application.include_router(router)\n    return application\napp = get_application()",
+        "detail": "app.app",
         "documentation": {}
     },
     {
@@ -777,16 +969,25 @@
         "kind": 5,
         "importPath": "app.app",
         "description": "app.app",
-        "peekOfCode": "app = FastAPI()\n# middleware configuration\ncors_middleware(app)\n# Routes\nApiRouter(app)",
+        "peekOfCode": "app = get_application()",
         "detail": "app.app",
         "documentation": {}
     },
     {
-        "label": "app_client",
+        "label": "get_application",
+        "kind": 2,
+        "importPath": "app.client",
+        "description": "app.client",
+        "peekOfCode": "def get_application() -> FastAPI:\n    application = FastAPI()\n    static_middleware(application)\n    application.include_router(router)\n    return application\napp = get_application()\nif __name__ == '__main__':\n    uvicorn.run(app, host=\"0.0.0.0\", port=8000)",
+        "detail": "app.client",
+        "documentation": {}
+    },
+    {
+        "label": "app",
         "kind": 5,
         "importPath": "app.client",
         "description": "app.client",
-        "peekOfCode": "app_client = FastAPI()\n# middleware configuration\nstatic_middleware(app_client)\n# Routes\nPageRouter(app_client)\nif __name__ == '__main__':\n    uvicorn.run(app_client, host='0.0.0.0', port=8080)",
+        "peekOfCode": "app = get_application()\nif __name__ == '__main__':\n    uvicorn.run(app, host=\"0.0.0.0\", port=8000)",
         "detail": "app.client",
         "documentation": {}
     },

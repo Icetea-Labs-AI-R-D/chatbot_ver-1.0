@@ -1,19 +1,19 @@
-import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 import uvicorn
 from middlewares import static_middleware
-from routers import PageRouter
+from api.v1.page_router import router
 
 load_dotenv()
 
-app_client = FastAPI()
+def get_application() -> FastAPI:
+    application = FastAPI()
+    static_middleware(application)
+    application.include_router(router)
 
-# middleware configuration
-static_middleware(app_client)
+    return application
 
-# Routes
-PageRouter(app_client)
+app = get_application()
 
 if __name__ == '__main__':
-    uvicorn.run(app_client, host='0.0.0.0', port=8080)
+    uvicorn.run(app, host="0.0.0.0", port=8000)
