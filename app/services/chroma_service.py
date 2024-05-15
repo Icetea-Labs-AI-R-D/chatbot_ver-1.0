@@ -42,6 +42,7 @@ class ChromaService:
     @traceable(run_type="retriever")
     async def retrieve_keyword(self, keyword: dict, global_topic:dict) -> dict:
         try:     
+
             topics = []
             contents = []
             retrieved_topics = []
@@ -76,5 +77,7 @@ class ChromaService:
             return {
                 "topic": "",
                 "content": [],
+
                 "global_topic": global_topic
+
             }

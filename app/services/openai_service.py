@@ -144,6 +144,7 @@ class OpenAIService:
         
         messages = [{"role": "system", "content":system_message }] + [{"role": "user", "content": user_message}]
 
+
         stream = self.openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             messages=messages,
@@ -161,8 +162,8 @@ class OpenAIService:
         suggestion = self.generate_suggestion(context)
         suggestion = json.loads(suggestion)
         reply_markup = {
-            "text": "Maybe you want know ⬇️:",
-            "follow_up": suggestion['suggestions']
+            "text": "Maybe you want to know ⬇️:",
+            "follow_up": suggestion['suggestions'][:3]
         }
         yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"     
         
@@ -174,4 +175,6 @@ class OpenAIService:
             "global_topic": global_topic
         }
         
+
         self.add_conversation_to_db(conversation['conversation_id'], message)
+
