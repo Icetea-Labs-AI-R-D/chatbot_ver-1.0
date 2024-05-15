@@ -1,3 +1,2 @@
-export OPENAI_API_KEY=""
 cd app
 uvicorn app:app --host 0.0.0.0 --port 9191 --reload

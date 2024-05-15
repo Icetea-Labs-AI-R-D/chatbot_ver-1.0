@@ -172,7 +172,7 @@ class OpenAIService:
             "content_user": question, 
             "role_assistant": "assistant",
             "content_assistant": answer, 
-            "previous_topic": global_topic
+            "global_topic": global_topic
         }
         
 
