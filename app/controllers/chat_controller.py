@@ -1,37 +1,31 @@
-from fastapi import Request
-from services import OpenAIService, ChromaService, MongoService
+from fastapi import Depends
+from services import OpenAIService, ChromaService
 from models.dto import ConversationRequest
 import json
 from utils import call_tools_async
 from langsmith import traceable
-from langsmith.wrappers import wrap_openai
+from crud.conversation import get_conversation
+from help import deps
 
 class ChatController:
-    openai_service: OpenAIService
-    chroma_service: ChromaService
-    mongo_service: MongoService
-
     def __init__(self):
-        self.openai_service = OpenAIService()
-        self.chroma_service = ChromaService()
-        self.mongo_service = MongoService()
+        pass
 
     @traceable
-    async def _qa_conversation(self, request_data: ConversationRequest):
+    @staticmethod
+    async def get_data_for_rag(request_data: ConversationRequest, openai_service: OpenAIService = deps.get_openai_service(), chroma_service: ChromaService = deps.get_chroma_service()):
         conversation_id = request_data.conversation_id
         prompt = request_data.meta.content.parts[0]
-        history = self.mongo_service.get_conversation(conversation_id)
-        history = list(map(lambda x: {'role': x.get('role', ''), 'content': x.get('content', ''), 'previous_topic': x.get('previous_topic', {'api': '', 'source': '', 'topic': '', 'type': ''})}, history))
+        conversation = await get_conversation(conversation_id)
+        history = [] 
+        for item in conversation.get('history', []):
+            history.extend(item)
+        history = list(map(lambda x: {'role': x.get('role', ''), 'content': x.get('content', '')}, history))
+        global_topic = conversation.get('global_topic', {'api': '', 'source': '', 'topic': '', 'type': ''})
         user_question = prompt.content
-        keywords_text = self.openai_service._rewrite_and_extract_keyword(user_question, history)
+        keywords_text = openai_service.rewrite_and_extract_keyword(user_question, history, global_topic)
         keywords_dict = json.loads(keywords_text)
-        if (len(history) > 0):
-            previous_topic = history[-1].get('previous_topic', {'api': '', 'source': '', 'topic': '', 'type': ''})
-        else:
-            previous_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}
-        features_keywords = await self.chroma_service._retrieve_keyword(keywords_dict, previous_topic)
-        
-        # print(features_keywords)
+        features_keywords = await chroma_service.retrieve_keyword(keywords_dict, global_topic)
         
         context = await call_tools_async(features_keywords)
 
@@ -42,6 +36,5 @@ class ChatController:
                 "history": history  
             },
             "context": context,
-            "rewrite_question": keywords_dict['rewritten_message'],
-            "previous_topic": features_keywords['previous_topic']
+            "global_topic": features_keywords['global_topic']
         }

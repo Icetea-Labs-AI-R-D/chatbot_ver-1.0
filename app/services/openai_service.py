@@ -1,26 +1,22 @@
+from fastapi import Depends
 from openai import OpenAI
 import os
-from time import sleep
-from .chroma_service import ChromaService
-from .mongo_service import MongoService
 import json
 from langsmith.wrappers import wrap_openai
 from langsmith import traceable
-from utils import get_price
+from crud.conversation import add_conversation
+from asgiref.sync import async_to_sync
 
 class OpenAIService:
     openai_client: OpenAI
-    chroma_service: ChromaService
-    mongo_service: MongoService
-    global_topic: dict
     def __init__(self) -> None:
         self.openai_client = wrap_openai(OpenAI(api_key=os.environ.get("OPENAI_API_KEY")))
-        self.chroma_service = ChromaService()
-        self.mongo_service = MongoService()
         
     @traceable
-    def _rewrite_and_extract_keyword(self, message: str, conversation: list = []):
-        previous_topic = conversation[-1]['previous_topic'] if len(conversation) > 0 else ""
+    def rewrite_and_extract_keyword(self, message: str, conversation: list = [], global_topic: dict = None):
+        if global_topic is None:
+            global_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}
+        global_topic = global_topic.get('topic', "")
         
         system_prompt = f'''
         ### Task ###
@@ -47,9 +43,12 @@ class OpenAIService:
         '''
 
         user_message = f"""
-            Previous user's topic:{previous_topic}
-            Current user's message: 
-                - User: {message}
+            ## Chat History ##
+            {conversation}
+            ## Global user's topic ##
+            {global_topic}
+            ## Current user's message ### 
+            {message}
         """
         
         messages = [{"role": "system", "content": system_prompt}] + [{"role": "user", "content": user_message}]
@@ -70,7 +69,8 @@ class OpenAIService:
         You are a helpful agent designed to provide suggestions based on the user's message and context.
         Your suggestions are question prompts that can help the user to get more information about the game on GameFi.org. 
         The provided context contains a json string, so you should parse it and give suggestions based on ONLY the keys of the json.
-        Generate exactly 4 question prompts.
+        Generate exactly 3 question prompts.
+        Suggest questions are in short, concise form, with upto 64 characters.
         Return the suggestions in JSON format contains 1 keys: "suggestions"
         '''
 
@@ -91,34 +91,62 @@ class OpenAIService:
             messages=messages 
         )
         
-        # print(get_price(response.usage))
-        
         return str(response.choices[0].message.content)
     
+    @async_to_sync
+    async def add_conversation_to_db(self, conversation_id, message):
+            await add_conversation(conversation_id, message)
     @traceable
-    def _ask_OpenAI_with_RAG(self, question: str, conversation: dict, context: str = "[]", previous_topic: dict = {'api': '', 'source': '', 'topic': '', 'type': ''}):
-        history = conversation.get('history', [])
-        if len(history) > 0:
-            history = history[-2:]
+    def ask_openai_with_rag(self, question: str, conversation: list = [], context: str = "[]", global_topic: dict = None):
+        if global_topic is None:
+            global_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}
+        history = conversation.get('history', [])[-4:]
         system_message = f"""
-        You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
-        Your role is to help user to know more about games and IDO projects which are available on the GameFi platform. 
-        Give information in a clear, concise and structured way.
-        List of things should be listed with Bulleted list.
-        
-        Use the following pieces of information to response the user's message: 
-        {context}
-        -----------------   
-        
-        If the question does not specify game's name, ask for the name of the game.
-        If the user greet you in any languages, greet back and introduce your self as 'GameFi Assistant'.
+        ###Task###
+            You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
+            YOUR TASK is to accurately answer information about games and IDO projects available on the GameFi platform, helping users better understand those information. 
+            Use the following pieces of information to response the user's message: 
+            <Information>
+                {context}
+            <Information>
+            The information in this <Information> section is assigned "Context", please remember it.
+            The user's question is assigned "User question", please remember to get it.
+
+        ###Instructions###
+            Please rely on the information of "Context" to answer "User question".
+            Let's carefully analyze "Context" and "User question" to provide the best answer.
+            When combining "Context" and "User question" to give the answer, the following possibilities arise:
+            1. In "Context" there is information to answer the "User Question":
+            - In this case, you can directly answer the "User question" based on the information in "Context".
+            - Respond in a clear, concise and structured manner with all the information the user needs.
+            - Do not answer questions like "This information is based on the data provided in the context".
+            - Please present your answer as clearly and easily as possible to read, paragraphs that can have line breaks should be given line breaks
+            2. In "Context" there is no information to answer the "User Question" or the information in "Context" is not related to "User Question":
+            - In this case, you should answer that there is no information, and you can ask the user to provide more information or ask for clarification.
+            - You can also ask the user if they have any other questions or need help with anything else.
+            - Please respond in a friendly manner.
+            3. "User question" are just normal communication questions (eg hello, thank you,...) that do not require information about games and IDO projects available on the GameFi platform:
+            - In this case, please respond as normal communication.
+            - You can also ask the user if they have any other questions or need help with anything else.
+            - Please respond in a friendly manner.
+
+        ###Note###
+            Respond in a concise and structured manner and include all the information the user needs.
+            Please present your answer as clearly and legibly as possible.
         """
-        messages = [{"role": "system", "content":system_message }] + history + [{"role": "user", "content": question}]
+        
+        user_message = f"""
+        ## Chat History ##
+        {history}
+        ## Current user's question ### 
+        {question}
+        """
+        
+        messages = [{"role": "system", "content":system_message }] + [{"role": "user", "content": user_message}]
 
         stream = self.openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             messages=messages,
-            # temperature=0.2,
             stream=True,
         )
         
@@ -128,7 +156,6 @@ class OpenAIService:
             token = chunk.choices[0].delta.content
             if token is not None:
                 answer += token
-                print(token)
                 yield token
                 
         suggestion = self.generate_suggestion(context)
@@ -137,21 +164,14 @@ class OpenAIService:
             "text": "Maybe you want know ⬇️:",
             "follow_up": suggestion['suggestions']
         }
-        yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
+        yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"     
         
-        print(previous_topic)        
-        
-        user = {
-            "role": "user",
-            "content": question, 
-            "previous_topic": previous_topic
+        message = {
+            "role_user": "user",
+            "content_user": question, 
+            "role_assistant": "assistant",
+            "content_assistant": answer, 
+            "previous_topic": global_topic
         }
         
-        assistant = {
-            "role": "assistant",
-            "content": answer,
-            "previous_topic": previous_topic
-        }
-        
-        self.mongo_service.add_conversation(conversation['conversation_id'], user)
-        self.mongo_service.add_conversation(conversation['conversation_id'], assistant)
+        self.add_conversation_to_db(conversation['conversation_id'], message)

@@ -25,17 +25,7 @@ services:
       - .env:/code/.env
     ports:
       - "9191:9191"
-    command: python3 ./app/app.py
-    networks:
-      - app-network
-  fe:
-    build: 
-      dockerfile: Dockerfile
-    container_name: fe
-    restart: always
-    ports:
-      - "8000:8000"
-    command: python3 ./app/client.py
+    command: bash dev.sh
     networks:
       - app-network
 

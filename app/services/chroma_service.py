@@ -10,7 +10,7 @@ class ChromaService:
     vectordb_content: Chroma
     vectordb_docs: Chroma
     def __init__(self) -> None:
-        self._load_config()
+        self.load_config()
         # OpenAI embeddings
         self.embedding = OpenAIEmbeddings()
         self.vectordb_topic = Chroma(
@@ -23,7 +23,7 @@ class ChromaService:
             persist_directory=f'{self.persist_directory}/docs/',
             embedding_function=self.embedding)
         
-    def _load_config(self) -> None:
+    def load_config(self) -> None:
         self.persist_directory = os.getenv('PERSISTENCE_PATH')
         
     async def async_similarity_search(self, k: str = "", _filter: dict = {}):
@@ -40,13 +40,13 @@ class ChromaService:
             )[0], index)
 
     @traceable(run_type="retriever")
-    async def _retrieve_keyword(self, keyword: dict, global_topic:dict) -> dict:
+    async def retrieve_keyword(self, keyword: dict, global_topic:dict) -> dict:
         try:     
-            keyword = keyword['keywords']
             topics = []
             contents = []
             retrieved_topics = []
             retrieved_tasks = []
+            keyword = keyword['keywords']
             keywords = [(k, index) for index, k in enumerate(keyword)]
             retrieved_tasks = [self.async_similarity_search_with_scores(k, index) for index, k in enumerate(keyword)]
             retrieved_topics = await asyncio.gather(*retrieved_tasks)
@@ -69,12 +69,12 @@ class ChromaService:
             return {
                 "topic": global_topic,
                 "content": contents,
-                "previous_topic": global_topic
+                "global_topic": global_topic
             }
         except Exception as e:
             print(e)
             return {
                 "topic": "",
                 "content": [],
-                "previous_topic": global_topic
+                "global_topic": global_topic
             }
