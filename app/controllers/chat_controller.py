@@ -25,7 +25,9 @@ class ChatController:
         user_question = prompt.content
         keywords_text = openai_service.rewrite_and_extract_keyword(user_question, history, global_topic)
         keywords_dict = json.loads(keywords_text)
+
         features_keywords = await chroma_service.retrieve_keyword(keywords_dict, global_topic)
+
         
         context = await call_tools_async(features_keywords)
 
