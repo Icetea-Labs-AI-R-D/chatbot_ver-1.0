@@ -3,6 +3,57 @@ import json
 import asyncio
 from datetime import datetime, timezone
 from async_lru import alru_cache
+from langchain.docstore.document import Document
+from langchain_community.vectorstores import Chroma
+from langchain_openai import OpenAIEmbeddings
+
+list_ido_game = []
+# OpenAI embeddings
+embedding = OpenAIEmbeddings()
+
+def get_upcoming_IDO_with_slug():
+    url = "https://ido.gamefi.org/api/v3/pools/upcoming"
+    headers = {
+        "Accept": "application/json",
+    }
+    reponse = requests.get(url, headers).json()
+    list_project_name = []
+    data = reponse['data']
+    for item in data:
+        list_project_name.append(
+            {
+               'name': item['name'],
+               'slug': item['slug']
+            }
+        )
+    overview = {
+        "number_of_upcoming_IDO": len(list_project_name),
+        "list_project": list_project_name
+    }
+    return overview
+
+def update_vector_topic(vector_topic):
+    # Remove old ido_upcoming topic from vector_topic
+    list_old_ids = list(filter(lambda x: x.startswith('ido_upcoming') ,vector_topic._collection.get()['ids']))
+    # print(list_old_ids)
+    if not list_old_ids : list_old_ids = ['']
+    vector_topic._collection.delete(list_old_ids)
+    
+    # Get new ido_upcoming topic
+    new_data = get_upcoming_IDO_with_slug()
+    
+    # Update new ido_upcoming topic to vector_topic
+    new_topic_ido_upcoming = new_data['list_project']
+    new_topic = []
+    for doc in new_topic_ido_upcoming:
+        document = Document(page_content=doc['name'], metadata={'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'})
+        new_topic.append(document)
+    # print(new_topic)
+    vector_topic.add_documents(
+        documents=new_topic, 
+        ids=[f'ido_upcoming_{i+1}' for i in range(len(new_topic_ido_upcoming))],
+    )
+    vector_topic.persist()
 
 @alru_cache(maxsize=32, ttl=60**3)
 async def get_infor_overview_gamehub(name):
@@ -412,6 +463,19 @@ async def get_upcoming_IDO(name):
     data = reponse['data']
     for item in data:
         list_project_name.append(item['name'])
+    
+    global list_ido_game   
+    global embedding 
+    if list_project_name != list_ido_game:
+        persist_directory_topic = './db/data_v2/topic/'
+        persist_directory_docs = './db/data_v2/docs/'
+        vectordb_topic = Chroma(persist_directory=persist_directory_topic,
+                   embedding_function=embedding)
+        vectordb_docs = Chroma(persist_directory=persist_directory_docs,
+                   embedding_function=embedding)
+        update_vector_topic(vectordb_topic)
+        update_vector_topic(vectordb_docs)
+        
     overview = {
         "number_of_upcoming_IDO": len(list_project_name),
         "list_project": list_project_name
@@ -654,9 +718,9 @@ async def call_tools_async(feature_dict : dict) -> str:
             info = result
             if 'data' in result:
                 if 'introduction' in result['data']:
-                    info = str(result['data']['introduction']) + "\n\nFor question suggestion only (use keys for suggestion): \n" + str(result['description'])
+                    info = str(result['data']['introduction']) 
                 elif 'description' in result['data']:
-                    info = str(result['data']['description']) + "\n\nFor question suggestion only (use keys for suggestion): \n" + str(result['description'])
+                    info = str(result['data']['description']) 
             
             context = f'''\nGeneral information of {topic['source']}:\n{info}\n'''
             

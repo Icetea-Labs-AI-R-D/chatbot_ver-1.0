@@ -38,5 +38,6 @@ class ChatController:
                 "history": history  
             },
             "context": context,
-            "global_topic": features_keywords['global_topic']
+            "global_topic": features_keywords['global_topic'],
+            "features_keywords": features_keywords
         }

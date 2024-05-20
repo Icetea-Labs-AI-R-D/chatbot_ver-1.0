@@ -14,4 +14,4 @@ async def conversation(request: Request, openai_service: OpenAIService = Depends
     data = await request.json()
     conversation_dto = ConversationRequest(**data)
     data_qa = await ChatController.get_data_for_rag(conversation_dto)
-    return StreamingResponse(openai_service.ask_openai_with_rag(data_qa['user_question'], conversation= data_qa['conversation'], context=data_qa['context'], global_topic=data_qa['global_topic']), media_type="text/event-stream")
+    return StreamingResponse(openai_service.ask_openai_with_rag(data_qa['user_question'], conversation= data_qa['conversation'], context=data_qa['context'], global_topic=data_qa['global_topic'], features_keywords=data_qa['features_keywords']), media_type="text/event-stream")

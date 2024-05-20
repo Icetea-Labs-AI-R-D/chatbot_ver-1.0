@@ -1,0 +1,110 @@
+{
+    "general": [
+        "Upcoming IDO projects?"
+    ],
+    "community-performance_gamehub": [
+        "Telegram users?",
+        "Twitter followers?",
+        "Discord users?",
+        "Twitter interaction?",
+        "Community rank?",
+        "Market rank?",
+        "Twitter rank?",
+        "Telegram rank?",
+        "Discord rank?",
+        "Community performance?"
+    ],
+    "daily-index_gamehub": [
+        "Daily index?",
+        "GameFi ranking?",
+        "Social signal 24h?",
+        "Social score 24h?",
+        "UAW 24h?",
+        "Transactions 24h?",
+        "Holders 24h?"
+    ],
+    "on-chain-performance_gamehub": [
+        "Token price?",
+        "Volume?",
+        "Volume 24h change?",
+        "Market cap?",
+        "Market cap 7d change?",
+        "UAW 7d change?",
+        "NFT transaction 7d change?",
+        "Volume rank?",
+        "Market cap rank?",
+        "UAW rank?",
+        "NFT transaction rank?",
+        "Onchain rank?",
+        "Market rank?",
+        "Circulating supply?"
+    ],
+    "overview_gamehub": [
+        "Whitepaper?",
+        "Status?",
+        "When was the project released?",
+        "Roadmap?",
+        "On which platform can I play this game?"
+    ],
+    "social-scores_gamehub": [
+        "Social scores?",
+        "Time?",
+        "Timeframe?",
+        "Social score?",
+        "Telegram group score?",
+        "Telegram channel score?",
+        "Twitter score?",
+        "Discord score?",
+        "Social rank?",
+        "Telegram group rank?",
+        "Telegram channel rank?",
+        "Twitter rank?",
+        "Discord rank?",
+        "Social health?"
+    ],
+    "team_gamehub": [
+        "Team?",
+        "Staffs?",
+        "Team rank?"
+    ],
+    "tokenomic_gamehub": [
+        "Tokenomic?",
+        "Valuation?",
+        "Market cap?",
+        "Market cap init?",
+        "Market cap fully diluted?",
+        "Market cap self-reported?",
+        "Token symbol?",
+        "Token utilities?",
+        "Token economy?",
+        "Token distribution?",
+        "Vesting schedule?",
+        "Current price?",
+        "Public price?",
+        "Highest price?",
+        "Reported ATH?",
+        "Chart symbol?",
+        "Init token circulation?"
+    ],
+    "backer_gamehub": [],
+    "overview_ido": [
+        "Overview?",
+        "Description?",
+        "Excerpt?",
+        "Type?",
+        "Status?",
+        "Claim policy?",
+        "Contract address?",
+        "Address receiver?",
+        "Airdrop chain ID?",
+        "Sort?",
+        "Total token?",
+        "Bonus progress?",
+        "Display?",
+        "Need KYC?",
+        "Featured?",
+        "Deployed?",
+        "Winner published?"
+    ],
+    "overview_ido_upcoming": []
+}
