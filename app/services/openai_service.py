@@ -7,6 +7,7 @@ from langsmith.wrappers import wrap_openai
 from langsmith import traceable
 from crud.conversation import add_conversation
 from asgiref.sync import async_to_sync
+import typing
 
 load_dotenv()
 
@@ -96,9 +97,8 @@ class OpenAIService:
         
         return str(response.choices[0].message.content)
     
-    @async_to_sync
-    async def add_conversation_to_db(self, conversation_id, message):
-            await add_conversation(conversation_id, message)
+    def add_conversation_to_db(self, conversation_id, message):
+            add_conversation(conversation_id, message)
     @traceable
     def ask_openai_with_rag(self, question: str, conversation: list = [], context: str = "[]", global_topic: dict = None):
         if global_topic is None:

@@ -24,6 +24,14 @@
         "documentation": {}
     },
     {
+        "label": "Body",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
         "label": "APIRouter",
         "importPath": "fastapi",
         "description": "fastapi",
@@ -256,6 +264,15 @@
         "documentation": {}
     },
     {
+        "label": "typing",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "typing",
+        "description": "typing",
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
         "label": "Annotated",
         "importPath": "typing",
         "description": "typing",
@@ -361,6 +378,14 @@
         "documentation": {}
     },
     {
+        "label": "call_tools_sync",
+        "importPath": "utils",
+        "description": "utils",
+        "isExtraImport": true,
+        "detail": "utils",
+        "documentation": {}
+    },
+    {
         "label": "get_conversation",
         "importPath": "crud.conversation",
         "description": "crud.conversation",
@@ -453,6 +478,22 @@
         "documentation": {}
     },
     {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timezone",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
         "label": "AgnosticDatabase",
         "importPath": "motor.core",
         "description": "motor.core",
@@ -474,6 +515,14 @@
         "description": "database.session",
         "isExtraImport": true,
         "detail": "database.session",
+        "documentation": {}
+    },
+    {
+        "label": "get_db",
+        "importPath": "database.database",
+        "description": "database.database",
+        "isExtraImport": true,
+        "detail": "database.database",
         "documentation": {}
     },
     {
@@ -703,11 +752,20 @@
         "documentation": {}
     },
     {
+        "label": "conversation",
+        "kind": 2,
+        "importPath": "app.api.v1.api_router",
+        "description": "app.api.v1.api_router",
+        "peekOfCode": "def conversation(conversation_dto: ConversationRequest, openai_service: OpenAIService = Depends(deps.get_openai_service)):\n    data_qa = ChatController.get_data_for_rag(conversation_dto)\n    return StreamingResponse(openai_service.ask_openai_with_rag(data_qa['user_question'], conversation= data_qa['conversation'], context=data_qa['context'], global_topic=data_qa['global_topic']), media_type=\"text/event-stream\")",
+        "detail": "app.api.v1.api_router",
+        "documentation": {}
+    },
+    {
         "label": "router",
         "kind": 5,
         "importPath": "app.api.v1.api_router",
         "description": "app.api.v1.api_router",
-        "peekOfCode": "router = APIRouter()\n@router.post(\"/backend/v1/request\")\n@traceable\nasync def conversation(request: Request, openai_service: OpenAIService = Depends(deps.get_openai_service)):\n    data = await request.json()\n    conversation_dto = ConversationRequest(**data)\n    data_qa = await ChatController.get_data_for_rag(conversation_dto)\n    return StreamingResponse(openai_service.ask_openai_with_rag(data_qa['user_question'], conversation= data_qa['conversation'], context=data_qa['context'], global_topic=data_qa['global_topic']), media_type=\"text/event-stream\")",
+        "peekOfCode": "router = APIRouter()\n@router.post(\"/backend/v1/request\")\n@traceable\ndef conversation(conversation_dto: ConversationRequest, openai_service: OpenAIService = Depends(deps.get_openai_service)):\n    data_qa = ChatController.get_data_for_rag(conversation_dto)\n    return StreamingResponse(openai_service.ask_openai_with_rag(data_qa['user_question'], conversation= data_qa['conversation'], context=data_qa['context'], global_topic=data_qa['global_topic']), media_type=\"text/event-stream\")",
         "detail": "app.api.v1.api_router",
         "documentation": {}
     },
@@ -752,7 +810,7 @@
         "kind": 6,
         "importPath": "app.controllers.chat_controller",
         "description": "app.controllers.chat_controller",
-        "peekOfCode": "class ChatController:\n    def __init__(self):\n        pass\n    @traceable\n    @staticmethod\n    async def get_data_for_rag(request_data: ConversationRequest, openai_service: OpenAIService = deps.get_openai_service(), chroma_service: ChromaService = deps.get_chroma_service()):\n        conversation_id = request_data.conversation_id\n        prompt = request_data.meta.content.parts[0]\n        conversation = await get_conversation(conversation_id)\n        history = [] ",
+        "peekOfCode": "class ChatController:\n    def __init__(self):\n        pass\n    @traceable\n    @staticmethod\n    def get_data_for_rag(request_data: ConversationRequest, openai_service: OpenAIService = deps.get_openai_service(), chroma_service: ChromaService = deps.get_chroma_service()):\n        conversation_id = request_data.conversation_id\n        prompt = request_data.meta.content.parts[0]\n        conversation = get_conversation(conversation_id)\n        history = [] ",
         "detail": "app.controllers.chat_controller",
         "documentation": {}
     },
@@ -766,11 +824,29 @@
         "documentation": {}
     },
     {
+        "label": "get_conversation",
+        "kind": 2,
+        "importPath": "app.crud.conversation",
+        "description": "app.crud.conversation",
+        "peekOfCode": "def get_conversation(\n    conversation_id: str,\n    db = get_db()\n):\n    conversation = db['conversation'].find_one(\n        {\n            'conversation_id': conversation_id\n        },\n        sort=[('start_date', -1)]\n    )",
+        "detail": "app.crud.conversation",
+        "documentation": {}
+    },
+    {
+        "label": "add_conversation",
+        "kind": 2,
+        "importPath": "app.crud.conversation",
+        "description": "app.crud.conversation",
+        "peekOfCode": "def add_conversation(\n    conversation_id: str,\n    message: dict,\n    db = get_db()\n):\n    db['conversation'].find_one_and_update(\n        {\n            'conversation_id': conversation_id,\n            'count': {'$lt': 20}\n        }",
+        "detail": "app.crud.conversation",
+        "documentation": {}
+    },
+    {
         "label": "Database",
         "kind": 6,
         "importPath": "app.database.database",
         "description": "app.database.database",
-        "peekOfCode": "class Database:\n    _instance = None\n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n            cls._instance.client = MongoClient(\"localhost\", 27017)\n            cls._instance.db = cls._instance.client[\"chatbot\"]\n        return cls._instance\ndef get_db() -> Optional[Database]:\n    return Database()",
+        "peekOfCode": "class Database:\n    _instance = None\n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n            cls._instance.client = MongoClient(\"localhost\", 27017)\n            cls._instance.db = cls._instance.client[\"chatbot\"]\n        return cls._instance\ndef get_db() -> Optional[Database]:\n    return Database()._instance.db",
         "detail": "app.database.database",
         "documentation": {}
     },
@@ -779,7 +855,7 @@
         "kind": 2,
         "importPath": "app.database.database",
         "description": "app.database.database",
-        "peekOfCode": "def get_db() -> Optional[Database]:\n    return Database()",
+        "peekOfCode": "def get_db() -> Optional[Database]:\n    return Database()._instance.db",
         "detail": "app.database.database",
         "documentation": {}
     },
@@ -961,6 +1037,132 @@
         "description": "app.utils.tools_async",
         "peekOfCode": "tools_fn = dict(map(lambda x: (x['name'], x['tool_fn']), tools_info))\nasync def call_tools_async(feature_dict : dict) -> str:\n    # try:\n        topic : dict  = feature_dict[\"global_topic\"]\n        content : list = feature_dict[\"content\"]\n        if topic == '':\n            return \"\"\n        apis = {\n            'social-scores_gamehub' : 'get_social_score_gamehub',\n            'daily-index_gamehub' : 'get_daily_index_gamehub',",
         "detail": "app.utils.tools_async",
+        "documentation": {}
+    },
+    {
+        "label": "get_infor_overview_gamehub",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def get_infor_overview_gamehub(name):\n    \"\"\"Get token price, market cap, and other tokenomics information from GameFi API.\"\"\"\n    url = f'''https://v3.gamefi.org/api/v1/games/{name}?include_tokenomics=true&include_studios=true&include_downloads=true&include_categories=true&include_advisors=true&include_backers=true&include_networks=true&include_origins=true&include_videos=true'''\n    headers = {\n        'Accept': 'application/json'\n    }\n    description = {\n        \"status\": \"The state of the game whether is is publishted or not\",\n        \"avg_star_rating\": \"The average star rating of the project on gamefi.org\",\n        \"dislikes\": \"Number of dislikes\",",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "get_on_chain_performance_gamehub",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def get_on_chain_performance_gamehub(name):\n    \"\"\"Get game on-chain performance from GameFi API.\"\"\"\n    description = {\n        \"uaw_7d_changed\": \"The change in the number of individual electronic wallets participating in transactions over the past 7 days.\",\n        \"nft_transaction_7d_changed\": \"The change in the number of NFT transactions in the past 7 days.\",\n        \"volume_rank\": \"Trading volume ranking\",\n        \"market_cap_rank\": \"Market capitalization ranking\",\n        \"uaw_rank\": \"Ranking total number of individual electronic wallets performing transactions.\",\n        \"nft_transaction_rank\": \"Ranking based on total number of NFT transactions\",\n        \"onchain_rank\": \"On-chain ranking level of the game\",",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "get_community_performance_gamehub",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def get_community_performance_gamehub(name):\n    \"\"\"Get community performance of a game from GameFi API.\"\"\"\n    description = {\n        \"market_rank\": \"Top games with the highest scores on the page\",\n        \"telegram_group_users\": \"The number of users participating in Telegram.\",\n        \"twitter_followers\": \"Number of followers on Twitter\",\n        \"discord_users\": \"The number of users on Discord is counted on the Gamefi.org page.\",\n        \"community_rank\": \"Community rank on Gamefi.org\",\n        \"twitter_rank\": \"Rank on Gamefi.org of project's twitter page\",\n        \"telegram_group_rank\": \"Rank on Gamefi.org of project's group on telegram\",",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "get_daily_index_gamehub",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def get_daily_index_gamehub(name):\n    \"\"\"Get daily ranking, social score, uaw, transaction and holder information in the last 24 hours of a game from GameFi API.\"\"\"\n    description = {\n        \"gamefi_ranking\": \"General ranking of Games on the Gamefi.org page\",\n        \"social_signal_24h\": \"Social signals index in the last 24 hours.\",\n        \"social_score_24h\": \"Social score in the past 24 hours.\",\n        \"uaw_24h\": \"Number of unique wallets participating in transactions in 24 hours.\",\n        \"transactions_24h\": \"The number of transactions carried out in the last 24 hours.\",\n        \"holders_24h\": \"The number of users holding tokens or NFTs in the last 24 hours.\"\n    }",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "get_social_score_gamehub",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def get_social_score_gamehub(name):\n    \"\"\"Get social score of a game from GameFi API.\"\"\"\n    description = {\n        \"time\": \"Time that records social score\",\n        \"time_frame\": \"Time frame\",\n        \"social_score\": \"Overall project social's score on GameFi.org\",\n        \"telegram_score\": \"Telegram score\",\n        \"telegram_group_score\": \"Score on Gamefi.org of project's group on telegram\",\n        \"telegram_channel_score\": \"Score on Gamefi.org of project's channel on telegram\",\n        \"social_rank\": \"Overall project social's rank on GameFi.org\",",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "get_top_backers_gamehub",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def get_top_backers_gamehub(name):\n    \"\"\"Get all backers of a game from GameFi API.\"\"\"\n    url = f'''https://v3.gamefi.org/api/v1/games/{name}/top-backers'''\n    headers = {\n        'Accept': 'application/json'\n    }\n    reponse = requests.get(url,headers).json()\n    listBacker = []\n    try:\n        items = reponse['data']['items']",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "to_date",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def to_date(time):\n    return str(datetime.fromtimestamp(time, timezone.utc))\ndef get_overview_ido(name):\n    url = f'''https://ido.gamefi.org/api/v3/pool/{name}'''\n    headers = {\n        'Accept': 'application/json'\n    }\n    reponse = requests.get(url, headers).json()\n    # Remove key in data\n    data = reponse['data']",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "get_overview_ido",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def get_overview_ido(name):\n    url = f'''https://ido.gamefi.org/api/v3/pool/{name}'''\n    headers = {\n        'Accept': 'application/json'\n    }\n    reponse = requests.get(url, headers).json()\n    # Remove key in data\n    data = reponse['data']\n    remove_keys = ['id', 'chain_id', 'excerpt', 'address', 'logo', 'banner', 'contract_address', 'address_receiver', 'airdrop_chain_id', 'claim_schedule']\n    for key in  remove_keys:",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "get_tokenomics_gamehub",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def get_tokenomics_gamehub(name):\n    listID = {'mobox': 'cda1dd30-0128-4ffe-bb65-29001e1ad0e9', 'the-sandbox': '08c1027f-4984-487a-a968-3c710ef2bd00', 'binaryx': '9e2def2a-f701-4721-a2c7-925b83018adf', 'axie-infinity': 'f96d0db8-d551-40c3-905c-e6e002c920e3', 'x-world-games': 'ffb52c78-016e-44f1-bfea-b57286d91898', 'thetan-arena': '149b050a-f391-4397-8dc0-163ea2e14138', 'alien-worlds': '0c49e040-be09-40ee-a178-e77bf404796e', 'league-of-kingdoms': '5293cb42-c26e-4a32-b80e-f595adc07083', 'burgercities': 'b91204b9-4197-4e4a-b5c7-56343ef49141', 'kryptomon': '0b54a231-070a-4474-ad6e-a17afba9a6c6', 'wanaka-farm': '466a5862-7e68-467b-85ef-cb677f5e96c5', 'sidus-heroes': '04054d55-b1ec-4234-9f10-c789b3b56065', 'ninneko': 'd2f84664-d28d-4729-8a0a-0ed33c39c521', 'cryptoblades': 'ad82204a-23d5-4ffe-a1ae-f8fb1f71b5f7', 'ultimate-champions': 'a1ee2386-33de-47cc-a3fe-11d0342de2e9', 'monsterra': 'b0b1271c-7b48-4bdc-a555-6ce95fc8bdfe', 'polychain-monsters': '47e03d0d-c353-47b0-b99c-a2a82dd875ae', 'iguverse': 'a47d016f-76e8-4f9c-819d-7c81daad7e91', 'heroes-empires': '79075231-aa7d-4b52-97d5-4390521f108b', 'illuvium': 'd3bf9ecf-58f1-488d-a3dc-8bead33eb930', 'xana': '3a0e8a04-255b-435b-856c-0723c01f08db', 'aqua-farm': '9a6373c8-9c46-40b5-9d23-c4fcbe873b20', 'mines-of-dalarnia': '60424918-41f0-4334-9ce3-2671f1febe88', 'magiccraft': 'a3110df8-f298-483c-aa0b-ce4fcae44841', 'derace': '31dcd5f2-5293-4db4-abf7-679671b25e1b', 'bit-hotel': '15385c8c-8c0b-445b-94b5-07fb1c918d4b', 'splinterlands': '98b3ca34-4683-4faf-be40-6814e8fe71b6', 'bullieverse': 'bb978fae-ce1a-4d3c-b18d-223a4ce285ff', 'gunstar-metaverse': '0f9abc34-1d34-46fc-8885-9dd5ed324692', 'gods-unchained': '3df2ee8f-df08-4604-b101-b59e0b3387db'}\n    url = f'''https://v3.gamefi.org/api/v1/tokenomics/{listID[name]}?include_statistics=true&include_contracts=true'''\n    headers = {\n        'Accept': 'application/json'\n    }\n    reponse = requests.get(url, headers).json()\n    data = reponse['data']['items'][0]\n    data.pop('id')\n    data.pop('icon')",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "get_upcoming_IDO",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def get_upcoming_IDO(name):\n    url = \"https://ido.gamefi.org/api/v3/pools/upcoming\"\n    headers = {\n        \"Accept\": \"application/json\",\n    }\n    reponse = requests.get(url, headers).json()\n    list_project_name = []\n    data = reponse['data']\n    for item in data:\n        list_project_name.append(item['name'])",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "get_upcoming_IDO_overview",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def get_upcoming_IDO_overview(name):\n    url = \"https://ido.gamefi.org/api/v3/pools/upcoming\"\n    headers = {\n        \"Accept\": \"application/json\",\n    }\n    description = {\n    \"slug\": \"Abbreviation for the project name.\",\n    \"name\": \"Name of project.\",\n    \"description\": \"Providing an overview of the project\",\n    \"status\": \"Status of the IDO, as Preorder, Created,...\",",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "call_tools_sync",
+        "kind": 2,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "def call_tools_sync(feature_dict : dict) -> str:\n    # try:\n        topic : dict  = feature_dict[\"global_topic\"]\n        content : list = feature_dict[\"content\"]\n        if topic == '':\n            return \"\"\n        apis = {\n            'social-scores_gamehub' : 'get_social_score_gamehub',\n            'daily-index_gamehub' : 'get_daily_index_gamehub',\n            'on-chain-performance_gamehub' : 'get_on_chain_performance_gamehub',",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "tools_info",
+        "kind": 5,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "tools_info = [\n    {\n        \"name\": \"get_infor_overview_gamehub\",\n        \"tool_fn\":get_infor_overview_gamehub\n    },\n    {\n        \"name\": \"get_on_chain_performance_gamehub\",\n        \"tool_fn\":get_on_chain_performance_gamehub\n    },\n    {",
+        "detail": "app.utils.tools_sync",
+        "documentation": {}
+    },
+    {
+        "label": "tools_fn",
+        "kind": 5,
+        "importPath": "app.utils.tools_sync",
+        "description": "app.utils.tools_sync",
+        "peekOfCode": "tools_fn = dict(map(lambda x: (x['name'], x['tool_fn']), tools_info))\ndef call_tools_sync(feature_dict : dict) -> str:\n    # try:\n        topic : dict  = feature_dict[\"global_topic\"]\n        content : list = feature_dict[\"content\"]\n        if topic == '':\n            return \"\"\n        apis = {\n            'social-scores_gamehub' : 'get_social_score_gamehub',\n            'daily-index_gamehub' : 'get_daily_index_gamehub',",
+        "detail": "app.utils.tools_sync",
         "documentation": {}
     },
     {

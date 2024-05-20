@@ -12,4 +12,4 @@ class Database:
         return cls._instance
 
 def get_db() -> Optional[Database]:
-    return Database()
+    return Database()._instance.db

@@ -26,21 +26,21 @@ class ChromaService:
     def load_config(self) -> None:
         self.persist_directory = os.getenv('PERSISTENCE_PATH')
         
-    async def async_similarity_search(self, k: str = "", _filter: dict = {}):
+    def async_similarity_search(self, k: str = "", _filter: dict = {}):
         return self.vectordb_content.similarity_search(
                 k,
                 k=3,
                 filter=_filter
             )
         
-    async def async_similarity_search_with_scores(self, k: str = "", index: int = 0):
+    def async_similarity_search_with_scores(self, k: str = "", index: int = 0):
         return (self.vectordb_docs.similarity_search_with_score(
                 k.lower(),
                 k=1
             )[0], index)
 
     @traceable(run_type="retriever")
-    async def retrieve_keyword(self, keyword: dict, global_topic:dict) -> dict:
+    def retrieve_keyword(self, keyword: dict, global_topic:dict) -> dict:
         try:     
 
             topics = []
@@ -49,8 +49,7 @@ class ChromaService:
             retrieved_tasks = []
             keyword = keyword['keywords']
             keywords = [(k, index) for index, k in enumerate(keyword)]
-            retrieved_tasks = [self.async_similarity_search_with_scores(k, index) for index, k in enumerate(keyword)]
-            retrieved_topics = await asyncio.gather(*retrieved_tasks)
+            retrieved_topics = [self.async_similarity_search_with_scores(k, index) for index, k in enumerate(keyword)]
             retrieved_topics = list(filter(lambda x: x[0][0].metadata['type'] == 'topic', retrieved_topics))
             topics = sorted(retrieved_topics, key=lambda x: x[0][1], reverse=False)
             if len(topics) > 0:
@@ -62,8 +61,7 @@ class ChromaService:
                 'topic': global_topic.get('topic', '')
             }
             keywords = list(map(lambda x: x[0], keywords))
-            retrieved_tasks = [self.async_similarity_search(k, _filter) for k in keywords]
-            group_contents = await asyncio.gather(*retrieved_tasks)
+            group_contents = [self.async_similarity_search(k, _filter) for k in keywords]
             for task in group_contents:
                 contents.extend(task)
             contents = list(map(lambda x: x.metadata, contents))
@@ -77,7 +75,6 @@ class ChromaService:
             return {
                 "topic": "",
                 "content": [],
-
                 "global_topic": global_topic
 
             }

@@ -3,12 +3,13 @@ from motor.core import AgnosticDatabase
 from typing import Any, Generator, Annotated
 from fastapi import Depends, HTTPException
 from database.session import MongoDatabase
+from database.database import get_db
 
-async def get_conversation(
+def get_conversation(
     conversation_id: str,
-    db = MongoDatabase()
+    db = get_db()
 ):
-    conversation = await db['conversation'].find_one(
+    conversation = db['conversation'].find_one(
         {
             'conversation_id': conversation_id
         },
@@ -18,12 +19,12 @@ async def get_conversation(
         return conversation
     return {}
 
-async def add_conversation(
+def add_conversation(
     conversation_id: str,
     message: dict,
-    db = MongoDatabase()
+    db = get_db()
 ):
-    await db['conversation'].find_one_and_update(
+    db['conversation'].find_one_and_update(
         {
             'conversation_id': conversation_id,
             'count': {'$lt': 20}
