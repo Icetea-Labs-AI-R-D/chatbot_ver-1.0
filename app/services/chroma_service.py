@@ -1,8 +1,11 @@
+from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 import os
 import asyncio
 from langsmith import traceable
+
+load_dotenv()
 class ChromaService:
     persist_directory: str
     embedding: OpenAIEmbeddings
@@ -10,9 +13,8 @@ class ChromaService:
     vectordb_content: Chroma
     vectordb_docs: Chroma
     def __init__(self) -> None:
-        self.load_config()
-        # OpenAI embeddings
-        self.embedding = OpenAIEmbeddings()
+        self.persist_directory = os.getenv('PERSISTENCE_PATH')
+        self.embedding = OpenAIEmbeddings(api_key=os.getenv('OPENAI_API_KEY3'))
         self.vectordb_topic = Chroma(
             persist_directory=f'{self.persist_directory}/topic/',
             embedding_function=self.embedding)
@@ -23,8 +25,6 @@ class ChromaService:
             persist_directory=f'{self.persist_directory}/docs/',
             embedding_function=self.embedding)
         
-    def load_config(self) -> None:
-        self.persist_directory = os.getenv('PERSISTENCE_PATH')
         
     async def async_similarity_search(self, k: str = "", _filter: dict = {}):
         return self.vectordb_content.similarity_search(
@@ -77,7 +77,6 @@ class ChromaService:
             return {
                 "topic": "",
                 "content": [],
-
                 "global_topic": global_topic
 
             }

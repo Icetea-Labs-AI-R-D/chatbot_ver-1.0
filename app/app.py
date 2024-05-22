@@ -1,17 +1,25 @@
 import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
-import uvicorn
 from middlewares import cors_middleware
 from api.v1.api_router import router
+from contextlib import asynccontextmanager
+from database import db
+from database.queue import AsyncQueue
 
-load_dotenv()
+load_dotenv('../.env')
 
-def get_application() -> FastAPI:
-    application = FastAPI()
-    cors_middleware(application)
-    application.include_router(router)
+async_queue = AsyncQueue()
 
-    return application
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await async_queue.init_queue()
+    yield
 
-app = get_application()
+app = FastAPI(lifespan=lifespan)
+cors_middleware(app)
+app.include_router(router)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("app:app", host="localhost", port=9090, workers=4)

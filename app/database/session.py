@@ -1,18 +1,68 @@
 from motor import motor_asyncio, core
-from pymongo.driver_info import DriverInfo
+import logging
+import datetime
 
-DRIVER_INFO = DriverInfo(name="chatbot", version="1.0.0")
-class _MongoClientSingleton:
-    mongo_client: motor_asyncio.AsyncIOMotorClient = None
+class MongoManager:
+    client: motor_asyncio.AsyncIOMotorClient = None
+    db: motor_asyncio.AsyncIOMotorDatabase = None
     
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(_MongoClientSingleton, cls).__new__(cls)
-            cls.instance.mongo_client = motor_asyncio.AsyncIOMotorClient(
-                'mongodb://localhost:27017',
-                driver=DRIVER_INFO
-            )
-        return cls.instance
+    def __init__(self) -> None:
+        self.client = motor_asyncio.AsyncIOMotorClient(
+            "mongodb://localhost:27017",
+            maxPoolSize=10,
+            minPoolSize=10)
+        self.db = self.client.chatbot
+    
+    async def get_conversation(
+        self,
+        conversation_id: str
+    ):
+        conversation = await self.db.conversation.find_one(
+            {
+                'conversation_id': conversation_id
+            },
+            sort=[('start_date', -1)]
+        )
+        return conversation or {}
 
-def MongoDatabase() -> core.AgnosticClient:
-        return _MongoClientSingleton().mongo_client['chatbot']
+    async def add_conversation(
+        self,
+        conversation_id: str,
+        message: dict
+    ):
+        await self.db.conversation.find_one_and_update(
+            {
+                'conversation_id': conversation_id,
+                'count': {'$lt': 20}
+            }
+            ,
+            {
+                '$push': {
+                    "history": [
+                    {
+                        "role": message.get('role_user'),
+                        "content": message.get('content_user')
+                    },
+                    {
+                        "role": message.get('role_assistant'),
+                        "content": message.get('content_assistant')
+                    }
+                    ]
+                },
+                "$set": {
+                    "global_topic": message.get('global_topic')
+                },
+                "$inc": { "count": 1 },
+                "$setOnInsert": {
+                    "conversation_id": conversation_id,
+                    "start_date": datetime.datetime.now(),
+                    "status": "open",
+                    "report": []
+                }
+            },
+            new=True,
+            upsert=True
+        )
+    
+    async def hi(self, content: str):
+        print(content)
