@@ -7,10 +7,14 @@ from async_lru import alru_cache
 from langchain.docstore.document import Document
 from langchain_community.vectorstores import Chroma
 from langchain_openai import OpenAIEmbeddings
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 list_ido_game = []
 # OpenAI embeddings
-embedding = OpenAIEmbeddings()
+embedding = OpenAIEmbeddings(api_key=os.getenv('OPENAI_API_KEY3'))
 
 async def get_upcoming_IDO_with_slug():
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
@@ -494,17 +498,19 @@ async def get_upcoming_IDO(name):
     for item in data:
         list_project_name.append(item['name'])
     
-    global list_ido_game   
-    global embedding 
-    if list_project_name != list_ido_game:
-        persist_directory_topic = './db/data_v2/topic/'
-        persist_directory_docs = './db/data_v2/docs/'
-        vectordb_topic = Chroma(persist_directory=persist_directory_topic,
-                   embedding_function=embedding)
-        vectordb_docs = Chroma(persist_directory=persist_directory_docs,
-                   embedding_function=embedding)
-        update_vector_topic(vectordb_topic)
-        update_vector_topic(vectordb_docs)
+    global list_ido_game  
+    global embedding
+    # if list_project_name != list_ido_game:
+    #     persist_directory_topic = './db/data_v2/topic/'
+    #     persist_directory_docs = './db/data_v2/docs/'
+    #     vectordb_topic = Chroma(persist_directory=persist_directory_topic,
+    #                embedding_function=embedding)
+    #     vectordb_docs = Chroma(persist_directory=persist_directory_docs,
+    #                embedding_function=embedding)
+    #     await update_vector_topic(vectordb_topic)
+    #     await update_vector_topic(vectordb_docs)
+        
+        
     overview = {
         "number_of_upcoming_IDO": len(list_project_name),
         "list_project": list_project_name

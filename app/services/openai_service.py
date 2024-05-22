@@ -1,20 +1,20 @@
-from dotenv import load_dotenv
 from fastapi import Depends
-from openai import OpenAI
+from openai import AsyncOpenAI
 import os
 import json
 from langsmith.wrappers import wrap_openai
 from langsmith import traceable
-from crud.conversation import add_conversation
-from asgiref.sync import async_to_sync
+from database.session import MongoManager
+from database.queue import AsyncQueue
+
 import random
 
-load_dotenv()
-
 class OpenAIService:
-    openai_client: OpenAI
+    db: MongoManager
+    async_queue: AsyncQueue
     def __init__(self) -> None:
-        self.openai_client = wrap_openai(OpenAI(api_key=os.environ.get("OPENAI_API_KEY")))
+        self.db = MongoManager()
+        self.async_queue = AsyncQueue()
 
         path_to_questions = os.path.join('..','data','json','questions.json')
         with open(path_to_questions) as f:
@@ -22,12 +22,12 @@ class OpenAIService:
         
         
     @traceable
-    def rewrite_and_extract_keyword(self, message: str, conversation: list = [], global_topic: dict = None):
+    async def rewrite_and_extract_keyword(self, message: str, conversation: list = [], global_topic: dict = None, api_key: str = ""):
         if global_topic is None:
             global_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}
         global_topic = global_topic.get('topic', "")
         
-        system_prompt = f'''
+        system_prompt = '''
         ### Task ###
         You are a helpful agent designed to paraphrase the user message into a complete sentence and extract the keywords.
         User message is question about GamFi, IDO,...
@@ -52,7 +52,9 @@ class OpenAIService:
         """
         messages = [{"role": "system", "content": system_prompt}] + [{"role": "user", "content": user_message}]
         
-        response = self.openai_client.chat.completions.create(
+        openai_client = AsyncOpenAI(api_key=api_key)
+        
+        response = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             temperature=0,
             response_format= {
@@ -63,7 +65,7 @@ class OpenAIService:
         return str(response.choices[0].message.content)
     
     @traceable
-    def generate_suggestion(self,  context: str = "[]", conversation: list = [], question_list: str = [], global_topic : dict = {}):
+    async def generate_suggestion(self,  context: str = "[]", api_key: str = "", conversation: list = [], question_list: str = [], global_topic : dict = {}):
         conversation = conversation[-20:]
         system_prompt = f'''
         You are a helpful agent designed to provide suggestions based on the user's message and context.
@@ -108,7 +110,9 @@ class OpenAIService:
         else:  
             messages = [{"role": "system", "content": system_prompt}] + [{"role": "user", "content": user_message}]
         
-        response = self.openai_client.chat.completions.create(
+        openai_client = AsyncOpenAI(api_key=api_key)
+        
+        response = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             temperature=0,
             response_format= {
@@ -118,16 +122,12 @@ class OpenAIService:
         )
         
         return str(response.choices[0].message.content)
-    
-    @async_to_sync
-    async def add_conversation_to_db(self, conversation_id, message):
-            await add_conversation(conversation_id, message)
     @traceable
-    def ask_openai_with_rag(self, question: str, conversation: list = [], context: str = "[]", global_topic: dict = None, features_keywords: dict = {}):
+    async def ask_openai_with_rag(self, question: str, conversation: list = [], context: str = "[]", global_topic: dict = None, api_key: str = "", features_keywords: dict = {}):
         if global_topic is None:
             global_topic = {'api': '', 'source': '', 'topic': '', 'type': ''}
         history = conversation.get('history', [])[-4:]
-        system_message = f"""
+        system_message = """
         You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
         YOUR TASK is to accurately answer information about games and IDO projects available on the GameFi platform, helping users better understand those information. 
         Based on the context below, answer the user's question.
@@ -140,7 +140,12 @@ class OpenAIService:
             - If the user's question is just normal communication questions (eg hello, thank you,...) that do not require information about games and IDO projects available on the GameFi platform, please respond as normal communication.
         """
 
+
         user_message = f"""
+        Chat History: {history}
+        Answer the question based only on the following context:
+        Context: {context} 
+        User: {question}
         Chat History: {history}
         Answer the question based only on the following context:
         Context: {context} 
@@ -149,8 +154,9 @@ class OpenAIService:
         
         messages = [{"role": "system", "content":system_message }] + [{"role": "user", "content": user_message}]
 
+        openai_client = AsyncOpenAI(api_key=api_key)
 
-        stream = self.openai_client.chat.completions.create(
+        stream = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             messages=messages,
             stream=True,
@@ -158,7 +164,7 @@ class OpenAIService:
         
         answer = ""
         
-        for chunk in stream:
+        async for chunk in stream:
             token = chunk.choices[0].delta.content
             if token is not None:
                 answer += token
@@ -184,7 +190,7 @@ class OpenAIService:
         conversation['history'].append({"role": "user", "content": question})
         conversation['history'].append({"role": "assistant", "content": answer})
                 
-        suggestion = self.generate_suggestion(context=context, conversation=conversation['history'], question_list=list_question, global_topic=global_topic)
+        suggestion = await self.generate_suggestion(context=context, conversation=conversation['history'], question_list=list_question, global_topic=global_topic, api_key=api_key)
         suggestion = json.loads(suggestion)
         reply_markup = {
             "text": "Maybe you want to know ⬇️:",
@@ -200,6 +206,6 @@ class OpenAIService:
             "global_topic": global_topic
         }
         
-
-        self.add_conversation_to_db(conversation['conversation_id'], message)
+        await self.async_queue.put(api_key)
+        await self.db.add_conversation(conversation['conversation_id'], message)
 

@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import Chroma
 import chromadb
@@ -29,8 +30,6 @@ class ChromaService:
             name="vector_topic", embedding_function=self.embedding_function, metadata={"hnsw:space": "cosine"})
 
         
-    def load_config(self) -> None:
-        self.persist_directory = os.getenv('PERSISTENCE_PATH')
         
     async def async_similarity_search(self, k: str = "", _filter: dict = {}):
         result =  self.vectordb_content.query(
