@@ -4,18 +4,20 @@ import asyncio
 import httpx
 from datetime import datetime, timezone
 from async_lru import alru_cache
-from langchain.docstore.document import Document
-from langchain_community.vectorstores import Chroma
-from langchain_openai import OpenAIEmbeddings
+# from langchain.docstore.document import Document
+# from langchain_community.vectorstores import Chroma
+# from langchain_openai import OpenAIEmbeddings
 import os
 from dotenv import load_dotenv
+from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
+import chromadb
 
-load_dotenv()
+load_dotenv('.env')
 
 list_ido_game = []
 # OpenAI embeddings
-embedding = OpenAIEmbeddings(api_key=os.getenv('OPENAI_API_KEY3'))
-
+embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY3'))
+chroma_client = chromadb.HttpClient()
 async def get_upcoming_IDO_with_slug():
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
@@ -43,30 +45,36 @@ async def get_upcoming_IDO_with_slug():
     
     return overview
 
-async def update_vector_topic(vector_topic):
-    # Remove old ido_upcoming topic from vector_topic
-    list_old_ids = list(filter(lambda x: x.startswith('ido_upcoming') ,vector_topic._collection.get()['ids']))
+async def update_topic_vector_db(vector_db):
+    print(f"Total items in vector {vector_db.name} before update: {vector_db.count()}")
+    # Remove old ido_upcoming topic from vector_db
+    list_old_ids = list(filter(lambda x: x.startswith('ido_upcoming') ,vector_db.get()['ids']))
     # print(list_old_ids)
-    if not list_old_ids: 
-        list_old_ids = ['']
-    
-    vector_topic._collection.delete(list_old_ids)
+    if not list_old_ids : list_old_ids = ['']
+    vector_db.delete(ids=list_old_ids)
     
     # Get new ido_upcoming topic
     new_data = await get_upcoming_IDO_with_slug()
     
-    # Update new ido_upcoming topic to vector_topic
+    # Update new ido_upcoming topic to vector_db
     new_topic_ido_upcoming = new_data['list_project']
     new_topic = []
     for doc in new_topic_ido_upcoming:
-        document = Document(page_content=doc['name'], metadata={'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'})
-        new_topic.append(document)
+        # document = Document(page_content=doc['name'], metadata={'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'})
+        item = {
+            'page_content': doc['name'],
+            'metadata': {'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'}
+        }
+        new_topic.append(item)
     # print(new_topic)
-    vector_topic.add_documents(
-        documents=new_topic, 
+    vector_db.add(
+        documents=[item['page_content'] for item in new_topic], 
         ids=[f'ido_upcoming_{i+1}' for i in range(len(new_topic_ido_upcoming))],
+        metadatas=[item['metadata'] for item in new_topic]
     )
-    vector_topic.persist()
+    
+    print(f"Added {len(new_topic)} items to vector {vector_db.name}")
+    print(f"Total items in vector {vector_db.name} after update: {vector_db.count()}")
 
 @alru_cache(maxsize=32, ttl=60**3)
 async def get_infor_overview_gamehub(name):
@@ -498,17 +506,15 @@ async def get_upcoming_IDO(name):
     for item in data:
         list_project_name.append(item['name'])
     
-    global list_ido_game  
-    global embedding
+    # global list_ido_game  
+    # global embedding
     # if list_project_name != list_ido_game:
-    #     persist_directory_topic = './db/data_v2/topic/'
-    #     persist_directory_docs = './db/data_v2/docs/'
-    #     vectordb_topic = Chroma(persist_directory=persist_directory_topic,
-    #                embedding_function=embedding)
-    #     vectordb_docs = Chroma(persist_directory=persist_directory_docs,
-    #                embedding_function=embedding)
-    #     await update_vector_topic(vectordb_topic)
-    #     await update_vector_topic(vectordb_docs)
+    #     vectordb_docs = chroma_client.get_or_create_collection(
+    #         name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
+    #     vectordb_topic = chroma_client.get_or_create_collection(
+    #         name="vector_topic", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
+    #     await update_topic_vector_db(vectordb_topic)
+    #     await update_topic_vector_db(vectordb_docs)
         
         
     overview = {
@@ -516,6 +522,7 @@ async def get_upcoming_IDO(name):
         "list_project": list_project_name
     }
     return overview
+
 @alru_cache(maxsize=32, ttl=60**3)
 async def get_upcoming_IDO_overview(name):
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"

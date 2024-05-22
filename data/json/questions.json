@@ -124,7 +124,7 @@
         "Token utilities of <ido-name>?",
         "Information about the tokenomics of <ido-name>?",
         "The team members of <ido-name> and their roles in project?",
-        "Description about <ido-name>."
+        "About <ido-name>?"
     ],
     "overview_list_ido_upcoming": [
         "Status of the <ido-name>?",
@@ -142,6 +142,6 @@
         "Token utilities of <ido-name>?",
         "Information about the tokenomics of <ido-name>?",
         "The team members of <ido-name> and their roles in project?",
-        "Description about <ido-name>."
+        "About <ido-name>?"
     ]
 }

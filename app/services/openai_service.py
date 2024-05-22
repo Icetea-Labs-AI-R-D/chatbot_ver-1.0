@@ -16,7 +16,7 @@ class OpenAIService:
         self.db = MongoManager()
         self.async_queue = AsyncQueue()
 
-        path_to_questions = os.path.join('..','data','json','questions.json')
+        path_to_questions = os.path.join('.','data','json','questions.json')
         with open(path_to_questions) as f:
             self.question_dict = json.load(f)
         
@@ -52,7 +52,7 @@ class OpenAIService:
         """
         messages = [{"role": "system", "content": system_prompt}] + [{"role": "user", "content": user_message}]
         
-        openai_client = AsyncOpenAI(api_key=api_key)
+        openai_client = wrap_openai(AsyncOpenAI(api_key=api_key))
         
         response = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
@@ -110,7 +110,7 @@ class OpenAIService:
         else:  
             messages = [{"role": "system", "content": system_prompt}] + [{"role": "user", "content": user_message}]
         
-        openai_client = AsyncOpenAI(api_key=api_key)
+        openai_client = wrap_openai(AsyncOpenAI(api_key=api_key))
         
         response = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
@@ -154,7 +154,7 @@ class OpenAIService:
         
         messages = [{"role": "system", "content":system_message }] + [{"role": "user", "content": user_message}]
 
-        openai_client = AsyncOpenAI(api_key=api_key)
+        openai_client = wrap_openai(AsyncOpenAI(api_key=api_key))
 
         stream = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
@@ -169,7 +169,9 @@ class OpenAIService:
             if token is not None:
                 answer += token
                 yield token
-                
+        
+        
+        # Logic follow-up        
         list_unique_api = list(set([c.get('api', "") for c in features_keywords.get('content', [])]))
         list_question = []
         for api in list_unique_api:
@@ -185,8 +187,9 @@ class OpenAIService:
         if global_topic['source'] == '':
             list_question = self.question_dict['general']
 
-
-            
+        if global_topic['source'] == 'upcoming':
+            list_question = self.question_dict['overview_list_ido_upcoming']
+   
         conversation['history'].append({"role": "user", "content": question})
         conversation['history'].append({"role": "assistant", "content": answer})
                 

@@ -123,7 +123,7 @@ if __name__ == "__main__":
     data_all = data_content + data_topic
                     
     
-    embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY'))
+    embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY1'))
     client = chromadb.HttpClient()
     vector_docs = client.get_or_create_collection(
         name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})

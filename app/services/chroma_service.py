@@ -17,7 +17,6 @@ class ChromaService:
     vectordb_content: Any
     vectordb_docs: Any
     def __init__(self) -> None:
-        self.load_config()
         client = chromadb.HttpClient()
         
         # OpenAI embeddings
