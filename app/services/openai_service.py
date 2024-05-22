@@ -15,6 +15,11 @@ class OpenAIService:
     def __init__(self) -> None:
         self.db = MongoManager()
         self.async_queue = AsyncQueue()
+
+        path_to_questions = os.path.join('..','data','json','questions.json')
+        with open(path_to_questions) as f:
+            self.question_dict = json.load(f)
+        
         
     @traceable
     async def rewrite_and_extract_keyword(self, message: str, conversation: list = [], global_topic: dict = None, api_key: str = ""):
@@ -135,7 +140,12 @@ class OpenAIService:
             - If the user's question is just normal communication questions (eg hello, thank you,...) that do not require information about games and IDO projects available on the GameFi platform, please respond as normal communication.
         """
 
+
         user_message = f"""
+        Chat History: {history}
+        Answer the question based only on the following context:
+        Context: {context} 
+        User: {question}
         Chat History: {history}
         Answer the question based only on the following context:
         Context: {context} 
