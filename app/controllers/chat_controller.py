@@ -27,7 +27,7 @@ class ChatController:
         keywords_dict = json.loads(keywords_text)
 
         features_keywords = await chroma_service.retrieve_keyword(keywords_dict, global_topic)
-
+        
         
         context = await call_tools_async(features_keywords)
 

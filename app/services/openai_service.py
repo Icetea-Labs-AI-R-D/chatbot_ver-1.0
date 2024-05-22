@@ -169,7 +169,6 @@ class OpenAIService:
         for api in list_unique_api:
             if api != "":
                 list_question.extend(self.question_dict[api])
-                
 
 
         if features_keywords.get('content', []) == []:

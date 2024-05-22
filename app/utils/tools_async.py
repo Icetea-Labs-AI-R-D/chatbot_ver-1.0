@@ -1,6 +1,7 @@
 import requests
 import json
 import asyncio
+import httpx
 from datetime import datetime, timezone
 from async_lru import alru_cache
 from langchain.docstore.document import Document
@@ -11,14 +12,18 @@ list_ido_game = []
 # OpenAI embeddings
 embedding = OpenAIEmbeddings()
 
-def get_upcoming_IDO_with_slug():
+async def get_upcoming_IDO_with_slug():
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
         "Accept": "application/json",
     }
-    reponse = requests.get(url, headers).json()
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response_json = response.json()
+    
     list_project_name = []
-    data = reponse['data']
+    data = response_json['data']
     for item in data:
         list_project_name.append(
             {
@@ -26,21 +31,25 @@ def get_upcoming_IDO_with_slug():
                'slug': item['slug']
             }
         )
+    
     overview = {
         "number_of_upcoming_IDO": len(list_project_name),
         "list_project": list_project_name
     }
+    
     return overview
 
-def update_vector_topic(vector_topic):
+async def update_vector_topic(vector_topic):
     # Remove old ido_upcoming topic from vector_topic
     list_old_ids = list(filter(lambda x: x.startswith('ido_upcoming') ,vector_topic._collection.get()['ids']))
     # print(list_old_ids)
-    if not list_old_ids : list_old_ids = ['']
+    if not list_old_ids: 
+        list_old_ids = ['']
+    
     vector_topic._collection.delete(list_old_ids)
     
     # Get new ido_upcoming topic
-    new_data = get_upcoming_IDO_with_slug()
+    new_data = await get_upcoming_IDO_with_slug()
     
     # Update new ido_upcoming topic to vector_topic
     new_topic_ido_upcoming = new_data['list_project']
@@ -88,8 +97,9 @@ async def get_infor_overview_gamehub(name):
         "max_supply": "The total maximum number of tokens coins/tokens that will ever exist, including both mined and future available tokens. This information provides an overview of the limitations on the token's supply and helps readers understand the project's economic structure.",
         "published_at": "The date when the game was published or released",
     }
-    response = requests.get(url, headers).json()
-    # print(response)
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     gameId = response['data']['item'].get('id', "")
     nameGame = response['data']['item'].get('name', "")
     status = response['data']['item'].get('status', "")
@@ -144,14 +154,13 @@ async def get_on_chain_performance_gamehub(name):
     headers = {
         'Accept': 'application/json'
     }
-    response = requests.get(url, headers).json()
-    try:
-        data = response['data']
-        data.pop('game_id', None)
-    except:
-        data = {}
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+    data = response.get('data', {})
+    data.pop('game_id', None)
+    if data == {}:
         description = {}
-    
     res = {
         "data": data,
         "description": description
@@ -176,7 +185,9 @@ async def get_community_performance_gamehub(name):
     headers = {
         'Accept': 'application/json'
     }
-    response = requests.get(url, headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     try:
         data = response['data']
         data.pop('game_id', None)
@@ -188,7 +199,6 @@ async def get_community_performance_gamehub(name):
         "description": description
     }
     return res
-
 @alru_cache(maxsize=32, ttl=60**3)
 async def get_daily_index_gamehub(name):
     """Get daily ranking, social score, uaw, transaction and holder information in the last 24 hours of a game from GameFi API."""
@@ -205,9 +215,11 @@ async def get_daily_index_gamehub(name):
     headers = {
         'Accept': 'application/json'
     }
-    reponse = requests.get(url, headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     try:
-        data = reponse['data']
+        data = response['data']
     except:
         data = {}
         description = {}
@@ -234,7 +246,9 @@ async def get_social_score_gamehub(name):
     headers = {
         'Accept': 'application/json'
     }
-    response = requests.get(url,headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     try:
         item = response['data']['item']
         item.pop('game_id', None)
@@ -255,13 +269,15 @@ async def get_top_backers_gamehub(name):
     headers = {
         'Accept': 'application/json'
     }
-    reponse = requests.get(url,headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     listBacker = []
     try:
-        items = reponse['data']['items']
+        items = response['data']['items']
         for index, item in enumerate(items):
-            name = reponse['data']['items'][index]['name']
-            linkWebsite = reponse['data']['items'][index]['links']['website']
+            name = response['data']['items'][index]['name']
+            linkWebsite = response['data']['items'][index]['links']['website']
             listBacker.append(
                 {
                     "name": name,
@@ -280,13 +296,51 @@ def to_date(time):
 
 @alru_cache(maxsize=32, ttl=60**3)
 async def get_overview_ido(name):
+
+    description = {
+        "slug": "Abbreviation for the project name.",
+        "name": "Name of project.",
+        "description": "Providing an overview of the project",
+        "status": "Status of the IDO.",
+        "claim_policy": "Vesting / includes the vesting period, release rate, and any other provisions regarding the trading freedom of tokens after the IDO.",
+        "total_token": "Total number of tokens available for the IDO.",
+        "ath": "The maximum return on investment that the project's token has achieved since its all-time high.",
+        "whitelist": "The timeframe during which the whitelist is open to receive registrations from individuals who want to participate in the project's IDO.",
+        "refund_policy": "The policy regarding refunding funds in case the IDO is unsuccessful or if any issues arise. This information may include the conditions and regulations for requesting a refund, the timeframe, and the process for refunding.",
+        "buying_phases": "The time or period during which users can purchase tokens or participate in the project's IDO.",
+        "token": {
+            "type": "The specific category or standard this token adheres to, defining its functionality and interaction within its respective blockchain ecosystem.",
+            "symbol": "The unique identifier or abbreviation for this token, used for trading and referencing in the cryptocurrency markets.",
+            "price": "The current market value of the token, often quoted in United States Dollars (USD), which can fluctuate based on supply and demand dynamics.",
+            "decimals": "The maximum number of decimal places to which this token can be subdivided, indicating the smallest possible transaction unit for this token."
+        },
+        "currency": {
+            "type": "The unique symbol identifying the currency",
+            "decimals": "Defines the smallest unit of the currency that can be handled in transactions."
+        },
+        "social_networks": "Provide information about the links to the project's social media pages or social media platforms of IDO project.",
+        "roadmap": "The project's roadmap, which outlines the key milestones and objectives that the project aims to achieve in the future.",
+        "revenue_streams": "Provide information about the sources of income that the project is expected to generate during its operation.",
+        "token_utilities": "Provide information about the applications and features that the project's token will provide.",
+        "highlights": "Provide information about the unique and standout aspects of the project. This information may include significant achievements, advanced technologies utilized, competitive advantages, market opportunities, or any other strengths that the project aims to highlight to attract the attention of the community and potential investors during the IDO process",
+        "launchpad": "The platform or service that is hosting the IDO for the project.",
+        "total_raise": "The total amount of funds the project aims to raise through the Initial DEX Offering (IDO) process and other funding rounds. This information provides an overview of the level of attractiveness and interest from the community and potential investors towards the project."
+    }
+
     url = f'''https://ido.gamefi.org/api/v3/pool/{name}'''
     headers = {
         'Accept': 'application/json'
     }
-    reponse = requests.get(url, headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+    data = response.get('data', {})
+    if data == None:
+        return {
+            "description": {},
+            "data": {}
+        }
     # Remove key in data
-    data = reponse['data']
     remove_keys = ['id', 'chain_id', 'excerpt', 'address', 'logo', 'banner', 'contract_address', 'address_receiver', 'airdrop_chain_id', 'claim_schedule']
     for key in  remove_keys:
         if key in data:
@@ -356,35 +410,7 @@ async def get_overview_ido(name):
     total_raise = data['total_token'] * data['token']['price']
     data['total_raise'] = total_raise
     
-    description = {
-        "slug": "Abbreviation for the project name.",
-        "name": "Name of project.",
-        "description": "Providing an overview of the project",
-        "status": "Status of the IDO.",
-        "claim_policy": "Vesting / includes the vesting period, release rate, and any other provisions regarding the trading freedom of tokens after the IDO.",
-        "total_token": "Total number of tokens available for the IDO.",
-        "ath": "The maximum return on investment that the project's token has achieved since its all-time high.",
-        "whitelist": "The timeframe during which the whitelist is open to receive registrations from individuals who want to participate in the project's IDO.",
-        "refund_policy": "The policy regarding refunding funds in case the IDO is unsuccessful or if any issues arise. This information may include the conditions and regulations for requesting a refund, the timeframe, and the process for refunding.",
-        "buying_phases": "The time or period during which users can purchase tokens or participate in the project's IDO.",
-        "token": {
-            "type": "The specific category or standard this token adheres to, defining its functionality and interaction within its respective blockchain ecosystem.",
-            "symbol": "The unique identifier or abbreviation for this token, used for trading and referencing in the cryptocurrency markets.",
-            "price": "The current market value of the token, often quoted in United States Dollars (USD), which can fluctuate based on supply and demand dynamics.",
-            "decimals": "The maximum number of decimal places to which this token can be subdivided, indicating the smallest possible transaction unit for this token."
-        },
-        "currency": {
-            "type": "The unique symbol identifying the currency",
-            "decimals": "Defines the smallest unit of the currency that can be handled in transactions."
-        },
-        "social_networks": "Provide information about the links to the project's social media pages or social media platforms of IDO project.",
-        "roadmap": "The project's roadmap, which outlines the key milestones and objectives that the project aims to achieve in the future.",
-        "revenue_streams": "Provide information about the sources of income that the project is expected to generate during its operation.",
-        "token_utilities": "Provide information about the applications and features that the project's token will provide.",
-        "highlights": "Provide information about the unique and standout aspects of the project. This information may include significant achievements, advanced technologies utilized, competitive advantages, market opportunities, or any other strengths that the project aims to highlight to attract the attention of the community and potential investors during the IDO process",
-        "launchpad": "The platform or service that is hosting the IDO for the project.",
-        "total_raise": "The total amount of funds the project aims to raise through the Initial DEX Offering (IDO) process and other funding rounds. This information provides an overview of the level of attractiveness and interest from the community and potential investors towards the project."
-    }
+    
     
     overview = {
         "description": description,
@@ -399,8 +425,10 @@ async def get_tokenomics_gamehub(name):
     headers = {
         'Accept': 'application/json'
     }
-    reponse = requests.get(url, headers).json()
-    data = reponse['data']['items'][0]
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+    data = response['data']['items'][0]
     data.pop('id')
     data.pop('icon')
 
@@ -458,9 +486,11 @@ async def get_upcoming_IDO(name):
     headers = {
         "Accept": "application/json",
     }
-    reponse = requests.get(url, headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     list_project_name = []
-    data = reponse['data']
+    data = response['data']
     for item in data:
         list_project_name.append(item['name'])
     
@@ -475,13 +505,11 @@ async def get_upcoming_IDO(name):
                    embedding_function=embedding)
         update_vector_topic(vectordb_topic)
         update_vector_topic(vectordb_docs)
-        
     overview = {
         "number_of_upcoming_IDO": len(list_project_name),
         "list_project": list_project_name
     }
     return overview
-
 @alru_cache(maxsize=32, ttl=60**3)
 async def get_upcoming_IDO_overview(name):
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
@@ -546,8 +574,10 @@ async def get_upcoming_IDO_overview(name):
     }
     list_key_time = ['from', 'to']
 
-    reponse = requests.get(url, headers).json()
-    data = reponse["data"]
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+    data = response["data"]
     project = {}
     # Take project by name
     for prj in data:
