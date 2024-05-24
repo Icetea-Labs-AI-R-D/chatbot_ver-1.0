@@ -1,25 +1,32 @@
 from fastapi import APIRouter, Depends, Request, status
 from models.dto import ConversationRequest
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import StreamingResponse
 from services.openai_service import OpenAIService
 from controllers.chat_controller import ChatController
 from langsmith import traceable
-from services import get_chroma_service, get_openai_service
+from services import get_openai_service
 from controllers import get_chat_controller
 from database.queue import AsyncQueue
+from utils.static_param import many_requests_generator, new_conversation_generator
+from app.api.v1.page_router import chat
 
 router = APIRouter()
 
 async_queue = AsyncQueue()
 
+@router.post("/api/chatbot/v1/new")
+async def new(requests: Request, chat_controller: ChatController = Depends(get_chat_controller)):
+    data = await requests.json()
+    await chat_controller.new_conversation(data.get("conversation_id"))
+    return StreamingResponse(
+        new_conversation_generator(),
+        status_code=status.HTTP_200_OK,
+        media_type="text/event-stream",
+    )
 
-async def too_many_requests_generator():
-    yield b'{"detail": "Too many requests, please try again later."}'
-
-
-@router.post("/chatbot/v1/request")
+@router.post("/api/chatbot/v1/chat")
 @traceable
-async def conversation(
+async def chat(
     request: Request,
     openai_service: OpenAIService = Depends(get_openai_service),
     chat_controller: ChatController = Depends(get_chat_controller),
@@ -31,6 +38,7 @@ async def conversation(
         data_qa = await chat_controller.get_data_for_rag(
             conversation_dto, openai_client
         )
+
         return StreamingResponse(
             openai_service.ask_openai_with_rag(
                 data_qa["user_question"],
@@ -39,12 +47,14 @@ async def conversation(
                 global_topic=data_qa["global_topic"],
                 openai_client=openai_client,
                 features_keywords=data_qa["features_keywords"],
+                new_conversation=data_qa["new_conversation"],
             ),
+            status_code=status.HTTP_200_OK,
             media_type="text/event-stream",
         )
     headers = {"Content-Type": "application/json"}
     return StreamingResponse(
-        too_many_requests_generator(),
+        many_requests_generator(),
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
         headers=headers,
     )

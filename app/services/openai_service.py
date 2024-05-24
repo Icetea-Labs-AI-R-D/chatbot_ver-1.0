@@ -5,20 +5,22 @@ import json
 from langsmith import traceable
 from database.session import MongoManager
 from database.queue import AsyncQueue
-
+from utils.static_param import new_conversation_generator
 import random
 
 
 class OpenAIService:
     db: MongoManager
     async_queue: AsyncQueue
+    question_dict: dict
 
     def __init__(self) -> None:
         self.db = MongoManager()
         self.async_queue = AsyncQueue()
-
-        path_to_questions = os.path.join(".", "data", "json", "questions.json")
-        with open(path_to_questions) as f:
+        path_to_json = os.path.join(
+            os.path.dirname(__file__), "../../data/json/questions.json"
+        )
+        with open(path_to_json) as f:
             self.question_dict = json.load(f)
 
     @traceable
@@ -141,6 +143,7 @@ class OpenAIService:
         global_topic: dict = None,
         openai_client: AsyncOpenAI = None,
         features_keywords: dict = {},
+        new_conversation: int = 0,
     ):
         if global_topic is None:
             global_topic = {"api": "", "source": "", "topic": "", "type": ""}
@@ -168,6 +171,10 @@ class OpenAIService:
         messages = [{"role": "system", "content": system_message}] + [
             {"role": "user", "content": user_message}
         ]
+        
+        if new_conversation == 1:
+            async for chunk in new_conversation_generator(1):
+                yield f"<reply_markup>{chunk}</reply_markup>"
 
         stream = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
@@ -194,8 +201,8 @@ class OpenAIService:
 
         if features_keywords.get("content", []) == []:
             topic = features_keywords.get("topic", {})
-            if topic != {} and topic["api"] != "":
-                list_question = self.question_dict[topic["api"]]
+            if topic != {} and topic.get("api", "") != "":
+                list_question = self.question_dict.get(topic["api"], [])
 
         if global_topic["source"] == "":
             list_question = self.question_dict["general"]
@@ -221,11 +228,12 @@ class OpenAIService:
         yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
 
         message = {
-            "role_user": "user",
             "content_user": question,
-            "role_assistant": "assistant",
             "content_assistant": answer,
-            "global_topic": global_topic,
+            "topic": global_topic,
+            "suggestion": suggestion["suggestions"][:3],
+            "context": context,
+            "features_keywords": features_keywords,
         }
 
         await self.async_queue.put(openai_client)
