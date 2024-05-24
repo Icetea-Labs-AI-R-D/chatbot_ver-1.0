@@ -120,17 +120,8 @@ const ask_gpt = async (message) => {
       },
       body: JSON.stringify({
         conversation_id: window.conversation_id,
-        action: `_ask`,
-        meta: {
-          content: {
-            parts: [
-              {
-                content: message,
-                role: "user",
-              },
-            ],
-          },
-        },
+        content: message,
+        suggested: 0,
       }),
     });
 
