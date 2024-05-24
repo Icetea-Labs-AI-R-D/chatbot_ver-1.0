@@ -19,9 +19,11 @@ class MongoManager:
     ):
         conversation = await self.db.conversation.find_one(
             {
-                'conversation_id': conversation_id
+                'conversation_id': conversation_id,
+                'last_update': {'$gt': datetime.datetime.now() - datetime.timedelta(minutes=5)},
+                'status': 'open'
             },
-            sort=[('start_date', -1)]
+            sort=[('last_update', -1)]
         )
         return conversation or {}
 
@@ -33,36 +35,34 @@ class MongoManager:
         await self.db.conversation.find_one_and_update(
             {
                 'conversation_id': conversation_id,
-                'count': {'$lt': 20}
+                'count': {'$lt': 20},
+                'last_update': {'$gt': datetime.datetime.now() - datetime.timedelta(minutes=5)},
+                'status': 'open'
             }
             ,
             {
                 '$push': {
                     "history": [
-                    {
-                        "role": message.get('role_user'),
-                        "content": message.get('content_user')
-                    },
-                    {
-                        "role": message.get('role_assistant'),
-                        "content": message.get('content_assistant')
-                    }
+                        {
+                            "content_user": message.get('content_user'),
+                            "content_assistant": message.get('content_assistant'),
+                            "suggestion": message.get('suggestion'),
+                            "context": message.get('context'),
+                            "topic": message.get('topic'),
+                        }
                     ]
                 },
                 "$set": {
-                    "global_topic": message.get('global_topic')
+                    "last_update": datetime.datetime.now(),
                 },
                 "$inc": { "count": 1 },
                 "$setOnInsert": {
                     "conversation_id": conversation_id,
-                    "start_date": datetime.datetime.now(),
+                    "last_update": datetime.datetime.now(),
                     "status": "open",
-                    "report": []
                 }
             },
             new=True,
             upsert=True
         )
     
-    async def hi(self, content: str):
-        print(content)
