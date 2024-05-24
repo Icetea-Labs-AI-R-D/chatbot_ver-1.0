@@ -1,28 +1,35 @@
 import requests
 import json
 import asyncio
+import httpx
 from datetime import datetime, timezone
 from async_lru import alru_cache
-from langchain.docstore.document import Document
-from langchain_community.vectorstores import Chroma
-from langchain_openai import OpenAIEmbeddings
+# from langchain.docstore.document import Document
+# from langchain_community.vectorstores import Chroma
+# from langchain_openai import OpenAIEmbeddings
 import os
 from dotenv import load_dotenv
+from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
+import chromadb
 
-load_dotenv()
+load_dotenv('.env')
 
 list_ido_game = []
 # OpenAI embeddings
-embedding = OpenAIEmbeddings(api_key=os.getenv('OPENAI_API_KEY3'))
-
+embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY3'))
+chroma_client = chromadb.HttpClient()
 async def get_upcoming_IDO_with_slug():
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
         "Accept": "application/json",
     }
-    reponse = requests.get(url, headers).json()
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response_json = response.json()
+    
     list_project_name = []
-    data = reponse['data']
+    data = response_json['data']
     for item in data:
         list_project_name.append(
             {
@@ -30,37 +37,47 @@ async def get_upcoming_IDO_with_slug():
                'slug': item['slug']
             }
         )
+    
     overview = {
         "number_of_upcoming_IDO": len(list_project_name),
         "list_project": list_project_name
     }
+    
     return overview
 
-async def update_vector_topic(vector_topic):
-    # Remove old ido_upcoming topic from vector_topic
-    list_old_ids = list(filter(lambda x: x.startswith('ido_upcoming') ,vector_topic._collection.get()['ids']))
+async def update_topic_vector_db(vector_db):
+    print(f"Total items in vector {vector_db.name} before update: {vector_db.count()}")
+    # Remove old ido_upcoming topic from vector_db
+    list_old_ids = list(filter(lambda x: x.startswith('ido_upcoming') ,vector_db.get()['ids']))
     # print(list_old_ids)
     if not list_old_ids : list_old_ids = ['']
-    vector_topic._collection.delete(list_old_ids)
+    vector_db.delete(ids=list_old_ids)
     
     # Get new ido_upcoming topic
     new_data = await get_upcoming_IDO_with_slug()
     
-    # Update new ido_upcoming topic to vector_topic
+    # Update new ido_upcoming topic to vector_db
     new_topic_ido_upcoming = new_data['list_project']
     new_topic = []
     for doc in new_topic_ido_upcoming:
-        document = Document(page_content=doc['name'], metadata={'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'})
-        new_topic.append(document)
+        # document = Document(page_content=doc['name'], metadata={'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'})
+        item = {
+            'page_content': doc['name'],
+            'metadata': {'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'}
+        }
+        new_topic.append(item)
     # print(new_topic)
-    vector_topic.add_documents(
-        documents=new_topic, 
+    vector_db.add(
+        documents=[item['page_content'] for item in new_topic], 
         ids=[f'ido_upcoming_{i+1}' for i in range(len(new_topic_ido_upcoming))],
+        metadatas=[item['metadata'] for item in new_topic]
     )
-    vector_topic.persist()
+    
+    print(f"Added {len(new_topic)} items to vector {vector_db.name}")
+    print(f"Total items in vector {vector_db.name} after update: {vector_db.count()}")
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_infor_overview_gamehub(name):
+async def get_infor_overview_gamehub(name, keywords=[]):
     """Get token price, market cap, and other tokenomics information from GameFi API."""
     
     url = f'''https://v3.gamefi.org/api/v1/games/{name}?include_tokenomics=true&include_studios=true&include_downloads=true&include_categories=true&include_advisors=true&include_backers=true&include_networks=true&include_origins=true&include_videos=true'''
@@ -92,8 +109,9 @@ async def get_infor_overview_gamehub(name):
         "max_supply": "The total maximum number of tokens coins/tokens that will ever exist, including both mined and future available tokens. This information provides an overview of the limitations on the token's supply and helps readers understand the project's economic structure.",
         "published_at": "The date when the game was published or released",
     }
-    response = requests.get(url, headers).json()
-    # print(response)
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     gameId = response['data']['item'].get('id', "")
     nameGame = response['data']['item'].get('name', "")
     status = response['data']['item'].get('status', "")
@@ -128,10 +146,25 @@ async def get_infor_overview_gamehub(name):
         },
         "description": description
     }
+    if len(keywords) == 0:
+        overview = {
+            "data": {
+                "name": nameGame,
+                "status": status,
+                "published_at": published_at, 
+                "introduction": introduction,
+                "social-media": links,
+                "tokenomics-compact": tokenomicsCompact,
+            }
+        }
+    # else:
+    #     list_key_to_pop = [i for i in list(overview['data'].keys()) if i not in keywords]
+    #     for key in list_key_to_pop:
+    #         overview['data'].pop(key)
     return overview
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_on_chain_performance_gamehub(name):
+async def get_on_chain_performance_gamehub(name, keywords=[]):
     """Get game on-chain performance from GameFi API."""
    
     description = {
@@ -148,14 +181,13 @@ async def get_on_chain_performance_gamehub(name):
     headers = {
         'Accept': 'application/json'
     }
-    response = requests.get(url, headers).json()
-    try:
-        data = response['data']
-        data.pop('game_id', None)
-    except:
-        data = {}
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+    data = response.get('data', {})
+    data.pop('game_id', None)
+    if data == {}:
         description = {}
-    
     res = {
         "data": data,
         "description": description
@@ -163,7 +195,7 @@ async def get_on_chain_performance_gamehub(name):
     return res
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_community_performance_gamehub(name):
+async def get_community_performance_gamehub(name, keywords=[]):
     """Get community performance of a game from GameFi API."""
     
     description = {
@@ -180,7 +212,9 @@ async def get_community_performance_gamehub(name):
     headers = {
         'Accept': 'application/json'
     }
-    response = requests.get(url, headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     try:
         data = response['data']
         data.pop('game_id', None)
@@ -192,9 +226,8 @@ async def get_community_performance_gamehub(name):
         "description": description
     }
     return res
-
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_daily_index_gamehub(name):
+async def get_daily_index_gamehub(name, keywords=[]):
     """Get daily ranking, social score, uaw, transaction and holder information in the last 24 hours of a game from GameFi API."""
    
     description = {
@@ -209,9 +242,11 @@ async def get_daily_index_gamehub(name):
     headers = {
         'Accept': 'application/json'
     }
-    reponse = requests.get(url, headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     try:
-        data = reponse['data']
+        data = response['data']
     except:
         data = {}
         description = {}
@@ -221,7 +256,7 @@ async def get_daily_index_gamehub(name):
     }
     
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_social_score_gamehub(name):
+async def get_social_score_gamehub(name, keywords=[]):
     """Get social score of a game from GameFi API."""
     
     description = {
@@ -238,7 +273,9 @@ async def get_social_score_gamehub(name):
     headers = {
         'Accept': 'application/json'
     }
-    response = requests.get(url,headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     try:
         item = response['data']['item']
         item.pop('game_id', None)
@@ -252,20 +289,22 @@ async def get_social_score_gamehub(name):
     return res
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_top_backers_gamehub(name):
+async def get_top_backers_gamehub(name, keywords=[]):
     """Get all backers of a game from GameFi API."""
     
     url = f'''https://v3.gamefi.org/api/v1/games/{name}/top-backers'''
     headers = {
         'Accept': 'application/json'
     }
-    reponse = requests.get(url,headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     listBacker = []
     try:
-        items = reponse['data']['items']
+        items = response['data']['items']
         for index, item in enumerate(items):
-            name = reponse['data']['items'][index]['name']
-            linkWebsite = reponse['data']['items'][index]['links']['website']
+            name = response['data']['items'][index]['name']
+            linkWebsite = response['data']['items'][index]['links']['website']
             listBacker.append(
                 {
                     "name": name,
@@ -275,7 +314,9 @@ async def get_top_backers_gamehub(name):
     except:
         listBacker = []
     backers = {
-        "data": listBacker
+        "data": {
+            "backer" : listBacker
+        } 
     }
     return backers
 
@@ -283,14 +324,53 @@ def to_date(time):
     return str(datetime.fromtimestamp(time, timezone.utc))
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_overview_ido(name):
+async def get_overview_ido(name, keywords=[]):
+
+    description = {
+        "slug": "Abbreviation for the project name.",
+        "name": "Name of project.",
+        "description": "Providing an overview of the project",
+        "status": "Status of the IDO.",
+        "claim_policy": "Vesting / includes the vesting period, release rate, and any other provisions regarding the trading freedom of tokens after the IDO.",
+        "total_token": "Total number of tokens available for the IDO.",
+        "ath": "The maximum return on investment that the project's token has achieved since its all-time high.",
+        "whitelist": "The timeframe during which the whitelist is open to receive registrations from individuals who want to participate in the project's IDO.",
+        "refund_policy": "The policy regarding refunding funds in case the IDO is unsuccessful or if any issues arise. This information may include the conditions and regulations for requesting a refund, the timeframe, and the process for refunding.",
+        "buying_phases": "The time or period during which users can purchase tokens or participate in the project's IDO.",
+        "token": {
+            "type": "The specific category or standard this token adheres to, defining its functionality and interaction within its respective blockchain ecosystem.",
+            "symbol": "The unique identifier or abbreviation for this token, used for trading and referencing in the cryptocurrency markets.",
+            "price": "The current market value of the token, often quoted in United States Dollars (USD), which can fluctuate based on supply and demand dynamics.",
+            "decimals": "The maximum number of decimal places to which this token can be subdivided, indicating the smallest possible transaction unit for this token."
+        },
+        "currency": {
+            "type": "The unique symbol identifying the currency",
+            "decimals": "Defines the smallest unit of the currency that can be handled in transactions."
+        },
+        "social_networks": "Provide information about the links to the project's social media pages or social media platforms of IDO project.",
+        "roadmap": "The project's roadmap, which outlines the key milestones and objectives that the project aims to achieve in the future.",
+        "revenue_streams": "Provide information about the sources of income that the project is expected to generate during its operation.",
+        "token_utilities": "Provide information about the applications and features that the project's token will provide.",
+        "highlights": "Provide information about the unique and standout aspects of the project. This information may include significant achievements, advanced technologies utilized, competitive advantages, market opportunities, or any other strengths that the project aims to highlight to attract the attention of the community and potential investors during the IDO process",
+        "launchpad": "The platform or service that is hosting the IDO for the project.",
+        "total_raise": "The total amount of funds the project aims to raise through the Initial DEX Offering (IDO) process and other funding rounds. This information provides an overview of the level of attractiveness and interest from the community and potential investors towards the project."
+    }
+
     url = f'''https://ido.gamefi.org/api/v3/pool/{name}'''
     headers = {
         'Accept': 'application/json'
     }
-    reponse = requests.get(url, headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+    data = response.get('data', {})
+    # data['about'] = data.drop('description')
+    if data == None:
+        return {
+            "description": {},
+            "data": {}
+        }
     # Remove key in data
-    data = reponse['data']
     remove_keys = ['id', 'chain_id', 'excerpt', 'address', 'logo', 'banner', 'contract_address', 'address_receiver', 'airdrop_chain_id', 'claim_schedule']
     for key in  remove_keys:
         if key in data:
@@ -360,35 +440,7 @@ async def get_overview_ido(name):
     total_raise = data['total_token'] * data['token']['price']
     data['total_raise'] = total_raise
     
-    description = {
-        "slug": "Abbreviation for the project name.",
-        "name": "Name of project.",
-        "description": "Providing an overview of the project",
-        "status": "Status of the IDO.",
-        "claim_policy": "Vesting / includes the vesting period, release rate, and any other provisions regarding the trading freedom of tokens after the IDO.",
-        "total_token": "Total number of tokens available for the IDO.",
-        "ath": "The maximum return on investment that the project's token has achieved since its all-time high.",
-        "whitelist": "The timeframe during which the whitelist is open to receive registrations from individuals who want to participate in the project's IDO.",
-        "refund_policy": "The policy regarding refunding funds in case the IDO is unsuccessful or if any issues arise. This information may include the conditions and regulations for requesting a refund, the timeframe, and the process for refunding.",
-        "buying_phases": "The time or period during which users can purchase tokens or participate in the project's IDO.",
-        "token": {
-            "type": "The specific category or standard this token adheres to, defining its functionality and interaction within its respective blockchain ecosystem.",
-            "symbol": "The unique identifier or abbreviation for this token, used for trading and referencing in the cryptocurrency markets.",
-            "price": "The current market value of the token, often quoted in United States Dollars (USD), which can fluctuate based on supply and demand dynamics.",
-            "decimals": "The maximum number of decimal places to which this token can be subdivided, indicating the smallest possible transaction unit for this token."
-        },
-        "currency": {
-            "type": "The unique symbol identifying the currency",
-            "decimals": "Defines the smallest unit of the currency that can be handled in transactions."
-        },
-        "social_networks": "Provide information about the links to the project's social media pages or social media platforms of IDO project.",
-        "roadmap": "The project's roadmap, which outlines the key milestones and objectives that the project aims to achieve in the future.",
-        "revenue_streams": "Provide information about the sources of income that the project is expected to generate during its operation.",
-        "token_utilities": "Provide information about the applications and features that the project's token will provide.",
-        "highlights": "Provide information about the unique and standout aspects of the project. This information may include significant achievements, advanced technologies utilized, competitive advantages, market opportunities, or any other strengths that the project aims to highlight to attract the attention of the community and potential investors during the IDO process",
-        "launchpad": "The platform or service that is hosting the IDO for the project.",
-        "total_raise": "The total amount of funds the project aims to raise through the Initial DEX Offering (IDO) process and other funding rounds. This information provides an overview of the level of attractiveness and interest from the community and potential investors towards the project."
-    }
+    
     
     overview = {
         "description": description,
@@ -397,14 +449,16 @@ async def get_overview_ido(name):
     return overview
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_tokenomics_gamehub(name):
+async def get_tokenomics_gamehub(name, keywords=[]):
     listID = {'mobox': 'cda1dd30-0128-4ffe-bb65-29001e1ad0e9', 'the-sandbox': '08c1027f-4984-487a-a968-3c710ef2bd00', 'binaryx': '9e2def2a-f701-4721-a2c7-925b83018adf', 'axie-infinity': 'f96d0db8-d551-40c3-905c-e6e002c920e3', 'x-world-games': 'ffb52c78-016e-44f1-bfea-b57286d91898', 'thetan-arena': '149b050a-f391-4397-8dc0-163ea2e14138', 'alien-worlds': '0c49e040-be09-40ee-a178-e77bf404796e', 'league-of-kingdoms': '5293cb42-c26e-4a32-b80e-f595adc07083', 'burgercities': 'b91204b9-4197-4e4a-b5c7-56343ef49141', 'kryptomon': '0b54a231-070a-4474-ad6e-a17afba9a6c6', 'wanaka-farm': '466a5862-7e68-467b-85ef-cb677f5e96c5', 'sidus-heroes': '04054d55-b1ec-4234-9f10-c789b3b56065', 'ninneko': 'd2f84664-d28d-4729-8a0a-0ed33c39c521', 'cryptoblades': 'ad82204a-23d5-4ffe-a1ae-f8fb1f71b5f7', 'ultimate-champions': 'a1ee2386-33de-47cc-a3fe-11d0342de2e9', 'monsterra': 'b0b1271c-7b48-4bdc-a555-6ce95fc8bdfe', 'polychain-monsters': '47e03d0d-c353-47b0-b99c-a2a82dd875ae', 'iguverse': 'a47d016f-76e8-4f9c-819d-7c81daad7e91', 'heroes-empires': '79075231-aa7d-4b52-97d5-4390521f108b', 'illuvium': 'd3bf9ecf-58f1-488d-a3dc-8bead33eb930', 'xana': '3a0e8a04-255b-435b-856c-0723c01f08db', 'aqua-farm': '9a6373c8-9c46-40b5-9d23-c4fcbe873b20', 'mines-of-dalarnia': '60424918-41f0-4334-9ce3-2671f1febe88', 'magiccraft': 'a3110df8-f298-483c-aa0b-ce4fcae44841', 'derace': '31dcd5f2-5293-4db4-abf7-679671b25e1b', 'bit-hotel': '15385c8c-8c0b-445b-94b5-07fb1c918d4b', 'splinterlands': '98b3ca34-4683-4faf-be40-6814e8fe71b6', 'bullieverse': 'bb978fae-ce1a-4d3c-b18d-223a4ce285ff', 'gunstar-metaverse': '0f9abc34-1d34-46fc-8885-9dd5ed324692', 'gods-unchained': '3df2ee8f-df08-4604-b101-b59e0b3387db'}
     url = f'''https://v3.gamefi.org/api/v1/tokenomics/{listID[name]}?include_statistics=true&include_contracts=true'''
     headers = {
         'Accept': 'application/json'
     }
-    reponse = requests.get(url, headers).json()
-    data = reponse['data']['items'][0]
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+    data = response['data']['items'][0]
     data.pop('id')
     data.pop('icon')
 
@@ -454,31 +508,34 @@ async def get_tokenomics_gamehub(name):
     # Contracts
     for item in data['contracts']:
         item.pop('id')
-    return data
+        
+    return {
+        "data": data
+    }
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_upcoming_IDO(name):
+async def get_upcoming_IDO(name, keywords=[]):
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
         "Accept": "application/json",
     }
-    reponse = requests.get(url, headers).json()
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
     list_project_name = []
-    data = reponse['data']
+    data = response['data']
     for item in data:
         list_project_name.append(item['name'])
     
-    global list_ido_game  
-    global embedding
+    # global list_ido_game  
+    # global embedding
     # if list_project_name != list_ido_game:
-    #     persist_directory_topic = './db/data_v2/topic/'
-    #     persist_directory_docs = './db/data_v2/docs/'
-    #     vectordb_topic = Chroma(persist_directory=persist_directory_topic,
-    #                embedding_function=embedding)
-    #     vectordb_docs = Chroma(persist_directory=persist_directory_docs,
-    #                embedding_function=embedding)
-    #     await update_vector_topic(vectordb_topic)
-    #     await update_vector_topic(vectordb_docs)
+    #     vectordb_docs = chroma_client.get_or_create_collection(
+    #         name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
+    #     vectordb_topic = chroma_client.get_or_create_collection(
+    #         name="vector_topic", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
+    #     await update_topic_vector_db(vectordb_topic)
+    #     await update_topic_vector_db(vectordb_docs)
         
         
     overview = {
@@ -488,7 +545,7 @@ async def get_upcoming_IDO(name):
     return overview
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_upcoming_IDO_overview(name):
+async def get_upcoming_IDO_overview(name, keywords=[]):
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
         "Accept": "application/json",
@@ -551,8 +608,10 @@ async def get_upcoming_IDO_overview(name):
     }
     list_key_time = ['from', 'to']
 
-    reponse = requests.get(url, headers).json()
-    data = reponse["data"]
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+    data = response["data"]
     project = {}
     # Take project by name
     for prj in data:
@@ -669,6 +728,10 @@ tools_fn = dict(map(lambda x: (x['name'], x['tool_fn']), tools_info))
 
 async def call_tools_async(feature_dict : dict) -> str:
     # try:
+    
+        # print(feature_di
+        # ct)
+    
         topic : dict  = feature_dict["global_topic"]
         content : list = feature_dict["content"]
         
@@ -721,11 +784,11 @@ async def call_tools_async(feature_dict : dict) -> str:
             result = await asyncio.gather(*tasks) 
             result = result[0]
             info = result
-            if 'data' in result:
-                if 'introduction' in result['data']:
-                    info = str(result['data']['introduction']) 
-                elif 'description' in result['data']:
-                    info = str(result['data']['description']) 
+            # if 'data' in result:
+            #     if 'introduction' in result['data']:
+            #         info = str(result['data']['introduction']) 
+            #     elif 'description' in result['data']:
+            #         info = str(result['data']['description']) 
             
             context = f'''\nGeneral information of {topic['source']}:\n{info}\n'''
             
@@ -737,14 +800,17 @@ async def call_tools_async(feature_dict : dict) -> str:
                 continue
             tasks.append({
                 'api': api['api'],
-                'param': topic['source']
+                'param': topic['source'],
+                'keywords':api['source']
                 }
             )
+            # print(api['source'])
             list_rs.append(f'''\nInformation of {topic['source']} about {", ".join(api['source'])}:\n''')
 
-        tasks = list(map(lambda x: tools_fn[x['api']](x['param']), tasks))
+        tasks = list(map(lambda x: tools_fn[x['api']](x['param'], tuple(x['keywords'])), tasks))
+        # tasks = list(map(lambda x: tools_fn[x['api']](x['param']), tasks))
         results = await asyncio.gather(*tasks)
-        for index, result in enumerate(results):    
+        for index, result in enumerate(results): 
             context += f'''{list_rs[index]}{result}\n'''
         return context
     # except Exception as e:

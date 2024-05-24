@@ -16,7 +16,7 @@ class OpenAIService:
         self.db = MongoManager()
         self.async_queue = AsyncQueue()
 
-        path_to_questions = os.path.join('..','data','json','questions.json')
+        path_to_questions = os.path.join('.','data','json','questions.json')
         with open(path_to_questions) as f:
             self.question_dict = json.load(f)
         
@@ -52,7 +52,7 @@ class OpenAIService:
         """
         messages = [{"role": "system", "content": system_prompt}] + [{"role": "user", "content": user_message}]
         
-        openai_client = AsyncOpenAI(api_key=api_key)
+        openai_client = wrap_openai(AsyncOpenAI(api_key=api_key))
         
         response = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
@@ -77,9 +77,7 @@ class OpenAIService:
         
         Note:
            - Question X should be the question from the question list that is provided in the user input. 
-           - If there are less than 3 questions in the question list, return all questions in the list.  
-           - Check the user's message history and the assistant's last reply to avoid repeating the same question asked or answered above.
-           - If the suggested question has content that matches the user's message history, you will be penalized.
+           - If there are less than 3 questions in the question list, return all questions in the list.
         '''
         nl = "\n"
         
@@ -110,7 +108,7 @@ class OpenAIService:
         else:  
             messages = [{"role": "system", "content": system_prompt}] + [{"role": "user", "content": user_message}]
         
-        openai_client = AsyncOpenAI(api_key=api_key)
+        openai_client = wrap_openai(AsyncOpenAI(api_key=api_key))
         
         response = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
@@ -146,15 +144,11 @@ class OpenAIService:
         Answer the question based only on the following context:
         Context: {context} 
         User: {question}
-        Chat History: {history}
-        Answer the question based only on the following context:
-        Context: {context} 
-        User: {question}
         """
         
         messages = [{"role": "system", "content":system_message }] + [{"role": "user", "content": user_message}]
 
-        openai_client = AsyncOpenAI(api_key=api_key)
+        openai_client = wrap_openai(AsyncOpenAI(api_key=api_key))
 
         stream = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
@@ -169,13 +163,14 @@ class OpenAIService:
             if token is not None:
                 answer += token
                 yield token
-                
+        
+        
+        # Logic follow-up        
         list_unique_api = list(set([c.get('api', "") for c in features_keywords.get('content', [])]))
         list_question = []
         for api in list_unique_api:
             if api != "":
                 list_question.extend(self.question_dict[api])
-                
 
 
         if features_keywords.get('content', []) == []:
@@ -186,8 +181,9 @@ class OpenAIService:
         if global_topic['source'] == '':
             list_question = self.question_dict['general']
 
-
-            
+        if global_topic['source'] == 'upcoming':
+            list_question = self.question_dict['overview_list_ido_upcoming']
+   
         conversation['history'].append({"role": "user", "content": question})
         conversation['history'].append({"role": "assistant", "content": answer})
                 

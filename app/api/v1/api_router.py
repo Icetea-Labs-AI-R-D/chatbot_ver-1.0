@@ -34,6 +34,7 @@ async def conversation(
                 context=data_qa["context"],
                 global_topic=data_qa["global_topic"],
                 api_key=api_key,
+                features_keywords=data_qa["features_keywords"]
             ),
             media_type="text/event-stream",
         )
