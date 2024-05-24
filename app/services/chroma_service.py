@@ -20,7 +20,7 @@ class ChromaService:
         client = chromadb.HttpClient()
         
         # OpenAI embeddings
-        self.embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY'))
+        self.embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY3'))
         self.vectordb_docs = client.get_or_create_collection(
             name="vector_docs", embedding_function=self.embedding_function, metadata={"hnsw:space": "cosine"})
         self.vectordb_content = client.get_or_create_collection(

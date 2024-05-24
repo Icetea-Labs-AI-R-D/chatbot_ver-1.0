@@ -77,9 +77,7 @@ class OpenAIService:
         
         Note:
            - Question X should be the question from the question list that is provided in the user input. 
-           - If there are less than 3 questions in the question list, return all questions in the list.  
-           - Check the user's message history and the assistant's last reply to avoid repeating the same question asked or answered above.
-           - If the suggested question has content that matches the user's message history, you will be penalized.
+           - If there are less than 3 questions in the question list, return all questions in the list.
         '''
         nl = "\n"
         
@@ -142,10 +140,6 @@ class OpenAIService:
 
 
         user_message = f"""
-        Chat History: {history}
-        Answer the question based only on the following context:
-        Context: {context} 
-        User: {question}
         Chat History: {history}
         Answer the question based only on the following context:
         Context: {context} 

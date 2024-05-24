@@ -77,7 +77,7 @@ async def update_topic_vector_db(vector_db):
     print(f"Total items in vector {vector_db.name} after update: {vector_db.count()}")
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_infor_overview_gamehub(name):
+async def get_infor_overview_gamehub(name, keywords=[]):
     """Get token price, market cap, and other tokenomics information from GameFi API."""
     
     url = f'''https://v3.gamefi.org/api/v1/games/{name}?include_tokenomics=true&include_studios=true&include_downloads=true&include_categories=true&include_advisors=true&include_backers=true&include_networks=true&include_origins=true&include_videos=true'''
@@ -146,10 +146,25 @@ async def get_infor_overview_gamehub(name):
         },
         "description": description
     }
+    if len(keywords) == 0:
+        overview = {
+            "data": {
+                "name": nameGame,
+                "status": status,
+                "published_at": published_at, 
+                "introduction": introduction,
+                "social-media": links,
+                "tokenomics-compact": tokenomicsCompact,
+            }
+        }
+    # else:
+    #     list_key_to_pop = [i for i in list(overview['data'].keys()) if i not in keywords]
+    #     for key in list_key_to_pop:
+    #         overview['data'].pop(key)
     return overview
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_on_chain_performance_gamehub(name):
+async def get_on_chain_performance_gamehub(name, keywords=[]):
     """Get game on-chain performance from GameFi API."""
    
     description = {
@@ -180,7 +195,7 @@ async def get_on_chain_performance_gamehub(name):
     return res
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_community_performance_gamehub(name):
+async def get_community_performance_gamehub(name, keywords=[]):
     """Get community performance of a game from GameFi API."""
     
     description = {
@@ -212,7 +227,7 @@ async def get_community_performance_gamehub(name):
     }
     return res
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_daily_index_gamehub(name):
+async def get_daily_index_gamehub(name, keywords=[]):
     """Get daily ranking, social score, uaw, transaction and holder information in the last 24 hours of a game from GameFi API."""
    
     description = {
@@ -241,7 +256,7 @@ async def get_daily_index_gamehub(name):
     }
     
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_social_score_gamehub(name):
+async def get_social_score_gamehub(name, keywords=[]):
     """Get social score of a game from GameFi API."""
     
     description = {
@@ -274,7 +289,7 @@ async def get_social_score_gamehub(name):
     return res
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_top_backers_gamehub(name):
+async def get_top_backers_gamehub(name, keywords=[]):
     """Get all backers of a game from GameFi API."""
     
     url = f'''https://v3.gamefi.org/api/v1/games/{name}/top-backers'''
@@ -299,7 +314,9 @@ async def get_top_backers_gamehub(name):
     except:
         listBacker = []
     backers = {
-        "data": listBacker
+        "data": {
+            "backer" : listBacker
+        } 
     }
     return backers
 
@@ -307,7 +324,7 @@ def to_date(time):
     return str(datetime.fromtimestamp(time, timezone.utc))
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_overview_ido(name):
+async def get_overview_ido(name, keywords=[]):
 
     description = {
         "slug": "Abbreviation for the project name.",
@@ -347,6 +364,7 @@ async def get_overview_ido(name):
         response = await client.get(url, headers=headers)
         response = response.json()
     data = response.get('data', {})
+    # data['about'] = data.drop('description')
     if data == None:
         return {
             "description": {},
@@ -431,7 +449,7 @@ async def get_overview_ido(name):
     return overview
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_tokenomics_gamehub(name):
+async def get_tokenomics_gamehub(name, keywords=[]):
     listID = {'mobox': 'cda1dd30-0128-4ffe-bb65-29001e1ad0e9', 'the-sandbox': '08c1027f-4984-487a-a968-3c710ef2bd00', 'binaryx': '9e2def2a-f701-4721-a2c7-925b83018adf', 'axie-infinity': 'f96d0db8-d551-40c3-905c-e6e002c920e3', 'x-world-games': 'ffb52c78-016e-44f1-bfea-b57286d91898', 'thetan-arena': '149b050a-f391-4397-8dc0-163ea2e14138', 'alien-worlds': '0c49e040-be09-40ee-a178-e77bf404796e', 'league-of-kingdoms': '5293cb42-c26e-4a32-b80e-f595adc07083', 'burgercities': 'b91204b9-4197-4e4a-b5c7-56343ef49141', 'kryptomon': '0b54a231-070a-4474-ad6e-a17afba9a6c6', 'wanaka-farm': '466a5862-7e68-467b-85ef-cb677f5e96c5', 'sidus-heroes': '04054d55-b1ec-4234-9f10-c789b3b56065', 'ninneko': 'd2f84664-d28d-4729-8a0a-0ed33c39c521', 'cryptoblades': 'ad82204a-23d5-4ffe-a1ae-f8fb1f71b5f7', 'ultimate-champions': 'a1ee2386-33de-47cc-a3fe-11d0342de2e9', 'monsterra': 'b0b1271c-7b48-4bdc-a555-6ce95fc8bdfe', 'polychain-monsters': '47e03d0d-c353-47b0-b99c-a2a82dd875ae', 'iguverse': 'a47d016f-76e8-4f9c-819d-7c81daad7e91', 'heroes-empires': '79075231-aa7d-4b52-97d5-4390521f108b', 'illuvium': 'd3bf9ecf-58f1-488d-a3dc-8bead33eb930', 'xana': '3a0e8a04-255b-435b-856c-0723c01f08db', 'aqua-farm': '9a6373c8-9c46-40b5-9d23-c4fcbe873b20', 'mines-of-dalarnia': '60424918-41f0-4334-9ce3-2671f1febe88', 'magiccraft': 'a3110df8-f298-483c-aa0b-ce4fcae44841', 'derace': '31dcd5f2-5293-4db4-abf7-679671b25e1b', 'bit-hotel': '15385c8c-8c0b-445b-94b5-07fb1c918d4b', 'splinterlands': '98b3ca34-4683-4faf-be40-6814e8fe71b6', 'bullieverse': 'bb978fae-ce1a-4d3c-b18d-223a4ce285ff', 'gunstar-metaverse': '0f9abc34-1d34-46fc-8885-9dd5ed324692', 'gods-unchained': '3df2ee8f-df08-4604-b101-b59e0b3387db'}
     url = f'''https://v3.gamefi.org/api/v1/tokenomics/{listID[name]}?include_statistics=true&include_contracts=true'''
     headers = {
@@ -490,10 +508,13 @@ async def get_tokenomics_gamehub(name):
     # Contracts
     for item in data['contracts']:
         item.pop('id')
-    return data
+        
+    return {
+        "data": data
+    }
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_upcoming_IDO(name):
+async def get_upcoming_IDO(name, keywords=[]):
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
         "Accept": "application/json",
@@ -524,7 +545,7 @@ async def get_upcoming_IDO(name):
     return overview
 
 @alru_cache(maxsize=32, ttl=60**3)
-async def get_upcoming_IDO_overview(name):
+async def get_upcoming_IDO_overview(name, keywords=[]):
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
         "Accept": "application/json",
@@ -707,6 +728,10 @@ tools_fn = dict(map(lambda x: (x['name'], x['tool_fn']), tools_info))
 
 async def call_tools_async(feature_dict : dict) -> str:
     # try:
+    
+        # print(feature_di
+        # ct)
+    
         topic : dict  = feature_dict["global_topic"]
         content : list = feature_dict["content"]
         
@@ -759,11 +784,11 @@ async def call_tools_async(feature_dict : dict) -> str:
             result = await asyncio.gather(*tasks) 
             result = result[0]
             info = result
-            if 'data' in result:
-                if 'introduction' in result['data']:
-                    info = str(result['data']['introduction']) 
-                elif 'description' in result['data']:
-                    info = str(result['data']['description']) 
+            # if 'data' in result:
+            #     if 'introduction' in result['data']:
+            #         info = str(result['data']['introduction']) 
+            #     elif 'description' in result['data']:
+            #         info = str(result['data']['description']) 
             
             context = f'''\nGeneral information of {topic['source']}:\n{info}\n'''
             
@@ -775,14 +800,17 @@ async def call_tools_async(feature_dict : dict) -> str:
                 continue
             tasks.append({
                 'api': api['api'],
-                'param': topic['source']
+                'param': topic['source'],
+                'keywords':api['source']
                 }
             )
+            # print(api['source'])
             list_rs.append(f'''\nInformation of {topic['source']} about {", ".join(api['source'])}:\n''')
 
-        tasks = list(map(lambda x: tools_fn[x['api']](x['param']), tasks))
+        tasks = list(map(lambda x: tools_fn[x['api']](x['param'], tuple(x['keywords'])), tasks))
+        # tasks = list(map(lambda x: tools_fn[x['api']](x['param']), tasks))
         results = await asyncio.gather(*tasks)
-        for index, result in enumerate(results):    
+        for index, result in enumerate(results): 
             context += f'''{list_rs[index]}{result}\n'''
         return context
     # except Exception as e:

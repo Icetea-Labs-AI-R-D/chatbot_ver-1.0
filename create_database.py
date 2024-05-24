@@ -132,9 +132,9 @@ if __name__ == "__main__":
     vector_topic = client.get_or_create_collection(
         name="vector_topic", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
 
-    # add_full_data_to_vector(data_all, vector_docs)
-    # add_full_data_to_vector(data_content, vector_content)
-    # add_full_data_to_vector(data_topic, vector_topic)
+    add_full_data_to_vector(data_all, vector_docs)
+    add_full_data_to_vector(data_content, vector_content)
+    add_full_data_to_vector(data_topic, vector_topic)
     
     update_topic_vector_db(vector_topic)
     update_topic_vector_db(vector_docs)

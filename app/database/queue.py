@@ -34,6 +34,6 @@ class AsyncQueue(metaclass=SingletonMeta):
     async def init_queue(self):
         self.queue = asyncio.Queue()
         if self.queue.empty():
-            apis = [os.environ.get("OPENAI_API_KEY1") for i in range(5)] + [os.environ.get("OPENAI_API_KEY2") for i in range(5)]
+            apis = [os.environ.get("OPENAI_API_KEY1") for i in range(2)] + [os.environ.get("OPENAI_API_KEY2") for i in range(2)]
             for api in apis:
                 await self.put(api)
