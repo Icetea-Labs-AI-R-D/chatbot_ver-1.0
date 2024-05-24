@@ -1,10 +1,12 @@
 from fastapi import Depends
+import openai
 from services import OpenAIService, ChromaService
 import json
 from utils import call_tools_async
 from langsmith import traceable
 from database.session import MongoManager
 from models.dto import ConversationRequest
+from openai import AsyncOpenAI
 
 class ChatController:
     openai_service: OpenAIService
@@ -19,7 +21,7 @@ class ChatController:
     async def get_data_for_rag(
         self,
         request_data: ConversationRequest,
-        api_key: str,
+        openai_client: AsyncOpenAI,
     ):
         conversation_id = request_data.conversation_id
         prompt = request_data.meta.content.parts[0]
@@ -38,7 +40,7 @@ class ChatController:
         )
         user_question = prompt.content
         keywords_text = await self.openai_service.rewrite_and_extract_keyword(
-            user_question, history, global_topic, api_key
+            user_question, history, global_topic, openai_client
         )
         keywords_dict = json.loads(keywords_text)
 

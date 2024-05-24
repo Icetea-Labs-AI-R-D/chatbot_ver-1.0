@@ -12,35 +12,39 @@ router = APIRouter()
 
 async_queue = AsyncQueue()
 
+
 async def too_many_requests_generator():
     yield b'{"detail": "Too many requests, please try again later."}'
 
-@router.post("/backend/v1/request")
+
+@router.post("/chatbot/v1/request")
 @traceable
 async def conversation(
-    request: Request, 
+    request: Request,
     openai_service: OpenAIService = Depends(get_openai_service),
-    chat_controller: ChatController = Depends(get_chat_controller)
+    chat_controller: ChatController = Depends(get_chat_controller),
 ):
     data = await request.json()
     conversation_dto = ConversationRequest(**data)
-    api_key = await async_queue.get()
-    if api_key != "":
-        data_qa = await chat_controller.get_data_for_rag(conversation_dto, api_key)
+    openai_client = await async_queue.get()
+    if openai_client != None:
+        data_qa = await chat_controller.get_data_for_rag(
+            conversation_dto, openai_client
+        )
         return StreamingResponse(
             openai_service.ask_openai_with_rag(
                 data_qa["user_question"],
                 conversation=data_qa["conversation"],
                 context=data_qa["context"],
                 global_topic=data_qa["global_topic"],
-                api_key=api_key,
-                features_keywords=data_qa["features_keywords"]
+                openai_client=openai_client,
+                features_keywords=data_qa["features_keywords"],
             ),
             media_type="text/event-stream",
         )
-    headers = {'Content-Type': 'application/json'}
+    headers = {"Content-Type": "application/json"}
     return StreamingResponse(
         too_many_requests_generator(),
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-        headers=headers
+        headers=headers,
     )
