@@ -29,6 +29,7 @@ class ChatController:
         prompt = request_data.content
         new_conversation = 0
         conversation = await self.db.get_conversation(conversation_id)
+        rag = conversation.get('rag', 0)
         if conversation == {}:
             new_conversation = 1
         global_topic = conversation.get(
@@ -39,6 +40,8 @@ class ChatController:
                 lambda x: {
                     "content_user": x.get("content_user", ""),
                     "content_assistant": x.get("content_assistant", ""),
+                    "context": x.get("context", ""),
+                    "features_keywords": x.get("features_keywords", {}),
                 },
                 conversation.get("history", []),
             )
@@ -54,7 +57,8 @@ class ChatController:
         user_question = prompt
         context = "[]"
         features_keywords = {}
-        if request_data.suggested == 0:
+        if request_data.suggested == 0 or not raw_history or raw_history[-1].get("context", "") == "" or rag >= 2:
+            rag = 0
             keywords_text = await self.openai_service.rewrite_and_extract_keyword(
                 user_question, history, global_topic, openai_client
             )
@@ -67,6 +71,7 @@ class ChatController:
         else:
             context = raw_history[-1].get("context", "")
             features_keywords = raw_history[-1].get("features_keywords", {})
+            rag = rag + 1
 
         return {
             "user_question": user_question,
@@ -77,6 +82,7 @@ class ChatController:
             ),
             "features_keywords": features_keywords,
             "new_conversation": new_conversation,
+            "rag": rag,
         }
     
     async def new_conversation(self, conversation_id: str) -> None:
