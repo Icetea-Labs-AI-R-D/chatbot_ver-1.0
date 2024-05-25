@@ -45,6 +45,18 @@ async def get_upcoming_IDO_with_slug():
     
     return overview
 
+def lmao():
+    res = get_upcoming_IDO_with_slug()
+    res = {
+        "number_of_upcoming_IDO": 3,
+        "list_project": [
+                         "fsdf", 
+                         "fsdf", "sfsdfsdf"]
+    }
+    nl = '\n'
+    out = f"""Here are the upcoming IDO projects on GameFi:{nl.join([f'{index+1}. {item}' for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform."""
+    return out
+
 async def update_topic_vector_db(vector_db):
     print(f"Total items in vector {vector_db.name} before update: {vector_db.count()}")
     # Remove old ido_upcoming topic from vector_db

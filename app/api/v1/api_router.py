@@ -1,14 +1,13 @@
 from fastapi import APIRouter, Depends, Request, status
 from models.dto import ConversationRequest
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 from services.openai_service import OpenAIService
 from controllers.chat_controller import ChatController
 from langsmith import traceable
 from services import get_openai_service
 from controllers import get_chat_controller
 from database.queue import AsyncQueue
-from utils.static_param import many_requests_generator, new_conversation_generator
-from app.api.v1.page_router import chat
+from utils.static_param import many_requests_generator
 
 router = APIRouter()
 
@@ -18,11 +17,7 @@ async_queue = AsyncQueue()
 async def new(requests: Request, chat_controller: ChatController = Depends(get_chat_controller)):
     data = await requests.json()
     await chat_controller.new_conversation(data.get("conversation_id"))
-    return StreamingResponse(
-        new_conversation_generator(),
-        status_code=status.HTTP_200_OK,
-        media_type="text/event-stream",
-    )
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "New conversation"})
 
 @router.post("/api/chatbot/v1/chat")
 @traceable
@@ -48,13 +43,14 @@ async def chat(
                 openai_client=openai_client,
                 features_keywords=data_qa["features_keywords"],
                 new_conversation=data_qa["new_conversation"],
+                rag=data_qa["rag"],
             ),
             status_code=status.HTTP_200_OK,
             media_type="text/event-stream",
         )
-    headers = {"Content-Type": "application/json"}
+    print("Too many requests")
     return StreamingResponse(
         many_requests_generator(),
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-        headers=headers,
+        media_type="text/event-stream",
     )

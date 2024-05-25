@@ -5,7 +5,6 @@ import json
 from langsmith import traceable
 from database.session import MongoManager
 from database.queue import AsyncQueue
-from utils.static_param import new_conversation_generator
 import random
 
 
@@ -79,7 +78,9 @@ class OpenAIService:
         question_list: str = [],
         global_topic: dict = {},
     ):
-        conversation = conversation[-10:]
+        conversation = conversation[-8:]
+        if len(conversation) == 0:
+            conversation = [{}]
         system_prompt = f"""
         You are a helpful agent designed to provide suggestions based on the user's message and context.
         Your role is to pick randomly up to 3 questions from provided question list that are most relevant to the user's message.
@@ -103,15 +104,15 @@ class OpenAIService:
         Of course,naturally add the topic below to each question, while keeping the structure of each question in the list the same, if topic is empty, don't add it.
         Topic: {global_topic['source']}
         Carefully check whether the suggested question has content that matches the user's message history or the Assistant's last response. If the content is the same, the suggestion will not be added.
-        User history: {[f"{c['content']}" for c in conversation if c['role'] == 'user']}
-        Assistant last response: {conversation[-1]['role']}: {conversation[-1]['content']}  
+        User history: {[f"{c['content']}" for c in conversation if c.get('role', '') == 'user']}
+        Assistant last response: {conversation[-1].get('role', '')}: {conversation[-1].get('content', '')}  
         If the content is the same, you will be penalized.
         """
         # {nl.join(f"- {c['role']}: {c['content']}" for c in conversation if c['role'] == 'user')}
         user_message_list_ido = f"""
         Based on the list of questions and topics from assistant last response, topics are list of name IDO projects, provide suggested questions, up to 3 questions.
         Question list: {question_list}
-        Assistant last response: {conversation[-1]['role']}: {conversation[-1]['content']}
+        Assistant last response: {conversation[-1].get('role', '')}: {conversation[-1].get('content', '')}
         Can take many random name IDO project from Assistant last response.
         Check the user's message history to avoid repeating the same question.
         User history: {[f"{c['content']}" for c in conversation if c['role'] == 'user']}
@@ -144,6 +145,7 @@ class OpenAIService:
         openai_client: AsyncOpenAI = None,
         features_keywords: dict = {},
         new_conversation: int = 0,
+        rag: int = 1,
     ):
         if global_topic is None:
             global_topic = {"api": "", "source": "", "topic": "", "type": ""}
@@ -173,8 +175,7 @@ class OpenAIService:
         ]
         
         if new_conversation == 1:
-            async for chunk in new_conversation_generator(1):
-                yield f"<reply_markup>{chunk}</reply_markup>"
+            yield f"<notify>✅ **Starting new dialog due to timeout**</notify>"
 
         stream = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
@@ -204,7 +205,7 @@ class OpenAIService:
             if topic != {} and topic.get("api", "") != "":
                 list_question = self.question_dict.get(topic["api"], [])
 
-        if global_topic["source"] == "":
+        if global_topic.get("source", "") == "":
             list_question = self.question_dict["general"]
 
         if global_topic["source"] == "upcoming":
@@ -234,6 +235,7 @@ class OpenAIService:
             "suggestion": suggestion["suggestions"][:3],
             "context": context,
             "features_keywords": features_keywords,
+            "rag": rag
         }
 
         await self.async_queue.put(openai_client)
