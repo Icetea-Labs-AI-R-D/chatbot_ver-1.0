@@ -2,7 +2,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from gspread_formatting import *
 # Path to the JSON credential file
-ss_cred_path = '/home/dynamite/code/chatbot_ver-1.0/data/json/chatbotgamefi-a0dcf41e5bcd.json' 
+ss_cred_path = 'data/json/chatbotgamefi-a0dcf41e5bcd.json' 
 
 # Define the scope
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive'] 
@@ -23,7 +23,7 @@ worksheet = wks.worksheet('report')
 # Define the format for the 'Chưa đọc' cell (making it orange with border)
 orange_format = CellFormat(
     backgroundColor=Color(1, 0.6, 0),  # orange background
-    textFormat=TextFormat(bold=True, foregroundColor=Color(1, 1, 1)),
+    textFormat=TextFormat(bold=True, foregroundColor=Color(0, 0, 0)),
     borders=Borders(
         left=Border("SOLID", Color(0, 0, 0)),
         right=Border("SOLID", Color(0, 0, 0)),
@@ -35,7 +35,7 @@ orange_format = CellFormat(
 # Define the format for other cells (you can customize as needed, with border)
 blue_format = CellFormat(
     backgroundColor=Color(0.7, 0.85, 1),  # light blue background
-    textFormat=TextFormat(bold=False, foregroundColor=Color(0.5, 1, 1)),
+    textFormat=TextFormat(bold=False, foregroundColor=Color(0, 0, 0)),
     borders=Borders(
         left=Border("SOLID", Color(0, 0, 0)),
         right=Border("SOLID", Color(0, 0, 0)),
