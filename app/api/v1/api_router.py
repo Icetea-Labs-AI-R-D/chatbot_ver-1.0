@@ -5,9 +5,11 @@ from services.openai_service import OpenAIService
 from controllers.chat_controller import ChatController
 from langsmith import traceable
 from services import get_openai_service
-from controllers import get_chat_controller
+from controllers import get_chat_controller, get_report_controller
 from database.queue import AsyncQueue
 from utils.static_param import many_requests_generator
+from controllers.report_controller import ReportController
+from models.dto import ReportRequest
 
 router = APIRouter()
 
@@ -54,3 +56,9 @@ async def chat(
         status_code=status.HTTP_429_TOO_MANY_REQUESTS,
         media_type="text/event-stream",
     )
+
+@router.post("/api/chatbot/v1/report")
+async def report(request: Request, report_controller: ReportController = Depends(get_report_controller)):
+    data = await request.json()
+    await report_controller.generate_report(ReportRequest(**data))
+    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Report created"})
