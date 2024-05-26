@@ -6,6 +6,7 @@ from langsmith import traceable
 from database.session import MongoManager
 from database.queue import AsyncQueue
 import random
+from utils.tools_async import get_upcoming_IDO_with_slug
 
 
 class OpenAIService:
@@ -240,3 +241,21 @@ class OpenAIService:
 
         await self.async_queue.put(openai_client)
         await self.db.add_conversation(conversation["conversation_id"], message)
+
+    async def list_upcoming_ido(self, conversation_id):
+        res = await get_upcoming_IDO_with_slug()
+        nl = '\n'
+        out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item['name']}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform."""
+        for line in out.split("\n"):
+            yield line
+            
+        message = {
+            "content_user": "list upcoming ido",
+            "content_assistant": out,
+            "topic": {},
+            "suggestion": [],
+            "context": "",
+            "features_keywords": {},
+            "rag": 0
+        }
+        await self.db.add_conversation(conversation_id, message)

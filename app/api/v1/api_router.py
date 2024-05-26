@@ -15,11 +15,17 @@ router = APIRouter()
 
 async_queue = AsyncQueue()
 
+
 @router.post("/api/chatbot/v1/new")
-async def new(requests: Request, chat_controller: ChatController = Depends(get_chat_controller)):
+async def new(
+    requests: Request, chat_controller: ChatController = Depends(get_chat_controller)
+):
     data = await requests.json()
     await chat_controller.new_conversation(data.get("conversation_id"))
-    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "New conversation"})
+    return JSONResponse(
+        status_code=status.HTTP_200_OK, content={"message": "New conversation"}
+    )
+
 
 @router.post("/api/chatbot/v1/chat")
 @traceable
@@ -57,8 +63,26 @@ async def chat(
         media_type="text/event-stream",
     )
 
+
 @router.post("/api/chatbot/v1/report")
-async def report(request: Request, report_controller: ReportController = Depends(get_report_controller)):
+async def report(
+    request: Request,
+    report_controller: ReportController = Depends(get_report_controller),
+):
     data = await request.json()
     await report_controller.generate_report(ReportRequest(**data))
-    return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Report created"})
+    return JSONResponse(
+        status_code=status.HTTP_200_OK, content={"message": "Report created"}
+    )
+
+
+@router.post("/api/chatbot/v1/upcoming_ido")
+async def upcoming_ido(
+    request: Request, openai_service: OpenAIService = Depends(get_openai_service)
+):
+    data = await request.json()
+    return StreamingResponse(
+        openai_service.list_upcoming_ido(data.get("conversation_id")),
+        status_code=status.HTTP_200_OK,
+        media_type="text/event-stream",
+    )
