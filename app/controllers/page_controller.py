@@ -28,7 +28,7 @@ class PageController:
         return RedirectResponse(url="/chat/")
     
     async def _stream_response(self, data):
-        url = 'http://54.158.157.54:9191/api/chatbot/v1/chat'
+        url = 'http://0.0.0.0:9191/api/chatbot/v1/chat'
         async with httpx.AsyncClient(timeout=None) as client:
             async with client.stream("POST", url, json=data) as r:
                 async for chunk in r.aiter_bytes():

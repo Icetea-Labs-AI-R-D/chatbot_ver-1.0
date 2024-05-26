@@ -25,6 +25,15 @@ class MongoManager:
             sort=[("last_update", -1)],
         )
         return conversation or {}
+    
+    async def get_report_conversation(self, conversation_id: str):
+        conversation = await self.db.conversation.find_one(
+            {
+                "conversation_id": conversation_id,
+            },
+            sort=[("last_update", -1)],
+        )
+        return conversation or {}
 
     async def add_conversation(self, conversation_id: str, message: dict):
         await self.db.conversation.find_one_and_update(
@@ -55,7 +64,6 @@ class MongoManager:
                 "$setOnInsert": {
                     "conversation_id": conversation_id,
                     "status": "open",
-                    "report": [],
                 },
             },
             new=True,
