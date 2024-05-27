@@ -7,7 +7,13 @@ from database.session import MongoManager
 from database.queue import AsyncQueue
 import random
 from utils.tools_async import get_upcoming_IDO_with_slug
+from typing import List
 
+class SuggestQuestion:
+    id: str
+    questions: list
+    is_related: bool
+    
 
 class OpenAIService:
     db: MongoManager
@@ -193,47 +199,99 @@ class OpenAIService:
                 yield token
 
         # Logic follow-up
+        def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: list = []):
+            questions = list(filter(lambda x: x['id'] not in asked_ids, questions))
+            related_questions = list(filter(lambda x: x['is_related'], questions))
+            irrelated_questions = list(filter(lambda x: not x['is_related'], questions))
+           
+            num_related = min(2, len(related_questions))
+            num_irrelated = min(3 - num_related, len(irrelated_questions))
+            num_related = 3 - num_irrelated
+            
+            random.shuffle(related_questions)
+            random.shuffle(irrelated_questions)
+            
+            related_questions = list(map(lambda x: 
+                {
+                    'id': x['id'],
+                    'question':random.choice(x['questions']),
+                    'is_related' : x['is_related']
+                }, related_questions[:num_related]))
+            irrelated_questions = list(map(lambda x:
+                {
+                    'id': x['id'],
+                    'question':random.choice(x['questions']),
+                    'is_related' : x['is_related']
+                }, irrelated_questions[:num_irrelated])) 
+            
+            return [*related_questions, *irrelated_questions]
+            
         list_unique_api = list(
             set([c.get("api", "") for c in features_keywords.get("content", [])])
         )
         list_question = []
+                
         for api in list_unique_api:
             if api != "":
-                list_question.extend(self.question_dict[api])
+                list_question.extend(list(self.question_dict[api].values()))
+
 
         if features_keywords.get("content", []) == []:
             topic = features_keywords.get("topic", {})
             if topic != {} and topic.get("api", "") != "":
-                list_question = self.question_dict.get(topic["api"], [])
+                list_question = list(self.question_dict.get(topic["api"], {}).values())
 
+        list_question = select_3_question_from_list(list_question, asked_ids=[])
+        
+        game_name = ' '.join([word.capitalize() for word in global_topic['source'].split('-')])
+        suggestions = [item['question'].replace('<game-name>', game_name) for item in list_question]
+        
+        if global_topic["source"] == "upcoming":
+            list_question = list(self.question_dict["overview_list_ido_upcoming"].values())
+            list_question = select_3_question_from_list(list_question, asked_ids=[])
+            list_game_name = json.loads(context.split('\n')[1])['list_project']
+            random.shuffle(list_game_name)
+            suggestions =  [item['question'].replace('<game-name>', list_game_name[index]) for index, item in enumerate(list_question)]
+        
         if global_topic.get("source", "") == "":
             list_question = self.question_dict["general"]
+            suggestions = list_question
+            list_question = list(map(lambda x:
+                {
+                    'id': 1000,
+                    'question': x,
+                    'is_related' : False
+                }, list_question))
 
-        if global_topic["source"] == "upcoming":
-            list_question = self.question_dict["overview_list_ido_upcoming"]
 
-        conversation["history"].append({"role": "user", "content": question})
-        conversation["history"].append({"role": "assistant", "content": answer})
+        # conversation["history"].append({"role": "user", "content": question})
+        # conversation["history"].append({"role": "assistant", "content": answer})
 
-        suggestion = await self.generate_suggestion(
-            context=context,
-            conversation=conversation["history"],
-            question_list=list_question,
-            global_topic=global_topic,
-            openai_client=openai_client,
-        )
-        suggestion = json.loads(suggestion)
+        # suggestion = await self.generate_suggestion(
+        #     context=context,
+        #     conversation=conversation["history"],
+        #     question_list=list_question,
+        #     global_topic=global_topic,
+        #     openai_client=openai_client,
+        # )
+        # suggestion = json.loads(suggestion)
+        # suggestions = [suggestion["suggestions"][:3]]
+        
+        
         reply_markup = {
             "text": "Maybe you want to know ⬇️:",
-            "follow_up": suggestion["suggestions"][:3],
+            "follow_up":suggestions,
         }
-        yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
+        
+        # If suggestions is not empty, return suggestions
+        if len(suggestions) != 0:
+            yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
 
         message = {
             "content_user": question,
             "content_assistant": answer,
             "topic": global_topic,
-            "suggestion": suggestion["suggestions"][:3],
+            "suggestion": suggestions,
             "context": context,
             "features_keywords": features_keywords,
             "rag": rag

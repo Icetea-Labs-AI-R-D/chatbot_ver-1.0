@@ -57,7 +57,7 @@ class ChatController:
         user_question = prompt
         context = "[]"
         features_keywords = {}
-        if request_data.suggested == 0 or not raw_history or raw_history[-1].get("context", "") == "" or rag >= 2:
+        if request_data.suggested >= 0 or not raw_history or raw_history[-1].get("context", "") == "" or rag >= 2:
             rag = 0
             keywords_text = await self.openai_service.rewrite_and_extract_keyword(
                 user_question, history, global_topic, openai_client
