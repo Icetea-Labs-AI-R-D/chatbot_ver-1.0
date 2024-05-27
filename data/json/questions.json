@@ -4,144 +4,946 @@
         "What is MOBOX game?",
         "Introduce the Axie Infinity game."
     ],
-    "community-performance_gamehub": [
-        "Telegram users?",
-        "Twitter followers?",
-        "Discord users?",
-        "Twitter interaction?",
-        "Community rank?",
-        "Market rank?",
-        "Twitter rank?",
-        "Telegram rank?",
-        "Discord rank?",
-        "Community performance?"
-    ],
-    "daily-index_gamehub": [
-        "Daily index?",
-        "GameFi ranking?",
-        "Social signal 24h?",
-        "Social score 24h?",
-        "UAW 24h?",
-        "Transactions 24h?",
-        "Holders 24h?"
-    ],
-    "on-chain-performance_gamehub": [
-        "Token price?",
-        "Volume?",
-        "Volume 24h change?",
-        "Market cap?",
-        "Market cap 7d change?",
-        "UAW 7d change?",
-        "NFT transaction 7d change?",
-        "Volume rank?",
-        "Market cap rank?",
-        "UAW rank?",
-        "NFT transaction rank?",
-        "Onchain rank?",
-        "Market rank?",
-        "Circulating supply?"
-    ],
-    "overview_gamehub": [
-        "Whitepaper of <game-name>?",
-        "Status of <game-name>?",
-        "When was <game-name> released?",
-        "Roadmap of <game-name>?",
-        "On which platform can I play <game-name>?"
-    ],
-    "social-scores_gamehub": [
-        "Social scores?",
-        "Time?",
-        "Timeframe?",
-        "Social score?",
-        "Telegram group score?",
-        "Telegram channel score?",
-        "Twitter score?",
-        "Discord score?",
-        "Social rank?",
-        "Telegram group rank?",
-        "Telegram channel rank?",
-        "Twitter rank?",
-        "Discord rank?",
-        "Social health?"
-    ],
-    "team_gamehub": [
-        "Team?",
-        "Staffs?",
-        "Team rank?"
-    ],
-    "tokenomic_gamehub": [
-        "Tokenomic info of <game-name>?",
-        "Valuation of <game-name>?",
-        "Market cap of <game-name>?",
-        "Market cap init of <game-name>?",
-        "Market cap fully diluted of <game-name>?",
-        "Market cap self-reported of <game-name>?",
-        "Token symbol of <game-name>?",
-        "Token utilities of <game-name>?",
-        "Token economy of <game-name>?",
-        "Token distribution of <game-name>?",
-        "Vesting schedule of <game-name>?",
-        "Current price of <game-name>?",
-        "Public price of <game-name>?",
-        "Highest price of <game-name>?",
-        "Reported ATH of <game-name>?",
-        "Chart symbol of <game-name>?",
-        "Init token circulation of <game-name>?"
-    ],
-    "backer_gamehub": [],
-    "overview_ido": [
-        "Overview of <game-name>?",
-        "Description of <game-name>?",
-        "Excerpt of <game-name>?",
-        "Type of <game-name>?",
-        "Status of <game-name>?",
-        "Claim policy of <game-name>?",
-        "Contract address of <game-name>?",
-        "Address receiver of <game-name>?",
-        "Airdrop chain ID of <game-name>?",
-        "Sort of <game-name>?",
-        "Total token of <game-name>?",
-        "Bonus progress of <game-name>?",
-        "Display of <game-name>?",
-        "Need KYC of <game-name>?",
-        "Featured of <game-name>?",
-        "Deployed of <game-name>?",
-        "Winner published of <game-name>?"
-    ],
-    "overview_ido_upcoming": [
-        "Status of the <ido-name>?",
-        "What is claim policy of <ido-name>?",
-        "When the whitelist is open of <game-name>?",
-        "What is refund policy of <ido-name>?",
-        "Curent token price of <ido-name>?",
-        "Total token of <ido-name>?",
-        "What is <ido-name>'s roadmap?",
-        "Social media platforms of <ido-name>?",
-        "Total raise of <ido-name>?",
-        "The highlights of <ido-name>?",
-        "The highlights of <ido-name>?",
-        "What is <ido-name>'s revenue streams?",
-        "Token utilities of <ido-name>?",
-        "Information about the tokenomics of <ido-name>?",
-        "The team members of <ido-name> and their roles in project?",
-        "About <ido-name>?"
-    ],
-    "overview_list_ido_upcoming": [
-        "Status of the <ido-name>?",
-        "What is claim policy of <ido-name>?",
-        "When the whitelist is open of <game-name>?",
-        "What is refund policy of <ido-name>?",
-        "Curent token price of <ido-name>?",
-        "Total token of <ido-name>?",
-        "What is <ido-name>'s roadmap?",
-        "Social media platforms of <ido-name>?",
-        "Total raise of <ido-name>?",
-        "The highlights of <ido-name>?",
-        "The highlights of <ido-name>?",
-        "What is <ido-name>'s revenue streams?",
-        "Token utilities of <ido-name>?",
-        "Information about the tokenomics of <ido-name>?",
-        "The team members of <ido-name> and their roles in project?",
-        "About <ido-name>?"
-    ]
+    "backer_gamehub": {},
+    "community-performance_gamehub": {
+        "telegram_users": {
+            "id": 1,
+            "questions": [
+                "Telegram users in <game-name>?",
+                "Number of Telegram users for <game-name>?",
+                "How many Telegram users are involved in <game-name>?"
+            ],
+            "is_related": true
+        },
+        "twitter_followers": {
+            "id": 2,
+            "questions": [
+                "How many follow <game-name> on Twitter?",
+                "Number of Twitter followers for <game-name>?",
+                "How many Twitter followers does <game-name> have?"
+            ],
+            "is_related": true
+        },
+        "discord_users": {
+            "id": 3,
+            "questions": [
+                "How many Discord users are there for <game-name>?",
+                "Number of Discord users for <game-name>?",
+                "How many Discord users are involved in <game-name>?"
+            ],
+            "is_related": true
+        },
+        "twitter_interaction": {
+            "id": 4,
+            "questions": [
+                "How is the Twitter interaction for <game-name>?",
+                "Twitter interaction of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "community_rank": {
+            "id": 5,
+            "questions": [
+                "Rank of <game-name> in the community?",
+                "Community rank of <game-name>?",
+                "<game-name>'s rank in the community?"
+            ],
+            "is_related": true
+        },
+        "market_rank": {
+            "id": 6,
+            "questions": [
+                "Rank of <game-name> in the market?",
+                "Market rank of <game-name>?",
+                "What is the market rank of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "twitter_rank": {
+            "id": 7,
+            "questions": [
+                "Rank of <game-name> on Twitter?",
+                "Twitter rank of <game-name>?",
+                "<game-name>'s Twitter rank?"
+            ],
+            "is_related": true
+        },
+        "telegram_rank": {
+            "id": 8,
+            "questions": [
+                "What is the Telegram rank of <game-name>?",
+                "Telegram rank of <game-name>?",
+                "Rank of <game-name> on Telegram?"
+            ],
+            "is_related": true
+        },
+        "discord_rank": {
+            "id": 9,
+            "questions": [
+                "Discord position of <game-name>?",
+                "Discord rank of <game-name>?",
+                "Rank of <game-name> on Discord?"
+            ],
+            "is_related": true
+        },
+        "community_performance": {
+            "id": 10,
+            "questions": [
+                "How is <game-name> performing in the community?",
+                "<game-name> performance within the community?",
+                "Community performance of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "gamefi_ranking": {
+            "id": 11,
+            "questions": [
+                "GameFi ranking of <game-name>?",
+                "Rank of <game-name> in GameFi?",
+                "How is the GameFi ranking of <game-name>?"
+            ],
+            "is_related": false
+        }
+    },
+    "daily-index_gamehub": {
+        "daily_index": {
+            "id": 1,
+            "questions": [
+                "Daily index of <game-name>?",
+                "What is the daily index of <game-name>?",
+                "<game-name>'s daily index?"
+            ],
+            "is_related": true
+        },
+        "gamefi_ranking": {
+            "id": 2,
+            "questions": [
+                "GameFi ranking of <game-name>?",
+                "Rank of <game-name> in GameFi?",
+                "How is the GameFi ranking of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "social_signal_24h": {
+            "id": 3,
+            "questions": [
+                "Social signal 24h of <game-name>?",
+                "Social signal in 24 hours for <game-name>? ",
+                "24h social signal for <game-name>?"
+            ],
+            "is_related": true
+        },
+        "social_score_24h": {
+            "id": 4,
+            "questions": [
+                "Social score 24h of <game-name>?",
+                "Social score in 24 hours for <game-name>?",
+                "<game-name>'s 24-hour social score?"
+            ],
+            "is_related": true
+        },
+        "uaw_24h": {
+            "id": 5,
+            "questions": [
+                "UAW 24h of <game-name>?",
+                "What is the UAW 24h of <game-name>?",
+                "24-hour UAW of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "transactions_24h": {
+            "id": 6,
+            "questions": [
+                "Transactions 24h of <game-name>?",
+                "24-hour transaction count of <game-name>?",
+                "<game-name>'s 24-hour transactions?"
+            ],
+            "is_related": true
+        },
+        "holders_24h": {
+            "id": 7,
+            "questions": [
+                "Holders 24h of <game-name>?",
+                "What is the holders 24h of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "volume_24h_change": {
+            "id": 8,
+            "questions": [
+                "Volume 24h change of <game-name>?",
+                "What is the volume 24h change of <game-name>?",
+                "24-hour volume variation of <game-name>?"
+            ],
+            "is_related": false
+        }
+    },
+    "on-chain-performance_gamehub": {
+        "token_price": {
+            "id": 1,
+            "questions": [
+                "Token price of <game-name>?",
+                "Current token price of <game-name>?",
+                "What is the current price of <game-name> token?",
+                "How much is the <game-name> token now?"
+            ],
+            "is_related": true
+        },
+        "volume": {
+            "id": 2,
+            "questions": [
+                "Volume of <game-name>?",
+                "What is the volume of <game-name>?",
+                "<game-name>'s current volume?"
+            ],
+            "is_related": true
+        },
+        "volume_24h_change": {
+            "id": 3,
+            "questions": [
+                "Volume 24h change of <game-name>?",
+                "What is the volume 24h change of <game-name>?",
+                "24-hour volume variation of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "market_cap": {
+            "id": 4,
+            "questions": [
+                "Market capitalization of <game-name>?",
+                "What is the market cap of <game-name>?",
+                "<game-name>'s market cap?"
+            ],
+            "is_related": true
+        },
+        "market_cap_7d_change": {
+            "id": 5,
+            "questions": [
+                "Market cap change in 7 days for <game-name>?",
+                "7-day market cap variation of <game-name>?",
+                "<game-name>'s 7-day market cap change?"
+            ],
+            "is_related": true
+        },
+        "uaw_7d_change": {
+            "id": 6,
+            "questions": [
+                "UAW change in 7 days for <game-name>?",
+                "<game-name>'s 7-day UAW change?"
+            ],
+            "is_related": true
+        },
+        "nft_transaction_7d_change": {
+            "id": 7,
+            "questions": [
+                "NFT transaction change in 7 days for <game-name>?",
+                "7d NFT transaction change for <game-name>?",
+                "<game-name> 7d NFT transaction fluctuation?"
+            ],
+            "is_related": true
+        },
+        "volume_rank": {
+            "id": 8,
+            "questions": [
+                "Volume rank of <game-name>?",
+                "Rank of <game-name> by volume?"
+            ],
+            "is_related": true
+        },
+        "market_cap_rank": {
+            "id": 9,
+            "questions": [
+                "Market cap rank of <game-name>?",
+                "<game-name>'s market cap rank?",
+                "Rank of <game-name> by market cap?"
+            ],
+            "is_related": true
+        },
+        "uaw_rank": {
+            "id": 10,
+            "questions": [
+                "UAW rank of <game-name>?",
+                "Rank of <game-name> by UAW?",
+                "<game-name>'s UAW rank?"
+            ],
+            "is_related": true
+        },
+        "nft_transaction_rank": {
+            "id": 11,
+            "questions": [
+                "NFT transaction ranking of <game-name>?",
+                "Rank of <game-name> by NFT transactions?",
+                "<game-name>'s NFT transaction rank?"
+            ],
+            "is_related": true
+        },
+        "onchain_rank": {
+            "id": 12,
+            "questions": [
+                "Onchain rank of <game-name>?",
+                "What is the onchain rank of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "market_rank": {
+            "id": 13,
+            "questions": [
+                "Market ranking of <game-name>?",
+                "<game-name>'s market rank?"
+            ],
+            "is_related": true
+        },
+        "circulating_supply": {
+            "id": 14,
+            "questions": [
+                "Circulating supply of <game-name>?",
+                "What is the circulating supply of <game-name>?",
+                "<game-name>'s circulating supply?"
+            ],
+            "is_related": true
+        }
+    },
+    "overview_gamehub": {
+        "status": {
+            "id": 2,
+            "questions": [
+                "Status of <game-name>?",
+                "What is the status of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "release_date": {
+            "id": 3,
+            "questions": [
+                "When was <game-name> released?",
+                "What is the release date of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "roadmap": {
+            "id": 4,
+            "questions": [
+                "Roadmap of <game-name>?",
+                "What is the roadmap for <game-name>?",
+                "<game-name>'s roadmap?",
+                "Can you share the roadmap of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "play_mode": {
+            "id": 5,
+            "questions": [
+                "What are the play modes of <game-name>?",
+                "Play mode of <game-name>?",
+                "How many play modes does <game-name> have?"
+            ],
+            "is_related": true
+        },
+        "play_to_earn_model": {
+            "id": 6,
+            "questions": [
+                "Play-to-earn model of <game-name>?",
+                "What is the play-to-earn model of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "token_price": {
+            "id": 7,
+            "questions": [
+                "Token price of <game-name>?",
+                "Current token price of <game-name>?",
+                "What is the current price of <game-name> token?",
+                "How much is the <game-name> token now?"
+            ],
+            "is_related": false
+        }
+    },
+    "social-scores_gamehub": {
+        "social_scores": {
+            "id": 1,
+            "questions": [
+                "Social scores of <game-name>?",
+                "What are the social scores of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "telegram_group_score": {
+            "id": 2,
+            "questions": [
+                "Telegram group score of <game-name>?",
+                "Score of <game-name> Telegram group?",
+                "<game-name>'s Telegram group score?"
+            ],
+            "is_related": true
+        },
+        "telegram_channel_score": {
+            "id": 3,
+            "questions": [
+                "Telegram channel score of <game-name>?",
+                "Score of <game-name> Telegram channel?",
+                "What is the Telegram channel score of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "twitter_score": {
+            "id": 4,
+            "questions": [
+                "Twitter score of <game-name>?",
+                "What is the Twitter score of <game-name>?",
+                "Current Twitter score of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "discord_score": {
+            "id": 5,
+            "questions": [
+                "Discord score of <game-name>?",
+                "What is the Discord score of <game-name>?",
+                "<game-name>'s Discord score?"
+            ],
+            "is_related": true
+        },
+        "social_rank": {
+            "id": 6,
+            "questions": [
+                "Social rank of <game-name>?",
+                "Rank of <game-name> on social platforms?",
+                "<game-name>'s social rank?"
+            ],
+            "is_related": true
+        },
+        "telegram_group_rank": {
+            "id": 7,
+            "questions": [
+                "Telegram group rank of <game-name>?",
+                "Rank of <game-name> in Telegram group?"
+            ],
+            "is_related": true
+        },
+        "telegram_channel_rank": {
+            "id": 8,
+            "questions": [
+                "Telegram channel rank of <game-name>?",
+                "What is the Telegram channel rank of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "twitter_rank": {
+            "id": 9,
+            "questions": [
+                "Twitter rank of <game-name>?",
+                "How does <game-name> rank on Twitter?",
+                "How is <game-name> ranked on Twitter?"
+            ],
+            "is_related": true
+        },
+        "discord_rank": {
+            "id": 10,
+            "questions": [
+                "Discord rank of <game-name>?",
+                "How does <game-name> rank on Discord?",
+                "Rank of <game-name> on Discord?"
+            ],
+            "is_related": true
+        },
+        "team": {
+            "id": 11,
+            "questions": [
+                "Team of <game-name>?",
+                "Who are the team members of <game-name>?",
+                "Who is the team behind <game-name>?",
+                "<game-name>'s team?"
+            ],
+            "is_related": false
+        }
+    },
+    "team_gamehub": {
+        "team": {
+            "id": 1,
+            "questions": [
+                "Team of <game-name>?",
+                "Who are the team members of <game-name>?",
+                "Who is the team behind <game-name>?",
+                "<game-name>'s team?"
+            ],
+            "is_related": true
+        },
+        "staffs": {
+            "id": 2,
+            "questions": [
+                "Staffs of <game-name>?",
+                "Who are the staffs of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "team_rank": {
+            "id": 3,
+            "questions": [
+                "Team ranking of <game-name>?",
+                "<game-name>'s team rank?"
+            ],
+            "is_related": true
+        },
+        "market_cap": {
+            "id": 4,
+            "questions": [
+                "Market cap of <game-name>?",
+                "Market capitalization of <game-name>?",
+                "<game-name>'s market cap?"
+            ],
+            "is_related": true
+        }
+    },
+    "tokenomic_gamehub": {
+        "tokenomic_infor": {
+            "id": 1,
+            "questions": [
+                "Tokenomic info of <game-name>?",
+                "Tokenomic details of <game-name>?",
+                "<game-name>'s tokenomic information?"
+            ],
+            "is_related": true
+        },
+        "valuation": {
+            "id": 2,
+            "questions": [
+                "Valuation of <game-name>?",
+                "What is the valuation of <game-name>?",
+                "Current valuation of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "market_cap": {
+            "id": 3,
+            "questions": [
+                "Market cap of <game-name>?",
+                "Market capitalization of <game-name>?",
+                "<game-name>'s market cap?"
+            ],
+            "is_related": true
+        },
+        "market_cap_init": {
+            "id": 4,
+            "questions": [
+                "Market cap init of <game-name>?",
+                "<game-name>'s initial market cap?"
+            ],
+            "is_related": true
+        },
+        "token_symbol": {
+            "id": 6,
+            "questions": [
+                "Token symbol of <game-name>?",
+                "Symbol for <game-name> token?"
+            ],
+            "is_related": true
+        },
+        "token_utilities": {
+            "id": 7,
+            "questions": [
+                "Token utilities of <game-name>?",
+                "What are the token utilities of <game-name>?",
+                "<game-name>'s token utilities?"
+            ],
+            "is_related": true
+        },
+        "token_economy": {
+            "id": 8,
+            "questions": [
+                "Token economy of <game-name>?",
+                "What is the token economy of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "token_distribution": {
+            "id": 9,
+            "questions": [
+                "Token distribution of <game-name>?",
+                "What is the token distribution of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "vesting_schedule": {
+            "id": 10,
+            "questions": [
+                "Vesting schedule of <game-name>?",
+                "What is the vesting schedule of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "current_price": {
+            "id": 11,
+            "questions": [
+                "Current price of <game-name>?",
+                "What is the current price of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "highest_price": {
+            "id": 12,
+            "questions": [
+                "Highest price of <game-name>?",
+                "What is the highest price of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "init_token_circulation": {
+            "id": 13,
+            "questions": [
+                "Init token circulation of <game-name>?",
+                "What is the init token circulation of <game-name>?"
+            ],
+            "is_related": true
+        }
+    },
+    "overview_ido": {
+        "overview": {
+            "id": 1,
+            "questions": [
+                "Overview of <game-name>?",
+                "Description of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "status": {
+            "id": 2,
+            "questions": [
+                "Status of <game-name>?",
+                "What is the status of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "claim_policy": {
+            "id": 3,
+            "questions": [
+                "Claim policy of <game-name>?",
+                "What is the claim policy of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "refund_policy": {
+            "id": 4,
+            "questions": [
+                "Refund policy of <game-name>?",
+                "What is the refund policy of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "total_token": {
+            "id": 5,
+            "questions": [
+                "Total token of <game-name>?",
+                "What is the total token of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "token_price": {
+            "id": 6,
+            "questions": [
+                "Token price of <game-name>?",
+                "What is the token price of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "social_networks": {
+            "id": 7,
+            "questions": [
+                "Social networks of <game-name>?",
+                "What are the social networks of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "roadmap": {
+            "id": 8,
+            "questions": [
+                "Roadmap of <game-name>?",
+                "What is the roadmap of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "revenue_streams": {
+            "id": 9,
+            "questions": [
+                "Revenue streams of <game-name>?",
+                "What are the revenue streams of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "token_utilities": {
+            "id": 10,
+            "questions": [
+                "Token utilities of <game-name>?",
+                "What are the token utilities of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "highlights": {
+            "id": 11,
+            "questions": [
+                "Highlights of <game-name>?",
+                "What are the highlights of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "launchpad": {
+            "id": 12,
+            "questions": [
+                "Launchpad of <game-name>?",
+                "What is the launchpad of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "total_raise": {
+            "id": 13,
+            "questions": [
+                "Total raised of <game-name>?",
+                "What is the total raised of <game-name>?"
+            ],
+            "is_related": true
+        }
+    },
+    "overview_ido_upcoming": {
+        "status": {
+            "id": 1,
+            "questions": [
+                "Status of <ido-name>?",
+                "What is the status of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "claim_policy": {
+            "id": 2,
+            "questions": [
+                "Claim policy of <ido-name>?",
+                "What is the claim policy of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "whitelist_open": {
+            "id": 3,
+            "questions": [
+                "When the whitelist is open of <game-name>?",
+                "What is the whitelist open of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "refund_policy": {
+            "id": 4,
+            "questions": [
+                "Refund policy of <ido-name>?",
+                "What is the refund policy of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "token_price": {
+            "id": 5,
+            "questions": [
+                "Curent token price of <ido-name>?",
+                "What is curent token price of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "total_token": {
+            "id": 6,
+            "questions": [
+                "Total token of <ido-name>?",
+                "What is total token of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "roadmap": {
+            "id": 7,
+            "questions": [
+                "What is <ido-name>'s roadmap?",
+                "Roadmap of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "social_media": {
+            "id": 8,
+            "questions": [
+                "Social media platforms of <ido-name>?",
+                "What are social media platforms of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "total_raise": {
+            "id": 9,
+            "questions": [
+                "Total raise of <ido-name>?",
+                "What is total raise of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "highlights": {
+            "id": 10,
+            "questions": [
+                "The highlights of <ido-name>?",
+                "What are the highlights of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "revenue_streams": {
+            "id": 11,
+            "questions": [
+                "What is <ido-name>'s revenue streams?",
+                "Revenue streams of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "token_utilities": {
+            "id": 12,
+            "questions": [
+                "Token utilities of <ido-name>?",
+                "What are token utilities of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "tokenomics": {
+            "id": 13,
+            "questions": [
+                "Information about the tokenomics of <ido-name>?",
+                "What is information about the tokenomics of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "team": {
+            "id": 14,
+            "questions": [
+                "The team members of <ido-name> and their roles in project?",
+                "Who are the team members of <ido-name> and their roles in project?"
+            ],
+            "is_related": true
+        },
+        "white_list": {
+            "id": 15,
+            "questions": [
+                "White list of <ido-name>?",
+                "What is white list of <ido-name>?"
+            ],
+            "is_related": true
+        },
+        "launchpad": {
+            "id": 16,
+            "questions": [
+                "Launchpad of <ido-name>?",
+                "What is launchpad of <ido-name>?"
+            ],
+            "is_related": true
+        }
+    },
+    "overview_list_gamehub": {
+        "status": {
+            "id": 1,
+            "questions": [
+                "Status of <game-name>?",
+                "What is the status of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "claim_policy": {
+            "id": 2,
+            "questions": [
+                "Claim policy of <game-name>?",
+                "What is the claim policy of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "refund_policy": {
+            "id": 3,
+            "questions": [
+                "Refund policy of <game-name>?",
+                "What is the refund policy of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "total_token": {
+            "id": 4,
+            "questions": [
+                "Total token of <game-name>?",
+                "What is the total token of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "token_price": {
+            "id": 5,
+            "questions": [
+                "Token price of <game-name>?",
+                "What is the token price of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "social_networks": {
+            "id": 6,
+            "questions": [
+                "Social networks of <game-name>?",
+                "What are the social networks of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "roadmap": {
+            "id": 7,
+            "questions": [
+                "Roadmap of <game-name>?",
+                "What is the roadmap of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "revenue_streams": {
+            "id": 8,
+            "questions": [
+                "Revenue streams of <game-name>?",
+                "What are the revenue streams of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "token_utilities": {
+            "id": 9,
+            "questions": [
+                "Token utilities of <game-name>?",
+                "What are the token utilities of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "highlights": {
+            "id": 10,
+            "questions": [
+                "Highlights of <game-name>?",
+                "What are the highlights of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "launchpad": {
+            "id": 11,
+            "questions": [
+                "Launchpad of <game-name>?",
+                "What is the launchpad of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "total_raise": {
+            "id": 12,
+            "questions": [
+                "Total raised of <game-name>?",
+                "What is the total raised of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "white_list": {
+            "id": 13,
+            "questions": [
+                "White list of <game-name>?",
+                "What is the white list of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "team": {
+            "id": 14,
+            "questions": [
+                "Team of <game-name>?",
+                "Who are the team members of <game-name>?"
+            ],
+            "is_related": true
+        }
+    }
 }
