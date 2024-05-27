@@ -254,15 +254,30 @@ class OpenAIService:
                 }, list_question))
         
         game_name = ' '.join([word.capitalize() for word in global_topic['source'].split('-')])
-        suggestions = [item['question'].replace('<game-name>', game_name) for item in list_question]
+        list_question = list(map(lambda x:
+                {
+                    'id': x['id'],
+                    'question': x['question'].replace('<game-name>', game_name),
+                    'is_related' :  False if is_content_empty else x['is_related']
+                }, list_question))
+        
+        suggestions = [item['question'] for item in list_question]
         
         if global_topic["source"] == "upcoming":
+            list_game_name = ast.literal_eval(context.split('\n')[2].strip())['list_project']
+            random.shuffle(list_game_name)
+            
             list_question = list(self.question_dict["overview_list_ido_upcoming"].values())
             list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids)
             
-            list_game_name = ast.literal_eval(context.split('\n')[2].strip())['list_project']
-            random.shuffle(list_game_name)
-            suggestions =  [item['question'].replace('<game-name>', list_game_name[index]) for index, item in enumerate(list_question)]
+            list_question = list(map(lambda item:
+                {
+                    'id': item[1]['id'],
+                    'question': item[1]['question'].replace('<game-name>', list_game_name[item[0]]),
+                    'is_related' : item[1]['is_related']
+                }, enumerate(list_question)))
+            
+            suggestions =  [item['question'] for index, item in enumerate(list_question)]
         
         if global_topic.get("source", "") == "":
             list_question = self.question_dict["general"]
