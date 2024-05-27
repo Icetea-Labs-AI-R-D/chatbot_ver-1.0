@@ -152,7 +152,7 @@ class OpenAIService:
         openai_client: AsyncOpenAI = None,
         features_keywords: dict = {},
         new_conversation: int = 0,
-        rag: int = 1,
+        selected_suggestions: list = [],
     ):
         if global_topic is None:
             global_topic = {"api": "", "source": "", "topic": "", "type": ""}
@@ -225,7 +225,9 @@ class OpenAIService:
                 }, irrelated_questions[:num_irrelated])) 
             
             return [*related_questions, *irrelated_questions]
-            
+        
+        selected_suggestion_ids = list(map(lambda x: x['id'], selected_suggestions))
+
         list_unique_api = list(
             set([c.get("api", "") for c in features_keywords.get("content", [])])
         )
@@ -241,14 +243,14 @@ class OpenAIService:
             if topic != {} and topic.get("api", "") != "":
                 list_question = list(self.question_dict.get(topic["api"], {}).values())
 
-        list_question = select_3_question_from_list(list_question, asked_ids=[])
+        list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids)
         
         game_name = ' '.join([word.capitalize() for word in global_topic['source'].split('-')])
         suggestions = [item['question'].replace('<game-name>', game_name) for item in list_question]
         
         if global_topic["source"] == "upcoming":
             list_question = list(self.question_dict["overview_list_ido_upcoming"].values())
-            list_question = select_3_question_from_list(list_question, asked_ids=[])
+            list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids)
             list_game_name = json.loads(context.split('\n')[1])['list_project']
             random.shuffle(list_game_name)
             suggestions =  [item['question'].replace('<game-name>', list_game_name[index]) for index, item in enumerate(list_question)]
@@ -294,7 +296,7 @@ class OpenAIService:
             "suggestion": suggestions,
             "context": context,
             "features_keywords": features_keywords,
-            "rag": rag
+            "selected_suggestions": selected_suggestions,
         }
 
         await self.async_queue.put(openai_client)
@@ -314,6 +316,6 @@ class OpenAIService:
             "suggestion": [],
             "context": "",
             "features_keywords": {},
-            "rag": 0
+            "selected_suggestions": [],
         }
         await self.db.add_conversation(conversation_id, message)

@@ -58,7 +58,7 @@ class MongoManager:
                 "$set": {
                     "last_update": datetime.datetime.now(),
                     "global_topic": message.get("topic"),
-                    "rag": message.get("rag"),
+                    "selected_suggestions": message.get("selected_suggestions"),
                 },
                 "$inc": {"count": 1},
                 "$setOnInsert": {

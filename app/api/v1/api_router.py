@@ -51,7 +51,7 @@ async def chat(
                 openai_client=openai_client,
                 features_keywords=data_qa["features_keywords"],
                 new_conversation=data_qa["new_conversation"],
-                rag=data_qa["rag"],
+                selected_suggestions=data_qa["selected_suggestions"],
             ),
             status_code=status.HTTP_200_OK,
             media_type="text/event-stream",
