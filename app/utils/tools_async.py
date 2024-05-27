@@ -542,12 +542,13 @@ async def get_upcoming_IDO(name, keywords=[]):
     # global list_ido_game  
     # global embedding
     # if list_project_name != list_ido_game:
+    #     list_ido_game = list_project_name
     #     vectordb_docs = chroma_client.get_or_create_collection(
     #         name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
     #     vectordb_topic = chroma_client.get_or_create_collection(
     #         name="vector_topic", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
-    #     await update_topic_vector_db(vectordb_topic)
-    #     await update_topic_vector_db(vectordb_docs)
+    #     update_topic_vector_db(vectordb_topic)
+    #     update_topic_vector_db(vectordb_docs)
         
         
     overview = {
