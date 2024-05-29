@@ -256,17 +256,16 @@
         "volume_rank": {
             "id": "a82e5199-38ad-4ece-9a81-403bce1f6b4e",
             "questions": [
-                "Volume rank of <game-name>?",
-                "Rank of <game-name> by volume?"
+                "Volume rank of <game-name> on GameFi.org?",
+                "<game-name>'s volume rank on GameFi.org?"
             ],
             "is_related": true
         },
         "market_cap_rank": {
             "id": "6e45c4f7-f44d-4971-bfe3-a15709d7b7d1",
             "questions": [
-                "Market cap rank of <game-name>?",
-                "<game-name>'s market cap rank?",
-                "Rank of <game-name> by market cap?"
+                "Market cap rank of <game-name> on GameFi.org?",
+                "<game-name>'s market cap rank on GameFi.org?"
             ],
             "is_related": true
         },
@@ -274,7 +273,6 @@
             "id": "1d31e00f-36a3-4de5-ba1d-a7188c7770e4",
             "questions": [
                 "UAW rank of <game-name>?",
-                "Rank of <game-name> by UAW?",
                 "<game-name>'s UAW rank?"
             ],
             "is_related": true
@@ -283,7 +281,6 @@
             "id": "75503c5a-2118-4b6a-b064-7f73d2d4bd07",
             "questions": [
                 "NFT transaction ranking of <game-name>?",
-                "Rank of <game-name> by NFT transactions?",
                 "<game-name>'s NFT transaction rank?"
             ],
             "is_related": true
@@ -607,8 +604,7 @@
             "id": "4733e59e-5e8d-442a-b82f-c43cfa83905d",
             "questions": [
                 "GameFi ranking of <game-name>?",
-                "Rank of <game-name> in GameFi?",
-                "How is the GameFi ranking of <game-name>?"
+                "Rank of <game-name> on GameFi.org?"
             ],
             "is_related": false
         }
@@ -781,7 +777,7 @@
             "id": "1af2718e-6729-4cfc-9bb5-6ba36003be29",
             "questions": [
                 "Total token of <game-name>?",
-                "How many tokens does <game-name> have in total?",
+                "How many tokens does <game-name> have?",
                 "<game-name>'s total token count?"
             ],
             "is_related": true

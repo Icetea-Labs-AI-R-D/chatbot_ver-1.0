@@ -17,8 +17,36 @@ class SuggestQuestion:
     questions: list
     is_related: bool
 
-def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: list = []):
+def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: list = [], global_topic: dict = {}, question_dict: dict = {}):
+    tmp_questions = questions
     questions = list(filter(lambda x: x['id'] not in asked_ids, questions))
+    
+    force_rag = False
+    
+    # Get all questions from topic if less than 3
+    if len(questions) < 3 and 'upcoming' not in global_topic['topic']:
+        print("###Less than 3 questions")
+        force_rag = True
+        # Filter api question and remove questions of upcoming game
+        list_api = [key for key in question_dict.keys() if global_topic['topic'] in key and 'upcoming' not in key]
+        sub_dict = dict(filter(lambda x: x[0] in list_api, question_dict.items()))
+        questions = tmp_questions
+        
+        for key, value in sub_dict.items():
+            questions.extend([
+                {
+                    'id': v['id'],
+                    'questions': v['questions'],
+                    'is_related': v['is_related'],
+                    'keyword': k
+                }
+            for k, v in value.items() if k != 'id']) 
+        
+    questions = list(filter(lambda x: x['id'] not in asked_ids, questions))
+    
+    if force_rag:
+        print("###Force rag. Len questions: ", len(questions))
+    
     related_questions = list(filter(lambda x: x['is_related'], questions))
     irrelated_questions = list(filter(lambda x: not x['is_related'], questions))
     
@@ -33,18 +61,20 @@ def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: lis
         {
             'id': x['id'],
             'question':random.choice(x['questions']),
-            'is_related' : x['is_related'],
-            'keyword': x['keyword']
+            'is_related' : False if force_rag else  x['is_related'],
+            'keyword':  x['keyword']
         }, related_questions[:num_related]))
     irrelated_questions = list(map(lambda x:
         {
             'id': x['id'],
             'question':random.choice(x['questions']),
-            'is_related' : x['is_related'],
+            'is_related' : False if force_rag else  x['is_related'],
             'keyword': x['keyword']
         }, irrelated_questions[:num_irrelated])) 
     
-    return [*related_questions, *irrelated_questions]    
+    list_question = [*related_questions, *irrelated_questions]    
+    
+    return list_question
 
 # Use when rag is False to update lead sentence in context (rag is False -> selected_suggestions is not empty)
 def reformat_context_for_no_rag(context: str, global_topic: dict = {}, selected_suggestions: list = []):
@@ -263,7 +293,7 @@ class OpenAIService:
             # Filter keys with no data
             for key in keys:
                 tmp_val = data['data'].get(key, "")
-                if (tmp_val == "" or tmp_val == None or tmp_val == 0 or tmp_val == []) and question_dict_api[key]['is_related']:
+                if (tmp_val == "" or tmp_val == None or tmp_val == 0 or tmp_val == [] or tmp_val == {}) and question_dict_api[key]['is_related']:
                     # print("###Drop: ", key)
                     tmp_dict.pop(key)
 
@@ -287,9 +317,19 @@ class OpenAIService:
             list_game_name = ast.literal_eval(context.split('\n')[2].strip())['list_project']
             random.shuffle(list_game_name)
             
-            list_question = list(self.question_dict["overview_list_ido_upcoming"].values())
-            list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids)
+            # item = {index: (key, value)}
+            # assign keyword
+            list_question = list(map(lambda item:
+                {
+                    'id': item[1][1]['id'],
+                    'questions': item[1][1]['questions'],
+                    'is_related' : item[1][1]['is_related'],
+                    'keyword': item[1][0]
+                }, enumerate(self.question_dict["overview_list_ido_upcoming"].items())))
             
+            list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids, global_topic=global_topic, question_dict=self.question_dict)
+            
+            # Map game names
             list_question = list(map(lambda item:
                 {
                     'id': item[1]['id'],
@@ -306,7 +346,8 @@ class OpenAIService:
                 {
                     'id': 1000,
                     'question': x,
-                    'is_related' : False
+                    'is_related' : False,
+                    'keyword': ""
                 }, list_question))
         else:
             list_unique_api = list(
@@ -327,7 +368,7 @@ class OpenAIService:
                     processed_list_question = process_list_question_from_context(context, self.question_dict[topic["api"]])
                     list_question = processed_list_question
 
-            list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids)
+            list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids, global_topic=global_topic, question_dict=self.question_dict)
             
             pattern = r'[ -_]+' 
             
@@ -387,27 +428,38 @@ class OpenAIService:
         for line in out.split("\n"):
             yield line + '\n'
         
-        # list_game_name = [item['name'] for item in res['list_project']]
-        # random.shuffle(list_game_name)
+        list_game_name = [item['name'] for item in res['list_project']]
+        random.shuffle(list_game_name)
         
-        # list_question = list(self.question_dict["overview_list_ido_upcoming"].values())
-        # list_question = select_3_question_from_list(list_question, asked_ids=[])
+        # item = {index: (key, value)}
+        # assign keyword
+        list_question = list(map(lambda item:
+            {
+                'id': item[1][1]['id'],
+                'questions': item[1][1]['questions'],
+                'is_related' : item[1][1]['is_related'],
+                'keyword': item[1][0]
+            }, enumerate(self.question_dict["overview_list_ido_upcoming"].items())))
         
-        # list_question = list(map(lambda item:
-        #     {
-        #         'id': item[1]['id'],
-        #         'question': item[1]['question'].replace('<game-name>', list_game_name[item[0]]),
-        #         'is_related' : item[1]['is_related']
-        #     }, enumerate(list_question)))
+        list_question = select_3_question_from_list(list_question)
         
-        # suggestions =  [item['question'] for index, item in enumerate(list_question)]
-        # print(suggestions)
-        # if len(suggestions) != 0:
-        #     reply_markup = {
-        #         "text": "Maybe you want to know ⬇️:",
-        #         "follow_up":suggestions,
-        #     }
-        #     yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
+        # Map game names
+        list_question = list(map(lambda item:
+            {
+                'id': item[1]['id'],
+                'question': item[1]['question'].replace('<game-name>', list_game_name[item[0]]),
+                'is_related' : item[1]['is_related']
+            }, enumerate(list_question)))
+        
+        suggestions =  [item['question'] for index, item in enumerate(list_question)]
+        
+        print(suggestions)
+        if len(suggestions) != 0:
+            reply_markup = {
+                "text": "Maybe you want to know ⬇️:",
+                "follow_up":suggestions,
+            }
+            yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
             
         message = {
             "content_user": "list upcoming ido",
