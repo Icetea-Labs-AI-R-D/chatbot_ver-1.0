@@ -82,3 +82,14 @@ class MongoManager:
             },
             {"$set": {"status": "close"}},
         )
+        
+    async def new_conversation(self, conversation_id: str):
+        await self.db.conversation.insert_one(
+            {
+                "conversation_id": conversation_id,
+                "count": 0,
+                "last_update": datetime.datetime.now(),
+                "status": "open",
+            }
+        )
+

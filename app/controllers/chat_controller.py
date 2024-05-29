@@ -99,3 +99,4 @@ class ChatController:
     
     async def new_conversation(self, conversation_id: str) -> None:
         await self.db.close_conversation(conversation_id)
+        await self.db.new_conversation(conversation_id)
