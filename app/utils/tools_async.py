@@ -67,10 +67,15 @@ async def update_topic_vector_db(vector_db):
             'metadata': {'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'}
         }
         new_topic.append(item)
+        item = {
+            'page_content': doc['slug'],
+            'metadata': {'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'}
+        }
+        new_topic.append(item)
     # print(new_topic)
     vector_db.add(
         documents=[item['page_content'] for item in new_topic], 
-        ids=[f'ido_upcoming_{i+1}' for i in range(len(new_topic_ido_upcoming))],
+        ids=[f'ido_upcoming_{i+1}' for i in range(len(new_topic))],
         metadatas=[item['metadata'] for item in new_topic]
     )
     
@@ -142,8 +147,9 @@ async def get_infor_overview_gamehub(name, keywords=[]):
             "play-to-earn-model": play_to_earn_model,
             "social-media": links,
             "rating-score": ratingScore,
-            "tokenomics-compact": tokenomicsCompact,
-            "studios": studios
+            # "tokenomics-compact": tokenomicsCompact,
+            "studios": studios,
+            **tokenomicsCompact[0]
         },
         "description": description
     }

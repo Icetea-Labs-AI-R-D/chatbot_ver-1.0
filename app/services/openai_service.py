@@ -9,11 +9,40 @@ import random
 from utils.tools_async import get_upcoming_IDO_with_slug
 from typing import List
 import ast
+import re
+
+
 class SuggestQuestion:
     id: str
     questions: list
     is_related: bool
+
+def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: list = []):
+    questions = list(filter(lambda x: x['id'] not in asked_ids, questions))
+    related_questions = list(filter(lambda x: x['is_related'], questions))
+    irrelated_questions = list(filter(lambda x: not x['is_related'], questions))
     
+    num_related = min(2, len(related_questions))
+    num_irrelated = min(3 - num_related, len(irrelated_questions))
+    num_related = 3 - num_irrelated
+    
+    random.shuffle(related_questions)
+    random.shuffle(irrelated_questions)
+    
+    related_questions = list(map(lambda x: 
+        {
+            'id': x['id'],
+            'question':random.choice(x['questions']),
+            'is_related' : x['is_related']
+        }, related_questions[:num_related]))
+    irrelated_questions = list(map(lambda x:
+        {
+            'id': x['id'],
+            'question':random.choice(x['questions']),
+            'is_related' : x['is_related']
+        }, irrelated_questions[:num_irrelated])) 
+    
+    return [*related_questions, *irrelated_questions]    
 
 class OpenAIService:
     db: MongoManager
@@ -157,27 +186,24 @@ class OpenAIService:
         if global_topic is None:
             global_topic = {"api": "", "source": "", "topic": "", "type": ""}
         history = conversation.get("history", [])[-4:]
-        system_message = """
+        system_message = f"""
         You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
         YOUR TASK is to accurately answer information about games and IDO projects available on the GameFi platform, helping users better understand those information. 
-        Based on the context below, answer the user's question.
+        Answer the question based only on the following context:
+        Context: {context}
+
         Let carefully analyze the context and the user's question to provide the best answer.
         
         Answer BRIEFLY, with COMPLETE information and to the POINT of the user's question.
         The response style must be clear, easy to read, paragraphs that can have line breaks should be given line breaks.
         Note:
-            - If you can't find the information to answer the question, please answer that you couldn't find the information.
             - If the user's question is just normal communication questions (eg hello, thank you,...) that do not require information about games and IDO projects available on the GameFi platform, please respond as normal communication.
+            - If you can't find the information to answer the question, please answer that you couldn't find the information.
         """
 
-        user_message = f"""
-        Chat History: {history}
-        Answer the question based only on the following context:
-        Context: {context} 
-        User: {question}
-        """
+        user_message = f"""{question}"""
 
-        messages = [{"role": "system", "content": system_message}] + [
+        messages = [{"role": "system", "content": system_message}]+ history + [
             {"role": "user", "content": user_message}
         ]
         
@@ -199,69 +225,36 @@ class OpenAIService:
                 yield token
 
         # Logic follow-up
-        def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: list = []):
-            questions = list(filter(lambda x: x['id'] not in asked_ids, questions))
-            related_questions = list(filter(lambda x: x['is_related'], questions))
-            irrelated_questions = list(filter(lambda x: not x['is_related'], questions))
-           
-            num_related = min(2, len(related_questions))
-            num_irrelated = min(3 - num_related, len(irrelated_questions))
-            num_related = 3 - num_irrelated
+        
+        
+        ## Drop keys with no data
+        def process_list_question_from_context(context : str, question_dict_api:dict ):
+            data = dict()
+            for item in context.strip().split('\n\n'):
+                data.update(ast.literal_eval(item.split('\n')[1])) 
+                
+            keys = list(question_dict_api.keys())
+            list_question = []
+            # print("###Data: ", data['data'].keys())
+            # print("Question: ", keys)
+
+            tmp_dict = {**question_dict_api}
             
-            random.shuffle(related_questions)
-            random.shuffle(irrelated_questions)
+            # Filter keys with no data
+            for key in keys:
+                tmp_val = data['data'].get(key, "")
+                if (tmp_val == "" or tmp_val == None or tmp_val == 0 or tmp_val == []) and question_dict_api[key]['is_related']:
+                    # print("###Drop: ", key)
+                    tmp_dict.pop(key)
+
+            list_question = list(tmp_dict.values())
+            return list_question
             
-            related_questions = list(map(lambda x: 
-                {
-                    'id': x['id'],
-                    'question':random.choice(x['questions']),
-                    'is_related' : x['is_related']
-                }, related_questions[:num_related]))
-            irrelated_questions = list(map(lambda x:
-                {
-                    'id': x['id'],
-                    'question':random.choice(x['questions']),
-                    'is_related' : x['is_related']
-                }, irrelated_questions[:num_irrelated])) 
-            
-            return [*related_questions, *irrelated_questions]
         
         selected_suggestion_ids = list(map(lambda x: x['id'], selected_suggestions))
-
-        list_unique_api = list(
-            set([c.get("api", "") for c in features_keywords.get("content", [])])
-        )
         list_question = []
-                
-        for api in list_unique_api:
-            if api != "":
-                list_question.extend(list(self.question_dict[api].values()))
-
-        is_content_empty = False
-        if features_keywords.get("content", []) == []:
-            is_content_empty = True
-            topic = features_keywords.get("topic", {})
-            if topic != {} and topic.get("api", "") != "":
-                list_question = list(self.question_dict.get(topic["api"], {}).values())
-
-        list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids)
-        if is_content_empty:
-            list_question = list(map(lambda x:
-                {
-                    'id': x['id'],
-                    'question': x['question'],
-                    'is_related' : False
-                }, list_question))
+        suggestions = []
         
-        game_name = ' '.join([word.capitalize() for word in global_topic['source'].split('-')])
-        list_question = list(map(lambda x:
-                {
-                    'id': x['id'],
-                    'question': x['question'].replace('<game-name>', game_name),
-                    'is_related' :  False if is_content_empty else x['is_related']
-                }, list_question))
-        
-        suggestions = [item['question'] for item in list_question]
         
         if global_topic["source"] == "upcoming":
             list_game_name = ast.literal_eval(context.split('\n')[2].strip())['list_project']
@@ -279,7 +272,7 @@ class OpenAIService:
             
             suggestions =  [item['question'] for index, item in enumerate(list_question)]
         
-        if global_topic.get("source", "") == "":
+        elif global_topic.get("source", "") == "":
             list_question = self.question_dict["general"]
             suggestions = list_question
             list_question = list(map(lambda x:
@@ -288,7 +281,45 @@ class OpenAIService:
                     'question': x,
                     'is_related' : False
                 }, list_question))
+        else:
+            list_unique_api = list(
+                set([c.get("api", "") for c in features_keywords.get("content", [])])
+            )
+            list_question = []
+                    
+            for api in list_unique_api:
+                if api != "":
+                    processed_list_question = process_list_question_from_context(context, self.question_dict[api])
+                    list_question.extend(processed_list_question)
 
+            is_content_empty = False
+            if features_keywords.get("content", []) == []:
+                is_content_empty = True
+                topic = features_keywords.get("topic", {})
+                if topic != {} and topic.get("api", "") != "":
+                    processed_list_question = process_list_question_from_context(context, self.question_dict[topic["api"]])
+                    list_question = processed_list_question
+
+            list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids)
+            if is_content_empty:
+                list_question = list(map(lambda x:
+                    {
+                        'id': x['id'],
+                        'question': x['question'],
+                        'is_related' : False
+                    }, list_question))
+            
+            pattern = r'[ -_]+' 
+            
+            game_name = ' '.join([word.capitalize() for word in re.split(pattern, global_topic['source'])])
+            list_question = list(map(lambda x:
+                    {
+                        'id': x['id'],
+                        'question': x['question'].replace('<game-name>', game_name),
+                        'is_related' :  False if is_content_empty else x['is_related']
+                    }, list_question))
+            
+            suggestions = [item['question'] for item in list_question]
 
         # conversation["history"].append({"role": "user", "content": question})
         # conversation["history"].append({"role": "assistant", "content": answer})
@@ -303,7 +334,7 @@ class OpenAIService:
         # suggestion = json.loads(suggestion)
         # suggestions = [suggestion["suggestions"][:3]]
         
-        
+        # print(suggestions)
         reply_markup = {
             "text": "Maybe you want to know ⬇️:",
             "follow_up":suggestions,
@@ -313,6 +344,8 @@ class OpenAIService:
         if len(suggestions) != 0:
             yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
 
+        # print(suggestions)
+        
         message = {
             "content_user": question,
             "content_assistant": answer,
@@ -332,6 +365,28 @@ class OpenAIService:
         out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item['name']}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform."""
         for line in out.split("\n"):
             yield line + '\n'
+        
+        # list_game_name = [item['name'] for item in res['list_project']]
+        # random.shuffle(list_game_name)
+        
+        # list_question = list(self.question_dict["overview_list_ido_upcoming"].values())
+        # list_question = select_3_question_from_list(list_question, asked_ids=[])
+        
+        # list_question = list(map(lambda item:
+        #     {
+        #         'id': item[1]['id'],
+        #         'question': item[1]['question'].replace('<game-name>', list_game_name[item[0]]),
+        #         'is_related' : item[1]['is_related']
+        #     }, enumerate(list_question)))
+        
+        # suggestions =  [item['question'] for index, item in enumerate(list_question)]
+        # print(suggestions)
+        # if len(suggestions) != 0:
+        #     reply_markup = {
+        #         "text": "Maybe you want to know ⬇️:",
+        #         "follow_up":suggestions,
+        #     }
+        #     yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
             
         message = {
             "content_user": "list upcoming ido",
