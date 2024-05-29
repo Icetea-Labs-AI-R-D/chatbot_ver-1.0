@@ -8,7 +8,7 @@ from database.queue import AsyncQueue
 import random
 from utils.tools_async import get_upcoming_IDO_with_slug
 from typing import List
-
+import ast
 class SuggestQuestion:
     id: str
     questions: list
@@ -237,23 +237,47 @@ class OpenAIService:
             if api != "":
                 list_question.extend(list(self.question_dict[api].values()))
 
-
+        is_content_empty = False
         if features_keywords.get("content", []) == []:
+            is_content_empty = True
             topic = features_keywords.get("topic", {})
             if topic != {} and topic.get("api", "") != "":
                 list_question = list(self.question_dict.get(topic["api"], {}).values())
 
         list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids)
+        if is_content_empty:
+            list_question = list(map(lambda x:
+                {
+                    'id': x['id'],
+                    'question': x['question'],
+                    'is_related' : False
+                }, list_question))
         
         game_name = ' '.join([word.capitalize() for word in global_topic['source'].split('-')])
-        suggestions = [item['question'].replace('<game-name>', game_name) for item in list_question]
+        list_question = list(map(lambda x:
+                {
+                    'id': x['id'],
+                    'question': x['question'].replace('<game-name>', game_name),
+                    'is_related' :  False if is_content_empty else x['is_related']
+                }, list_question))
+        
+        suggestions = [item['question'] for item in list_question]
         
         if global_topic["source"] == "upcoming":
+            list_game_name = ast.literal_eval(context.split('\n')[2].strip())['list_project']
+            random.shuffle(list_game_name)
+            
             list_question = list(self.question_dict["overview_list_ido_upcoming"].values())
             list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids)
-            list_game_name = json.loads(context.split('\n')[1])['list_project']
-            random.shuffle(list_game_name)
-            suggestions =  [item['question'].replace('<game-name>', list_game_name[index]) for index, item in enumerate(list_question)]
+            
+            list_question = list(map(lambda item:
+                {
+                    'id': item[1]['id'],
+                    'question': item[1]['question'].replace('<game-name>', list_game_name[item[0]]),
+                    'is_related' : item[1]['is_related']
+                }, enumerate(list_question)))
+            
+            suggestions =  [item['question'] for index, item in enumerate(list_question)]
         
         if global_topic.get("source", "") == "":
             list_question = self.question_dict["general"]
@@ -293,7 +317,7 @@ class OpenAIService:
             "content_user": question,
             "content_assistant": answer,
             "topic": global_topic,
-            "suggestion": suggestions,
+            "suggestion": list_question,
             "context": context,
             "features_keywords": features_keywords,
             "selected_suggestions": selected_suggestions,
@@ -307,7 +331,7 @@ class OpenAIService:
         nl = '\n'
         out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item['name']}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform."""
         for line in out.split("\n"):
-            yield line
+            yield line + '\n'
             
         message = {
             "content_user": "list upcoming ido",

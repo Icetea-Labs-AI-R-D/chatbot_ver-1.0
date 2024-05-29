@@ -45,17 +45,6 @@ async def get_upcoming_IDO_with_slug():
     
     return overview
 
-def lmao():
-    res = get_upcoming_IDO_with_slug()
-    res = {
-        "number_of_upcoming_IDO": 3,
-        "list_project": [
-                         "fsdf", 
-                         "fsdf", "sfsdfsdf"]
-    }
-    nl = '\n'
-    out = f"""Here are the upcoming IDO projects on GameFi:{nl.join([f'{index+1}. {item}' for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform."""
-    return out
 
 async def update_topic_vector_db(vector_db):
     print(f"Total items in vector {vector_db.name} before update: {vector_db.count()}")
@@ -542,12 +531,13 @@ async def get_upcoming_IDO(name, keywords=[]):
     # global list_ido_game  
     # global embedding
     # if list_project_name != list_ido_game:
+    #     list_ido_game = list_project_name
     #     vectordb_docs = chroma_client.get_or_create_collection(
     #         name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
     #     vectordb_topic = chroma_client.get_or_create_collection(
     #         name="vector_topic", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
-    #     await update_topic_vector_db(vectordb_topic)
-    #     await update_topic_vector_db(vectordb_docs)
+    #     update_topic_vector_db(vectordb_topic)
+    #     update_topic_vector_db(vectordb_docs)
         
         
     overview = {
