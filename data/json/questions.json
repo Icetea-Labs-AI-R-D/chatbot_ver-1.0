@@ -576,7 +576,7 @@
             "is_related": true
         },
         "current_price": {
-            "id": "e4849591-4906-4958-a0d9-3f01f6415e80",
+            "id": "4e0a8549-f7e8-4811-85d8-e050861ea434",
             "questions": [
                 "Current token price of <game-name>?",
                 "What is the current token price of <game-name>?",

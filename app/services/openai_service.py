@@ -33,16 +33,31 @@ def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: lis
         {
             'id': x['id'],
             'question':random.choice(x['questions']),
-            'is_related' : x['is_related']
+            'is_related' : x['is_related'],
+            'keyword': x['keyword']
         }, related_questions[:num_related]))
     irrelated_questions = list(map(lambda x:
         {
             'id': x['id'],
             'question':random.choice(x['questions']),
-            'is_related' : x['is_related']
+            'is_related' : x['is_related'],
+            'keyword': x['keyword']
         }, irrelated_questions[:num_irrelated])) 
     
     return [*related_questions, *irrelated_questions]    
+
+# Use when rag is False to update lead sentence in context (rag is False -> selected_suggestions is not empty)
+def reformat_context_for_no_rag(context: str, global_topic: dict = {}, selected_suggestions: list = []):
+    list_context = context.strip().split('\n\n')
+    keyword = selected_suggestions[-1]['keyword']
+    for index, context in enumerate(list_context):
+        if keyword in context:
+            # Change lead sentence
+            context = context.split('\n')
+            context[0] = f"Information of {global_topic['source']} about {keyword}:"
+            list_context[index] = '\n'.join(context)
+            break
+    return '\n' + '\n\n'.join(list_context)
 
 class OpenAIService:
     db: MongoManager
@@ -170,7 +185,7 @@ class OpenAIService:
         )
 
         return str(response.choices[0].message.content)
-
+    
     @traceable
     async def ask_openai_with_rag(
         self,
@@ -182,9 +197,14 @@ class OpenAIService:
         features_keywords: dict = {},
         new_conversation: int = 0,
         selected_suggestions: list = [],
+        rag: bool = True,
     ):
         if global_topic is None:
             global_topic = {"api": "", "source": "", "topic": "", "type": ""}
+            
+        if not rag and selected_suggestions != []:
+            context = reformat_context_for_no_rag(context, global_topic, selected_suggestions)    
+            
         history = conversation.get("history", [])[-4:]
         system_message = f"""
         You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
@@ -247,7 +267,14 @@ class OpenAIService:
                     # print("###Drop: ", key)
                     tmp_dict.pop(key)
 
-            list_question = list(tmp_dict.values())
+            for k, v in tmp_dict.items():
+                list_question.append({
+                    'id': v['id'],
+                    'questions': v['questions'],
+                    'is_related': v['is_related'],
+                    'keyword': k
+                })
+            
             return list_question
             
         
@@ -301,13 +328,6 @@ class OpenAIService:
                     list_question = processed_list_question
 
             list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids)
-            if is_content_empty:
-                list_question = list(map(lambda x:
-                    {
-                        'id': x['id'],
-                        'question': x['question'],
-                        'is_related' : False
-                    }, list_question))
             
             pattern = r'[ -_]+' 
             
@@ -316,7 +336,8 @@ class OpenAIService:
                     {
                         'id': x['id'],
                         'question': x['question'].replace('<game-name>', game_name),
-                        'is_related' :  False if is_content_empty else x['is_related']
+                        'is_related' :  False if is_content_empty else x['is_related'],
+                        'keyword': x['keyword']
                     }, list_question))
             
             suggestions = [item['question'] for item in list_question]
