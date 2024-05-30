@@ -470,3 +470,30 @@ class OpenAIService:
             "selected_suggestions": [],
         }
         await self.db.add_conversation(conversation_id, message)
+        
+    async def games(self, conversation_id):
+        out = """
+            Here are the upcoming IDO projects on GameFi:
+            1. Agora
+            2. Laika AI
+            3. NexGami
+            4. Oxya Origin
+            5. Cryptopia
+            6. Better Fan
+            7. Axen AI
+            8. Fanton
+            These projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform.
+        """
+        for line in out.split("\n"):
+            yield line + '\n'
+            
+        message = {
+            "content_user": "list games",
+            "content_assistant": out,
+            "topic": {},
+            "suggestion": [],
+            "context": "",
+            "features_keywords": {},
+            "selected_suggestions": [],
+        }
+        await self.db.add_conversation(conversation_id, message)
