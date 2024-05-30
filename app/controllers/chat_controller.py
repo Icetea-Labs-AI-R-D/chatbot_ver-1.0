@@ -78,7 +78,8 @@ class ChatController:
             )
             if  global_topic != features_keywords.get("global_topic", {}):
                 selected_suggestions = []
-            if features_keywords['global_topic']['api'] != "":
+                
+            if features_keywords['global_topic'].get('api', "") != "":
                 context = await call_tools_async(features_keywords)
         else:
             rag = False
