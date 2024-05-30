@@ -86,3 +86,14 @@ async def upcoming_ido(
         status_code=status.HTTP_200_OK,
         media_type="text/event-stream",
     )
+
+@router.post("/api/chatbot/v1/game")
+async def upcoming_ido(
+    request: Request, openai_service: OpenAIService = Depends(get_openai_service)
+):
+    data = await request.json()
+    return StreamingResponse(
+        openai_service.games(data.get("conversation_id")),
+        status_code=status.HTTP_200_OK,
+        media_type="text/event-stream",
+    )
