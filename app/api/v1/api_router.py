@@ -52,6 +52,7 @@ async def chat(
                 features_keywords=data_qa["features_keywords"],
                 new_conversation=data_qa["new_conversation"],
                 selected_suggestions=data_qa["selected_suggestions"],
+                rag=data_qa["rag"],
             ),
             status_code=status.HTTP_200_OK,
             media_type="text/event-stream",

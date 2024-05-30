@@ -6,7 +6,7 @@
     ],
     "backer_gamehub": {
         "community_rank": {
-            "id": "b6339063-7e5f-4e9c-9714-85c24685dd25",
+            "id": "c490d38e-bc15-4d7b-8ce2-ea7696f72284",
             "questions": [
                 "Rank of <game-name> in the community?",
                 "Community rank of <game-name>?",
@@ -20,7 +20,7 @@
                 "Token price of <game-name>?",
                 "Current token price of <game-name>?",
                 "What is the current price of <game-name> token?",
-                "How much is the <game-name> token now?"
+                "<game-name>'s current token price?"
             ],
             "is_related": false
         },
@@ -36,10 +36,9 @@
         }
     },
     "community-performance_gamehub": {
-        "telegram_users": {
+        "telegram_group_users": {
             "id": "0de673f4-822d-46af-b039-9acb952c645c",
             "questions": [
-                "Telegram users in <game-name>?",
                 "Number of Telegram users for <game-name>?",
                 "How many Telegram users are involved in <game-name>?"
             ],
@@ -116,15 +115,6 @@
             ],
             "is_related": true
         },
-        "community_performance": {
-            "id": "ce52db1b-c2cf-4c2d-8acb-297f294294b4",
-            "questions": [
-                "How is <game-name> performing in the community?",
-                "<game-name> performance within the community?",
-                "Community performance of <game-name>?"
-            ],
-            "is_related": true
-        },
         "gamefi_ranking": {
             "id": "4733e59e-5e8d-442a-b82f-c43cfa83905d",
             "questions": [
@@ -136,15 +126,6 @@
         }
     },
     "daily-index_gamehub": {
-        "daily_index": {
-            "id": "95456ee9-012d-4cc6-a907-990b36488500",
-            "questions": [
-                "Daily index of <game-name>?",
-                "What is the daily index of <game-name>?",
-                "<game-name>'s daily index?"
-            ],
-            "is_related": true
-        },
         "gamefi_ranking": {
             "id": "cb633a7d-2a95-48e0-8dec-376fdd9d997b",
             "questions": [
@@ -210,12 +191,12 @@
     },
     "on-chain-performance_gamehub": {
         "token_price": {
-            "id": "02dadb4c-ea06-4eca-967c-292105bbaa39",
+            "id": "4e0a8549-f7e8-4811-85d8-e050861ea434",
             "questions": [
                 "Token price of <game-name>?",
                 "Current token price of <game-name>?",
                 "What is the current price of <game-name> token?",
-                "How much is the <game-name> token now?"
+                "<game-name>'s current token price?"
             ],
             "is_related": true
         },
@@ -229,7 +210,7 @@
             "is_related": true
         },
         "volume_24h_change": {
-            "id": "fe2b4679-6328-4d9c-9dad-9ba25d8471b3",
+            "id": "8c6cd341-ae17-40e8-b91e-8cb4a0b0f21a",
             "questions": [
                 "Volume 24h change of <game-name>?",
                 "What is the volume 24h change of <game-name>?",
@@ -275,17 +256,16 @@
         "volume_rank": {
             "id": "a82e5199-38ad-4ece-9a81-403bce1f6b4e",
             "questions": [
-                "Volume rank of <game-name>?",
-                "Rank of <game-name> by volume?"
+                "Volume rank of <game-name> on GameFi.org?",
+                "<game-name>'s volume rank on GameFi.org?"
             ],
             "is_related": true
         },
         "market_cap_rank": {
             "id": "6e45c4f7-f44d-4971-bfe3-a15709d7b7d1",
             "questions": [
-                "Market cap rank of <game-name>?",
-                "<game-name>'s market cap rank?",
-                "Rank of <game-name> by market cap?"
+                "Market cap rank of <game-name> on GameFi.org?",
+                "<game-name>'s market cap rank on GameFi.org?"
             ],
             "is_related": true
         },
@@ -293,7 +273,6 @@
             "id": "1d31e00f-36a3-4de5-ba1d-a7188c7770e4",
             "questions": [
                 "UAW rank of <game-name>?",
-                "Rank of <game-name> by UAW?",
                 "<game-name>'s UAW rank?"
             ],
             "is_related": true
@@ -302,7 +281,6 @@
             "id": "75503c5a-2118-4b6a-b064-7f73d2d4bd07",
             "questions": [
                 "NFT transaction ranking of <game-name>?",
-                "Rank of <game-name> by NFT transactions?",
                 "<game-name>'s NFT transaction rank?"
             ],
             "is_related": true
@@ -342,7 +320,7 @@
             ],
             "is_related": true
         },
-        "release_date": {
+        "published_at": {
             "id": "7c1da13f-d9b3-469b-996f-a971838a1896",
             "questions": [
                 "When was <game-name> released?",
@@ -350,8 +328,8 @@
             ],
             "is_related": true
         },
-        "roadmap": {
-            "id": "b1703cf3-b078-4233-9f6d-9dd46cbe0b23",
+        "roadmap-text": {
+            "id": "c130262e-06aa-4990-815e-b1b42cb41f18",
             "questions": [
                 "Roadmap of <game-name>?",
                 "What is the roadmap for <game-name>?",
@@ -360,16 +338,15 @@
             ],
             "is_related": true
         },
-        "play_mode": {
+        "play-mode": {
             "id": "e9bf0f9b-f0e9-48cd-bc9b-63224cbd8f47",
             "questions": [
                 "What are the play modes of <game-name>?",
-                "Play mode of <game-name>?",
-                "How many play modes does <game-name> have?"
+                "Play mode of <game-name>?"
             ],
             "is_related": true
         },
-        "play_to_earn_model": {
+        "play-to-earn-model": {
             "id": "d43fae3b-ca59-41cd-8018-8dc769ca99f6",
             "questions": [
                 "Play-to-earn model of <game-name>?",
@@ -377,19 +354,37 @@
             ],
             "is_related": true
         },
-        "token_price": {
-            "id": "e090e5fa-9308-4a9c-9c36-09d36f56be93",
+        "current_price": {
+            "id": "4e0a8549-f7e8-4811-85d8-e050861ea434",
             "questions": [
                 "Token price of <game-name>?",
                 "Current token price of <game-name>?",
                 "What is the current price of <game-name> token?",
-                "How much is the <game-name> token now?"
+                "<game-name>'s current token price?"
+            ],
+            "is_related": false
+        },
+        "daily_index": {
+            "id": "95456ee9-012d-4cc6-a907-990b36488500",
+            "questions": [
+                "Daily index of <game-name>?",
+                "What is the daily index of <game-name>?",
+                "<game-name>'s daily index?"
+            ],
+            "is_related": false
+        },
+        "community_performance": {
+            "id": "ce52db1b-c2cf-4c2d-8acb-297f294294b4",
+            "questions": [
+                "How is <game-name> performing in the community?",
+                "<game-name> performance within the community?",
+                "Community performance of <game-name>?"
             ],
             "is_related": false
         }
     },
     "social-scores_gamehub": {
-        "social_scores": {
+        "social_score": {
             "id": "a1bea083-93e7-444e-b3fc-269e2e52e7c8",
             "questions": [
                 "Social scores of <game-name>?",
@@ -476,6 +471,15 @@
             ],
             "is_related": true
         },
+        "tokenomic_infor": {
+            "id": "350f85c5-3587-41d6-8830-1bd990cca9e4",
+            "questions": [
+                "Tokenomic info of <game-name>?",
+                "Tokenomic details of <game-name>?",
+                "<game-name>'s tokenomic information?"
+            ],
+            "is_related": false
+        },
         "team": {
             "id": "a464ea38-185f-414d-b1d2-5ad1823ba078",
             "questions": [
@@ -525,15 +529,6 @@
         }
     },
     "tokenomic_gamehub": {
-        "tokenomic_infor": {
-            "id": "350f85c5-3587-41d6-8830-1bd990cca9e4",
-            "questions": [
-                "Tokenomic info of <game-name>?",
-                "Tokenomic details of <game-name>?",
-                "<game-name>'s tokenomic information?"
-            ],
-            "is_related": true
-        },
         "valuation": {
             "id": "a3fde067-3d84-40bb-84bb-ef89162d936f",
             "questions": [
@@ -578,7 +573,7 @@
             "is_related": true
         },
         "current_price": {
-            "id": "e4849591-4906-4958-a0d9-3f01f6415e80",
+            "id": "4e0a8549-f7e8-4811-85d8-e050861ea434",
             "questions": [
                 "Current token price of <game-name>?",
                 "What is the current token price of <game-name>?",
@@ -605,27 +600,16 @@
             ],
             "is_related": true
         },
-        "roadmap": {
-            "id": "bc3d8b15-128a-41da-a655-816ee684c2ca",
+        "gamefi_ranking": {
+            "id": "4733e59e-5e8d-442a-b82f-c43cfa83905d",
             "questions": [
-                "Roadmap of <game-name>?",
-                "What is the roadmap for <game-name>?",
-                "<game-name>'s roadmap?",
-                "Can you share the roadmap of <game-name>?"
+                "GameFi ranking of <game-name>?",
+                "Rank of <game-name> on GameFi.org?"
             ],
             "is_related": false
         }
     },
     "overview_ido": {
-        "overview": {
-            "id": "f26db704-3108-484e-b3d3-ae5140526691",
-            "questions": [
-                "Overview of <game-name>?",
-                "Summary of <game-name>?",
-                "<game-name> overview?"
-            ],
-            "is_related": true
-        },
         "status": {
             "id": "f60b1cf7-889d-46ed-a389-9ea67ba7df4e",
             "questions": [
@@ -663,13 +647,13 @@
             ],
             "is_related": true
         },
-        "token_price": {
+        "token": {
             "id": "a1cb4978-fd8b-4d2d-b121-cc13eb839e5a",
             "questions": [
                 "Token price of <game-name>?",
                 "Current token price of <game-name>?",
                 "What is the current price of <game-name> token?",
-                "How much is the <game-name> token now?"
+                "<game-name>'s current token price?"
             ],
             "is_related": true
         },
@@ -721,7 +705,7 @@
             ],
             "is_related": true
         },
-        "launchpad": {
+        "launchpads": {
             "id": "57847a9c-0096-4633-b08f-d18d03f56908",
             "questions": [
                 "Launchpad of <game-name>?",
@@ -785,7 +769,7 @@
                 "Token price of <game-name>?",
                 "Current token price of <game-name>?",
                 "What is the current price of <game-name> token?",
-                "How much is the <game-name> token now?"
+                "<game-name>'s current token price?"
             ],
             "is_related": true
         },
@@ -793,7 +777,7 @@
             "id": "1af2718e-6729-4cfc-9bb5-6ba36003be29",
             "questions": [
                 "Total token of <game-name>?",
-                "How many tokens does <game-name> have in total?",
+                "How many tokens does <game-name> have?",
                 "<game-name>'s total token count?"
             ],
             "is_related": true
@@ -856,19 +840,11 @@
             ],
             "is_related": true
         },
-        "tokenomics": {
-            "id": "3342c9bf-1cee-4b7e-9b83-5b822c643f4a",
-            "questions": [
-                "Information about the tokenomics of <game-name>?",
-                "What is information about the tokenomics of <game-name>?"
-            ],
-            "is_related": true
-        },
         "team": {
             "id": "003a8e2a-db05-4b91-b658-51d819cfc5f0",
             "questions": [
-                "The team members of <game-name> and their roles in project?",
-                "Who are the team members of <game-name> and their roles in project?"
+                "The team members of <game-name>?",
+                "Who are the team members of <game-name>?"
             ],
             "is_related": true
         },
@@ -927,7 +903,7 @@
                 "Token price of <game-name>?",
                 "Current token price of <game-name>?",
                 "What is the current price of <game-name> token?",
-                "How much is the <game-name> token now?"
+                "<game-name>'s current token price?"
             ],
             "is_related": false
         },
@@ -998,19 +974,11 @@
             ],
             "is_related": false
         },
-        "tokenomics": {
-            "id": "d58241d8-a4e1-40d5-afba-b8fe93eae3df",
-            "questions": [
-                "Information about the tokenomics of <game-name>?",
-                "What is information about the tokenomics of <game-name>?"
-            ],
-            "is_related": false
-        },
         "team": {
             "id": "dcb7e3ad-8082-4710-a37f-48836daa1f7c",
             "questions": [
-                "The team members of <game-name> and their roles in project?",
-                "Who are the team members of <game-name> and their roles in project?"
+                "The team members of <game-name>?",
+                "Who are the team members of <game-name>?"
             ],
             "is_related": false
         },

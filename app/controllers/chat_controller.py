@@ -59,6 +59,7 @@ class ChatController:
         context = "[]"
         features_keywords = {}
         suggestions = []
+        rag = True
         if raw_history:
             suggestions = raw_history[-1].get("suggestion", [])
         suggestion = {}
@@ -79,6 +80,7 @@ class ChatController:
                 selected_suggestions = []
             context = await call_tools_async(features_keywords)
         else:
+            rag = False
             context = raw_history[-1].get("context", "")
             features_keywords = raw_history[-1].get("features_keywords", {})
 
@@ -92,6 +94,7 @@ class ChatController:
             "features_keywords": features_keywords,
             "new_conversation": new_conversation,
             "selected_suggestions": selected_suggestions,
+            "rag": rag,
         }
     
     async def new_conversation(self, conversation_id: str) -> None:

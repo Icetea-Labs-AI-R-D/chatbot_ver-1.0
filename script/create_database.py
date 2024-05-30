@@ -113,6 +113,8 @@ def update_vector_topic(vector_topic):
     for doc in new_topic_ido_upcoming:
         document = Document(page_content=doc['name'], metadata={'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'})
         new_topic.append(document)
+        document = Document(page_content=doc['slug'], metadata={'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'})
+        new_topic.append(document)
     print(new_topic)
     vector_topic.add_documents(
         documents=new_topic, 
