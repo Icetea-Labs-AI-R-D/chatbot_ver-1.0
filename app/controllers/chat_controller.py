@@ -74,11 +74,12 @@ class ChatController:
             )
             keywords_dict = json.loads(keywords_text)
             features_keywords = await self.chroma_service.retrieve_keyword(
-                keywords_dict, global_topic
+                keywords_dict, global_topic, user_message=user_question
             )
-            if global_topic != features_keywords.get("global_topic", {}):
+            if  global_topic != features_keywords.get("global_topic", {}):
                 selected_suggestions = []
-            context = await call_tools_async(features_keywords)
+            if features_keywords['global_topic']['api'] != "":
+                context = await call_tools_async(features_keywords)
         else:
             rag = False
             context = raw_history[-1].get("context", "")

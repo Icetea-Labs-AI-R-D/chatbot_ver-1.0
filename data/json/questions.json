@@ -364,21 +364,21 @@
             ],
             "is_related": false
         },
-        "daily_index": {
-            "id": "95456ee9-012d-4cc6-a907-990b36488500",
-            "questions": [
-                "Daily index of <game-name>?",
-                "What is the daily index of <game-name>?",
-                "<game-name>'s daily index?"
-            ],
-            "is_related": false
-        },
         "community_performance": {
             "id": "ce52db1b-c2cf-4c2d-8acb-297f294294b4",
             "questions": [
                 "How is <game-name> performing in the community?",
                 "<game-name> performance within the community?",
                 "Community performance of <game-name>?"
+            ],
+            "is_related": false
+        },
+        "uaw_24h": {
+            "id": "721595c0-c25b-4ae7-b57e-3814da92bd99",
+            "questions": [
+                "UAW 24h of <game-name>?",
+                "What is the UAW 24h of <game-name>?",
+                "24-hour UAW of <game-name>?"
             ],
             "is_related": false
         }

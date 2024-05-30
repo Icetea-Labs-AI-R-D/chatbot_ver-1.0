@@ -401,9 +401,8 @@ class OpenAIService:
             "text": "Maybe you want to know ⬇️:",
             "follow_up":suggestions,
         }
-        
         # If suggestions is not empty, return suggestions
-        if len(suggestions) != 0:
+        if len(suggestions) != 0 and global_topic['topic'] != 'end_phrase':
             yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
 
         # print(suggestions)

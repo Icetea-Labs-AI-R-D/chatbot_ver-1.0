@@ -125,8 +125,6 @@ async def get_infor_overview_gamehub(name, keywords=[]):
     white_paper = response['data']['item'].get('white_paper', "")
     banners = response['data']['item'].get('banners', "")
     introduction = response['data']['item'].get('introduction', "")
-    roadmap_text = response['data']['item'].get('roadmap_text', "")
-    play_mode = response['data']['item'].get('play_mode', "")
     play_to_earn_model = response['data']['item'].get('play_to_earn_model', "")
     links = response['data']['item'].get('links', "")
     ratingScore = response['data']['metadata'].get('counts', {}).get(gameId, "")
@@ -134,6 +132,30 @@ async def get_infor_overview_gamehub(name, keywords=[]):
     studios = response['data']['item'].get('studios', "")
     studios = [studio['name'] for studio in studios]
     
+    roadmap_text = response['data']['item'].get('roadmap_text', None)
+    if roadmap_text:
+        roadmap_text = json.loads(roadmap_text)
+        roadmap = roadmap_text.get('blocks', [])
+        roadmap_text = ""
+        for block in roadmap:
+            data = block.get('data', {})
+            if data.get('text','') != '':
+                roadmap_text += data.get('text','') + "\n"
+            if data.get('items',[]) != []:
+                roadmap_text += "\n".join(data.get('items',[])) + "\n"
+    play_mode = response['data']['item'].get('play_mode', None)
+    if play_mode:
+        play_mode = json.loads(play_mode)
+        play_mode = play_mode.get('blocks', [])
+        play_mode_text = ""
+        for block in play_mode:
+            data = block.get('data', {})
+            if data.get('text','') != '':
+                play_mode_text += data.get('text','') + "\n"
+            if data.get('items',[]) != []:
+                play_mode_text += "\n".join(data.get('items',[])) + "\n"
+        play_mode = play_mode_text
+
     overview = {
         "data": {
             "name": nameGame,

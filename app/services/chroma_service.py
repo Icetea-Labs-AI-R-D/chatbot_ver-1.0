@@ -68,13 +68,17 @@ class ChromaService:
         return (result[0], index)
 
     @traceable(run_type="retriever")
-    async def retrieve_keyword(self, keyword: dict, global_topic: dict) -> dict:
+    async def retrieve_keyword(self, keyword: dict, global_topic: dict, user_message: str = "") -> dict:
         try:
             topics = []
             contents = []
             retrieved_topics = []
             retrieved_tasks = []
             keyword = keyword.get("keywords", [])
+            
+            if len(keyword) == 0:
+                keyword = [user_message]
+            
             keywords = [(k, index) for index, k in enumerate(keyword)]
 
             retrieved_tasks = [
@@ -83,7 +87,6 @@ class ChromaService:
             ]
 
             retrieved_topics = await asyncio.gather(*retrieved_tasks)
-
             retrieved_topics = list(
                 filter(lambda x: x[0]["metadata"]["type"] == "topic", retrieved_topics)
             )
@@ -94,6 +97,14 @@ class ChromaService:
                 keywords = list(filter(lambda x: x[1] != topic[1], keywords))
                 topic = topic[0]["metadata"]
                 global_topic = topic
+                
+            if  global_topic['topic'] == 'end_phrase':
+                return {
+                    "topic": global_topic,
+                    "content": contents,
+                    "global_topic": global_topic,
+                }
+                
             _filter = {"topic": global_topic.get("topic", "")}
             keywords = list(map(lambda x: x[0], keywords))
 
