@@ -304,8 +304,9 @@ class OpenAIService:
             token = chunk.choices[0].delta.content
             if token is not None:
                 answer += token
-                # yield token
-        yield answer + "<stop>"
+                yield token
+        # yield answer
+        yield "<stop>"
         # Logic follow-up
         
         

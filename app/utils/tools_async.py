@@ -477,7 +477,7 @@ async def get_overview_ido(name, keywords=[]):
     }
     
     
-    if len(keyword) == 0:
+    if len(keywords) == 0:
         overview = {
             "description": {
                 "name" : description['name'],
@@ -729,11 +729,30 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     total_raise = project['total_token'] * token_price
     project['total_raise'] = total_raise
     # Add description
-    project = {
+    overview = {
         "description": description,
         "data": project
     }
-    return project
+    
+    if len(keywords) == 0:
+        overview = {
+            "description": {
+                "name" : description['name'],
+                "description": description['description'],
+                "status": description['status'],
+                "token": description['token'],
+                "social_networks": description['social_networks'],
+            },
+            "data": {
+                "name" : project['name'],
+                "description": project['description'],
+                "status": project['status'],
+                "token": project['token'],
+                "social_networks": project['social_networks'],
+            }
+        }
+    
+    return overview
 
 
 tools_info = [
