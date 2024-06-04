@@ -180,7 +180,7 @@ async def get_infor_overview_gamehub(name, keywords=[]):
             "data": {
                 "name": nameGame,
                 "status": status,
-                "published_at": published_at, 
+                # "published_at": published_at, 
                 "introduction": introduction,
                 "social-media": links,
                 "tokenomics-compact": tokenomicsCompact,
@@ -475,6 +475,26 @@ async def get_overview_ido(name, keywords=[]):
         "description": description,
         "data": data
     }
+    
+    
+    if len(keyword) == 0:
+        overview = {
+            "description": {
+                "name" : description['name'],
+                "description": description['description'],
+                "status": description['status'],
+                "token": description['token'],
+                "social_networks": description['social_networks'],
+            },
+            "data": {
+                "name" : data['name'],
+                "description": data['description'],
+                "status": data['status'],
+                "token": data['token'],
+                "social_networks": data['social_networks'],
+            }
+        }
+    
     return overview
 
 @alru_cache(maxsize=32, ttl=60**3)
@@ -493,7 +513,11 @@ async def get_tokenomics_gamehub(name, keywords=[]):
 
     #Token Utilities
     token_utilities = ""
-    for item in data['token_utilities']['blocks']:
+    
+    if not data.get('token_utilities'):
+        data['token_utilities'] = { 'blocks': []}
+    
+    for item in data['token_utilities'].get('blocks', []):
         if item['data'].get('text') is not None:
             token_utilities += item['data']['text'] + '\n'
         if item['data'].get('items') is not None:
