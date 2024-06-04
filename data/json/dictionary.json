@@ -1501,47 +1501,6 @@
                 "social_health"
             ]
         },
-        "team_gamehub": {
-            "team": [
-                "group",
-                "crew",
-                "squad",
-                "staff",
-                "teamwork",
-                "collaborative group",
-                "working team",
-                "task force",
-                "unit",
-                "collective",
-                "team"
-            ],
-            "staffs": [
-                "employees",
-                "personnel",
-                "team members",
-                "workforce",
-                "staff members",
-                "company workers",
-                "organizational staff",
-                "staff workforce",
-                "staff personnel",
-                "staff team",
-                "staffs"
-            ],
-            "team_rank": [
-                "rank of team",
-                "team standing",
-                "team position",
-                "team placement",
-                "team rating",
-                "team order",
-                "team hierarchy",
-                "team classification",
-                "team level",
-                "team grade",
-                "team_rank"
-            ]
-        },
         "tokenomic_gamehub": {
             "tokenomic": [
                 "token economy",
@@ -3503,6 +3462,7 @@
                 "kryptomon"
             ],
             "wanaka-farm": [
+                "wana",
                 "wanaka farm project",
                 "wanaka farm nft collection",
                 "participating in wanaka farm",

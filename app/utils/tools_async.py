@@ -555,24 +555,25 @@ async def get_upcoming_IDO(name, keywords=[]):
     data = response['data']
     for item in data:
         list_project_name.append(item['name'])
-    
-    # global list_ido_game  
-    # global embedding
-    # if list_project_name != list_ido_game:
-    #     list_ido_game = list_project_name
-    #     vectordb_docs = chroma_client.get_or_create_collection(
-    #         name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
-    #     vectordb_topic = chroma_client.get_or_create_collection(
-    #         name="vector_topic", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
-    #     update_topic_vector_db(vectordb_topic)
-    #     update_topic_vector_db(vectordb_docs)
         
+    global list_ido_game  
+    global embedding
+    if list_project_name != list_ido_game:
+        list_ido_game = list_project_name
+        vectordb_docs = chroma_client.get_or_create_collection(
+            name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
+        vectordb_topic = chroma_client.get_or_create_collection(
+            name="vector_topic", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
+        # Schedule the update functions to run in the background
+        asyncio.create_task(update_topic_vector_db(vectordb_topic))
+        asyncio.create_task(update_topic_vector_db(vectordb_docs))
         
     overview = {
         "number_of_upcoming_IDO": len(list_project_name),
         "list_project": list_project_name
     }
-    return overview
+    return overview    
+   
 
 @alru_cache(maxsize=32, ttl=60**3)
 async def get_upcoming_IDO_overview(name, keywords=[]):

@@ -74,9 +74,9 @@ class ChatController:
             )
             keywords_dict = json.loads(keywords_text)
             features_keywords = await self.chroma_service.retrieve_keyword(
-                keywords_dict, global_topic, user_message=user_question
+                keywords_dict, global_topic, user_message=user_question, openai_client=openai_client
             )
-            if  global_topic != features_keywords.get("global_topic", {}):
+            if  global_topic != features_keywords.get("global_topic", {}) and global_topic.get("api", "") != "overview_list_ido_upcoming":
                 selected_suggestions = []
                 
             if features_keywords['global_topic'].get('api', "") != "":

@@ -144,11 +144,11 @@ if __name__ == "__main__":
     update_topic_vector_db(vector_topic)
     update_topic_vector_db(vector_docs)
     
-    # vector_docs.add(
-    #     documents=['thank you', "thank you for your information"],
-    #     metadatas=[
-    #         {'api': '', 'source': '', 'type': 'topic', 'topic': 'end_phrase'},
-    #         {'api': '', 'source': '', 'type': 'topic', 'topic': 'end_phrase'},
-    #     ],
-    #     ids=["end_phrase_1", "end_phrase_2"],
-    # )
+    vector_docs.add(
+        documents=['thank you', "thank you for your information"],
+        metadatas=[
+            {'api': '', 'source': '', 'type': 'topic', 'topic': 'end_phrase'},
+            {'api': '', 'source': '', 'type': 'topic', 'topic': 'end_phrase'},
+        ],
+        ids=["end_phrase_1", "end_phrase_2"],
+    )
