@@ -118,7 +118,7 @@ class ChromaService:
                 keywords = list(filter(lambda x: x[1] != topic[1], keywords))
                 if global_topic != topic:
                     check = await self.validate_change_topic(new_topic=topic[0], user_message=user_message, openai_client=openai_client)
-                    if check:
+                    if check == True:
                         topic = topic[0]["metadata"]
                         global_topic = topic
                 

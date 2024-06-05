@@ -229,9 +229,7 @@ class OpenAIService:
         """
         nl = "\n"
 
-        user_message = f"""Does any of these words in {topic_names} is mentioned in this sentence {user_message}
-        Response in a JSON format like this {{"is_mentioned": "True/False"}}
-        """
+        user_message = f"""Does any of these words in {topic_names} is mentioned in this sentence "{user_message}"\nResponse in a JSON format like this {{"is_mentioned": "True/False"}}"""
         
         messages = [
                 {"role": "system", "content": system_prompt},

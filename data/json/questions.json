@@ -24,13 +24,11 @@
             ],
             "is_related": false
         },
-        "roadmap": {
-            "id": "c130262e-06aa-4990-815e-b1b42cb41f18",
+        "play-mode": {
+            "id": "e9bf0f9b-f0e9-48cd-bc9b-63224cbd8f47",
             "questions": [
-                "Roadmap of <game-name>?",
-                "What is the roadmap for <game-name>?",
-                "<game-name>'s roadmap?",
-                "Can you share the roadmap of <game-name>?"
+                "What are the play modes of <game-name>?",
+                "Play mode of <game-name>?"
             ],
             "is_related": false
         }
