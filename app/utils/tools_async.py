@@ -155,7 +155,35 @@ async def get_infor_overview_gamehub(name, keywords=[]):
             if data.get('items',[]) != []:
                 play_mode_text += "\n".join(data.get('items',[])) + "\n"
         play_mode = play_mode_text
+    
+    introduction = response['data']['item'].get('introduction', None)    
+    if introduction:
+        if type(introduction) == str:
+            introduction = json.loads(introduction)
+        introduction = introduction.get('blocks', [])
+        introduction_text = ""
+        for block in introduction:
+            data = block.get('data', {})
+            if data.get('text','') != '':
+                introduction_text += data.get('text','') + "\n"
+            if data.get('items',[]) != []:
+                introduction_text += "\n".join(data.get('items',[])) + "\n"
+        introduction = introduction_text
 
+    play_to_earn_model = response['data']['item'].get('play_to_earn_model', None)    
+    if play_to_earn_model:
+        if type(play_to_earn_model) == str:
+            play_to_earn_model = json.loads(play_to_earn_model)
+        play_to_earn_model = play_to_earn_model.get('blocks', [])
+        play_to_earn_model_text = ""
+        for block in play_to_earn_model:
+            data = block.get('data', {})
+            if data.get('text','') != '':
+                play_to_earn_model_text += data.get('text','') + "\n"
+            if data.get('items',[]) != []:
+                play_to_earn_model_text += "\n".join(data.get('items',[])) + "\n"
+        play_to_earn_model = play_to_earn_model_text
+    
     overview = {
         "data": {
             "name": nameGame,
