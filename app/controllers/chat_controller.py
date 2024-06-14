@@ -7,7 +7,8 @@ from langsmith import traceable
 from database.session import MongoManager
 from models.dto import ConversationRequest
 from openai import AsyncOpenAI
-
+from dotenv import load_dotenv
+load_dotenv('.env')
 
 class ChatController:
     openai_service: OpenAIService

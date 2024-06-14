@@ -53,4 +53,5 @@ async def create_new_report(report: list):
     format_cell_range(worksheet, 'E2:E2', blue_format)  # Format cell E2
     format_cell_range(worksheet, 'F2:F2', blue_format)  # Format cell F2
     format_cell_range(worksheet, 'G2:G2', blue_format)  # Format cell G2
-    format_cell_range(worksheet, 'H2:H2', orange_format)  # Format cell H2
+    format_cell_range(worksheet, 'H2:H2', blue_format)  # Format cell H2
+    format_cell_range(worksheet, 'I2:I2', orange_format)  # Format cell H2

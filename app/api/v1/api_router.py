@@ -10,6 +10,8 @@ from database.queue import AsyncQueue
 from utils.static_param import many_requests_generator
 from controllers.report_controller import ReportController
 from models.dto import ReportRequest
+from dotenv import load_dotenv
+load_dotenv('.env')
 
 router = APIRouter()
 

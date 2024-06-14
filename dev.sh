@@ -1,1 +1,1 @@
-python ./app/app.py
+nohup python ./app/app.py &

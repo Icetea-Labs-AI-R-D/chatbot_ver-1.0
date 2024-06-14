@@ -10,7 +10,8 @@ from utils.tools_async import get_upcoming_IDO_with_slug
 from typing import List
 import ast
 import re
-
+from dotenv import load_dotenv
+load_dotenv('.env')
 
 class SuggestQuestion:
     id: str
@@ -229,7 +230,7 @@ class OpenAIService:
         """
         nl = "\n"
 
-        user_message = f"""Does any of these words in {topic_names} is mentioned in this sentence "{user_message}"\nResponse in a JSON format like this {{"is_mentioned": "True/False"}}"""
+        user_message = f"""Does any of these words in {topic_names} is mentioned in this sentence "{user_message}"\nResponse in a JSON format like this {{"is_mentioned": "True"/"False"}}"""
         
         messages = [
                 {"role": "system", "content": system_prompt},
@@ -302,8 +303,8 @@ class OpenAIService:
             token = chunk.choices[0].delta.content
             if token is not None:
                 answer += token
-                yield token
-        # yield answer
+                # yield token
+        yield answer
         yield "<stop>"
         # Logic follow-up
         
@@ -458,6 +459,8 @@ class OpenAIService:
         out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item['name']}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform.<stop>"""
         for line in out.split("\n"):
             yield line + '\n'
+
+        yield "<stop>"
         
         list_game_name = [item['name'] for item in res['list_project']]
         random.shuffle(list_game_name)
@@ -523,6 +526,7 @@ class OpenAIService:
         """
         for line in out.split("\n"):
             yield line + '\n'
+        yield "<stop>"
             
         message = {
             "content_user": "list games",

@@ -42,10 +42,10 @@ class AsyncQueue(metaclass=SingletonMeta):
         if self.queue.empty():
             apis = [
                 wrap_openai(AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY1")))
-                for _ in range(2)
+                for _ in range(5)
             ] + [
                 wrap_openai(AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY2")))
-                for _ in range(2)
+                for _ in range(5)
             ]
             for api in apis:
                 await self.put(api)
