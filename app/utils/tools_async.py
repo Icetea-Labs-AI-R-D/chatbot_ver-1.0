@@ -892,7 +892,7 @@ async def call_tools_async(feature_dict : dict) -> str:
 
         tasks = []
         
-        if topic['type'] == "topic" and len(content) == 0:
+        if topic.get('type', '') == "topic" and len(content) == 0:
             tasks.append(tools_fn[apis[topic['api']]](topic['source']))
             result = await asyncio.gather(*tasks) 
             result = result[0]

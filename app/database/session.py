@@ -9,7 +9,10 @@ class MongoManager:
 
     def __init__(self) -> None:
         self.client = motor_asyncio.AsyncIOMotorClient(
-            "mongodb://localhost:27017", maxPoolSize=10, minPoolSize=10
+            "mongodb://root:gamefichatbot@localhost:27017/", 
+            
+            maxPoolSize=10, 
+            minPoolSize=10,
         )
         self.db = self.client.chatbot
 
