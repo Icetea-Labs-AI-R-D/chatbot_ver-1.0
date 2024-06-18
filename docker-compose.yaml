@@ -1,40 +1,55 @@
-version: '3.8'
-
-services:
-  mongodb:
-    image: mongo:7.0.8
-    container_name: mongodb
-    restart: always
-    ports:
-      - "27017:27017"
-    environment:
-      - "MONGO_INITDB_DATABASE=chatbot"
-    volumes:
-      - mongodb:/data/db
-    networks:
-      - app-network
-
-  chatbot:
-    build: 
-      dockerfile: Dockerfile
-    container_name: chatbot
-    restart: always
-    volumes:
-      - db:/code/db
-      - data:/code/data
-      - .env:/code/.env
-    ports:
-      - "9191:9191"
-    command: bash dev.sh
-    networks:
-      - app-network
+version: "3.8"
 
 networks:
-  app-network:
+  net:
     driver: bridge
 
+services:
+
+  chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 'chatbot'
+    ports:
+      - 9191:9191
+    networks:
+      - net
+    depends_on:
+      - mongo
+      - chroma
+
+  mongo:
+    image: 'mongo:7.0.8'
+    container_name: 'mongodb'
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=gamefichatbot
+    networks:
+      - net
+#--------------------------------------------------------
+  chroma:
+    image: chromadb/chroma:0.5.2.dev9
+    volumes:
+      - chroma-data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma # this is the default path, change it as needed
+      - ANONYMIZED_TELEMETRY=${ANONYMIZED_TELEMETRY:-TRUE}
+    ports:
+      - 8000:8000
+    networks:
+      - net
+
+# -------------------------------------
+
+
 volumes:
-  db:
-  data:
-  .env:
-  mongodb:
+  mongo-data:
+  mongo-config:
+  chroma-data:
