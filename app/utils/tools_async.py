@@ -714,6 +714,17 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     for key in list_key_time:
         if project['whitelist'].get(key) is not None:
             project['whitelist'][key] = to_date(project['whitelist'][key])
+    # Bying phases
+    if project.get('buying_phases') is not None:
+        for item in project['buying_phases']:
+            for key in list_key_time:
+                if item.get(key) is not None:
+                    item[key] = to_date(item[key])
+    # Refund policy
+    if project.get('refund_policy') is not None:
+        for key in list_key_time:
+            if project['refund_policy'].get(key) is not None:
+                project['refund_policy'][key] = to_date(project['refund_policy'][key])
     # Cup story
     story = ""
     for item in project['story']['blocks']:

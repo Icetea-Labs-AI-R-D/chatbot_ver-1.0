@@ -9,3 +9,4 @@ class ConversationRequest(BaseModel):
 class ReportRequest(BaseModel):
     conversation_id: str
     content: str
+    username: str

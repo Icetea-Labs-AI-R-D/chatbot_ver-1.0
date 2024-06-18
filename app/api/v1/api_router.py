@@ -73,6 +73,7 @@ async def report(
     report_controller: ReportController = Depends(get_report_controller),
 ):
     data = await request.json()
+    # print(data)
     await report_controller.generate_report(ReportRequest(**data))
     return JSONResponse(
         status_code=status.HTTP_200_OK, content={"message": "Report created"}

@@ -69,7 +69,7 @@ class ChatController:
                 suggestion = s
                 selected_suggestions.append(suggestion)
                 break
-        if request_data.suggested == 0 or not raw_history or raw_history[-1].get("context", "") == "" or not suggestion.get('is_related', True):
+        if request_data.suggested == 0 or not raw_history or raw_history[-1].get("context", "") == "" or not suggestion.get('is_related', False):
             keywords_text = await self.openai_service.rewrite_and_extract_keyword(
                 user_question, history, global_topic, openai_client
             )

@@ -4,7 +4,7 @@ from models.dto import ReportRequest
 from database.session import MongoManager
 from database import get_db
 from datetime import datetime
-
+import pytz
 class ReportController:
     db: MongoManager
 
@@ -12,7 +12,9 @@ class ReportController:
         self.db = MongoManager()
 
     async def generate_report(self, request: ReportRequest):
+        print(request)
         conversation_id = request.conversation_id
+        username = request.username
         content = request.content
         conversation = await self.db.get_report_conversation(conversation_id)
         global_topic = conversation.get(
@@ -32,7 +34,11 @@ class ReportController:
         )
         if not raw_history:
             raw_history = [{}]
+        hanoi_tz = pytz.timezone('Asia/Ho_Chi_Minh')
+
+        current_time_in_hanoi = datetime.now(hanoi_tz)
         report = [
+            username,
             conversation_id,
             content,
             str(global_topic),
@@ -40,6 +46,6 @@ class ReportController:
             str(raw_history[-1].get("content_assistant", "")),
             str(raw_history[-1].get("context", "")),
             str(raw_history[-1].get("features_keywords", {})),
-            str(raw_history[-1].get("last_update", datetime.now())),
+            str(raw_history[-1].get("last_update", current_time_in_hanoi)),
         ]
         await create_new_report(report)
