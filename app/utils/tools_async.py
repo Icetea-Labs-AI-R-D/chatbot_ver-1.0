@@ -125,14 +125,64 @@ async def get_infor_overview_gamehub(name, keywords=[]):
     white_paper = response['data']['item'].get('white_paper', "")
     banners = response['data']['item'].get('banners', "")
     introduction = response['data']['item'].get('introduction', "")
-    roadmap_text = response['data']['item'].get('roadmap_text', "")
-    play_mode = response['data']['item'].get('play_mode', "")
     play_to_earn_model = response['data']['item'].get('play_to_earn_model', "")
     links = response['data']['item'].get('links', "")
     ratingScore = response['data']['metadata'].get('counts', {}).get(gameId, "")
     tokenomicsCompact = response['data']['item'].get('tokenomics_compact', "")
     studios = response['data']['item'].get('studios', "")
     studios = [studio['name'] for studio in studios]
+    
+    roadmap_text = response['data']['item'].get('roadmap_text', None)
+    if roadmap_text:
+        roadmap_text = json.loads(roadmap_text)
+        roadmap = roadmap_text.get('blocks', [])
+        roadmap_text = ""
+        for block in roadmap:
+            data = block.get('data', {})
+            if data.get('text','') != '':
+                roadmap_text += data.get('text','') + "\n"
+            if data.get('items',[]) != []:
+                roadmap_text += "\n".join(data.get('items',[])) + "\n"
+    play_mode = response['data']['item'].get('play_mode', None)
+    if play_mode:
+        play_mode = json.loads(play_mode)
+        play_mode = play_mode.get('blocks', [])
+        play_mode_text = ""
+        for block in play_mode:
+            data = block.get('data', {})
+            if data.get('text','') != '':
+                play_mode_text += data.get('text','') + "\n"
+            if data.get('items',[]) != []:
+                play_mode_text += "\n".join(data.get('items',[])) + "\n"
+        play_mode = play_mode_text
+    
+    introduction = response['data']['item'].get('introduction', None)    
+    if introduction:
+        if type(introduction) == str:
+            introduction = json.loads(introduction)
+        introduction = introduction.get('blocks', [])
+        introduction_text = ""
+        for block in introduction:
+            data = block.get('data', {})
+            if data.get('text','') != '':
+                introduction_text += data.get('text','') + "\n"
+            if data.get('items',[]) != []:
+                introduction_text += "\n".join(data.get('items',[])) + "\n"
+        introduction = introduction_text
+
+    play_to_earn_model = response['data']['item'].get('play_to_earn_model', None)    
+    if play_to_earn_model:
+        if type(play_to_earn_model) == str:
+            play_to_earn_model = json.loads(play_to_earn_model)
+        play_to_earn_model = play_to_earn_model.get('blocks', [])
+        play_to_earn_model_text = ""
+        for block in play_to_earn_model:
+            data = block.get('data', {})
+            if data.get('text','') != '':
+                play_to_earn_model_text += data.get('text','') + "\n"
+            if data.get('items',[]) != []:
+                play_to_earn_model_text += "\n".join(data.get('items',[])) + "\n"
+        play_to_earn_model = play_to_earn_model_text
     
     overview = {
         "data": {
@@ -158,7 +208,7 @@ async def get_infor_overview_gamehub(name, keywords=[]):
             "data": {
                 "name": nameGame,
                 "status": status,
-                "published_at": published_at, 
+                # "published_at": published_at, 
                 "introduction": introduction,
                 "social-media": links,
                 "tokenomics-compact": tokenomicsCompact,
@@ -453,6 +503,26 @@ async def get_overview_ido(name, keywords=[]):
         "description": description,
         "data": data
     }
+    
+    
+    if len(keywords) == 0:
+        overview = {
+            "description": {
+                "name" : description['name'],
+                "description": description['description'],
+                "status": description['status'],
+                "token": description['token'],
+                "social_networks": description['social_networks'],
+            },
+            "data": {
+                "name" : data['name'],
+                "description": data['description'],
+                "status": data['status'],
+                "token": data['token'],
+                "social_networks": data['social_networks'],
+            }
+        }
+    
     return overview
 
 @alru_cache(maxsize=32, ttl=60**3)
@@ -471,7 +541,11 @@ async def get_tokenomics_gamehub(name, keywords=[]):
 
     #Token Utilities
     token_utilities = ""
-    for item in data['token_utilities']['blocks']:
+    
+    if not data.get('token_utilities'):
+        data['token_utilities'] = { 'blocks': []}
+    
+    for item in data['token_utilities'].get('blocks', []):
         if item['data'].get('text') is not None:
             token_utilities += item['data']['text'] + '\n'
         if item['data'].get('items') is not None:
@@ -533,24 +607,25 @@ async def get_upcoming_IDO(name, keywords=[]):
     data = response['data']
     for item in data:
         list_project_name.append(item['name'])
-    
-    # global list_ido_game  
-    # global embedding
-    # if list_project_name != list_ido_game:
-    #     list_ido_game = list_project_name
-    #     vectordb_docs = chroma_client.get_or_create_collection(
-    #         name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
-    #     vectordb_topic = chroma_client.get_or_create_collection(
-    #         name="vector_topic", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
-    #     update_topic_vector_db(vectordb_topic)
-    #     update_topic_vector_db(vectordb_docs)
         
+    global list_ido_game  
+    global embedding
+    if list_project_name != list_ido_game:
+        list_ido_game = list_project_name
+        vectordb_docs = chroma_client.get_or_create_collection(
+            name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
+        vectordb_topic = chroma_client.get_or_create_collection(
+            name="vector_topic", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
+        # Schedule the update functions to run in the background
+        asyncio.create_task(update_topic_vector_db(vectordb_topic))
+        asyncio.create_task(update_topic_vector_db(vectordb_docs))
         
     overview = {
         "number_of_upcoming_IDO": len(list_project_name),
         "list_project": list_project_name
     }
-    return overview
+    return overview    
+   
 
 @alru_cache(maxsize=32, ttl=60**3)
 async def get_upcoming_IDO_overview(name, keywords=[]):
@@ -639,6 +714,17 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     for key in list_key_time:
         if project['whitelist'].get(key) is not None:
             project['whitelist'][key] = to_date(project['whitelist'][key])
+    # Bying phases
+    if project.get('buying_phases') is not None:
+        for item in project['buying_phases']:
+            for key in list_key_time:
+                if item.get(key) is not None:
+                    item[key] = to_date(item[key])
+    # Refund policy
+    if project.get('refund_policy') is not None:
+        for key in list_key_time:
+            if project['refund_policy'].get(key) is not None:
+                project['refund_policy'][key] = to_date(project['refund_policy'][key])
     # Cup story
     story = ""
     for item in project['story']['blocks']:
@@ -682,11 +768,30 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     total_raise = project['total_token'] * token_price
     project['total_raise'] = total_raise
     # Add description
-    project = {
+    overview = {
         "description": description,
         "data": project
     }
-    return project
+    
+    if len(keywords) == 0:
+        overview = {
+            "description": {
+                "name" : description['name'],
+                "description": description['description'],
+                "status": description['status'],
+                "token": description['token'],
+                "social_networks": description['social_networks'],
+            },
+            "data": {
+                "name" : project['name'],
+                "description": project['description'],
+                "status": project['status'],
+                "token": project['token'],
+                "social_networks": project['social_networks'],
+            }
+        }
+    
+    return overview
 
 
 tools_info = [
@@ -787,7 +892,7 @@ async def call_tools_async(feature_dict : dict) -> str:
 
         tasks = []
         
-        if topic['type'] == "topic" and len(content) == 0:
+        if topic.get('type', '') == "topic" and len(content) == 0:
             tasks.append(tools_fn[apis[topic['api']]](topic['source']))
             result = await asyncio.gather(*tasks) 
             result = result[0]

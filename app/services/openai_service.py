@@ -10,7 +10,8 @@ from utils.tools_async import get_upcoming_IDO_with_slug
 from typing import List
 import ast
 import re
-
+from dotenv import load_dotenv
+load_dotenv('.env')
 
 class SuggestQuestion:
     id: str
@@ -25,7 +26,7 @@ def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: lis
     
     # Get all questions from topic if less than 3
     if len(questions) < 3 and 'upcoming' not in global_topic['topic']:
-        print("###Less than 3 questions")
+        # print("###Less than 3 questions")
         force_rag = True
         # Filter api question and remove questions of upcoming game
         list_api = [key for key in question_dict.keys() if global_topic['topic'] in key and 'upcoming' not in key]
@@ -44,8 +45,8 @@ def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: lis
         
     questions = list(filter(lambda x: x['id'] not in asked_ids, questions))
     
-    if force_rag:
-        print("###Force rag. Len questions: ", len(questions))
+    # if force_rag:
+    #     print("###Force rag. Len questions: ", len(questions))
     
     related_questions = list(filter(lambda x: x['is_related'], questions))
     irrelated_questions = list(filter(lambda x: not x['is_related'], questions))
@@ -216,6 +217,36 @@ class OpenAIService:
 
         return str(response.choices[0].message.content)
     
+    
+    @traceable
+    async def check_change_topic(
+        self,
+        topic_names: list,
+        user_message: str,
+        openai_client: AsyncOpenAI = None,
+    ):
+        system_prompt = f"""
+        You are a helpful agent!
+        """
+        nl = "\n"
+
+        user_message = f"""Does any of these words in {topic_names} is mentioned in this sentence "{user_message}"\nResponse in a JSON format like this {{"is_mentioned": "True"/"False"}}"""
+        
+        messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_message}
+            ]
+
+        response = await openai_client.chat.completions.create(
+            model="gpt-3.5-turbo-0125",
+            temperature=0,
+            response_format={"type": "json_object"},
+            messages=messages,
+        )
+
+        return str(response.choices[0].message.content)
+    
+    
     @traceable
     async def ask_openai_with_rag(
         self,
@@ -272,8 +303,9 @@ class OpenAIService:
             token = chunk.choices[0].delta.content
             if token is not None:
                 answer += token
-                yield token
-
+                # yield token
+        yield answer
+        yield "<stop>"
         # Logic follow-up
         
         
@@ -281,7 +313,8 @@ class OpenAIService:
         def process_list_question_from_context(context : str, question_dict_api:dict ):
             data = dict()
             for item in context.strip().split('\n\n'):
-                data.update(ast.literal_eval(item.split('\n')[1])) 
+                if len(item.split('\n')) > 0:
+                    data.update(ast.literal_eval(item.split('\n')[1])) 
                 
             keys = list(question_dict_api.keys())
             list_question = []
@@ -313,7 +346,7 @@ class OpenAIService:
         suggestions = []
         
         
-        if global_topic["source"] == "upcoming":
+        if global_topic.get("source", "") == "upcoming":
             list_game_name = ast.literal_eval(context.split('\n')[2].strip())['list_project']
             random.shuffle(list_game_name)
             
@@ -370,7 +403,7 @@ class OpenAIService:
 
             list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids, global_topic=global_topic, question_dict=self.question_dict)
             
-            pattern = r'[ -_]+' 
+            pattern = r'[ \-_]+' 
             
             game_name = ' '.join([word.capitalize() for word in re.split(pattern, global_topic['source'])])
             list_question = list(map(lambda x:
@@ -401,9 +434,8 @@ class OpenAIService:
             "text": "Maybe you want to know ⬇️:",
             "follow_up":suggestions,
         }
-        
         # If suggestions is not empty, return suggestions
-        if len(suggestions) != 0:
+        if len(suggestions) != 0 and global_topic.get('topic', '') != 'end_phrase':
             yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
 
         # print(suggestions)
@@ -424,9 +456,11 @@ class OpenAIService:
     async def list_upcoming_ido(self, conversation_id):
         res = await get_upcoming_IDO_with_slug()
         nl = '\n'
-        out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item['name']}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform."""
+        out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item['name']}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform.<stop>"""
         for line in out.split("\n"):
             yield line + '\n'
+
+        yield "<stop>"
         
         list_game_name = [item['name'] for item in res['list_project']]
         random.shuffle(list_game_name)
@@ -453,7 +487,7 @@ class OpenAIService:
         
         suggestions =  [item['question'] for index, item in enumerate(list_question)]
         
-        print(suggestions)
+        # print(suggestions)
         if len(suggestions) != 0:
             reply_markup = {
                 "text": "Maybe you want to know ⬇️:",
@@ -474,19 +508,25 @@ class OpenAIService:
         
     async def games(self, conversation_id):
         out = """
-            Here are the upcoming IDO projects on GameFi:
-            1. Agora
-            2. Laika AI
-            3. NexGami
-            4. Oxya Origin
-            5. Cryptopia
-            6. Better Fan
-            7. Axen AI
-            8. Fanton
-            These projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform.
+        Here is the formatted list of available games on GameFi:
+
+        1. Mobox
+        2. The Sandbox
+        3. BinaryX
+        4. Axie Infinity
+        5. X World Games
+        6. Thetan Arena
+        7. Alien Worlds
+        8. League of Kingdoms
+        9. BurgerCities
+        10. Kryptomon
+        ...
+
+        For more details and the full list of games, visit the official [GameFi website](https://gamefi.org).
         """
         for line in out.split("\n"):
             yield line + '\n'
+        yield "<stop>"
             
         message = {
             "content_user": "list games",

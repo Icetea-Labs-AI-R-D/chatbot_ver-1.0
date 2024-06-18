@@ -130,6 +130,11 @@ if __name__ == "__main__":
     
     embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY1'))
     client = chromadb.HttpClient()
+    
+    client.delete_collection("vector_docs")
+    client.delete_collection("vector_content")
+    client.delete_collection("vector_topic")
+    
     vector_docs = client.get_or_create_collection(
         name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
     vector_content = client.get_or_create_collection(
@@ -143,3 +148,13 @@ if __name__ == "__main__":
     
     update_topic_vector_db(vector_topic)
     update_topic_vector_db(vector_docs)
+    
+    vector_docs.add(
+        documents=['thank you', "thank you for your information"],
+        metadatas=[
+            {'api': '', 'source': '', 'type': 'topic', 'topic': 'end_phrase'},
+            {'api': '', 'source': '', 'type': 'topic', 'topic': 'end_phrase'},
+        ],
+        ids=["end_phrase_1", "end_phrase_2"],
+    )
+    

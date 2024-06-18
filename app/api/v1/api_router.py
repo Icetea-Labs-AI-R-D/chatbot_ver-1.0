@@ -10,6 +10,8 @@ from database.queue import AsyncQueue
 from utils.static_param import many_requests_generator
 from controllers.report_controller import ReportController
 from models.dto import ReportRequest
+from dotenv import load_dotenv
+load_dotenv('.env')
 
 router = APIRouter()
 
@@ -71,6 +73,7 @@ async def report(
     report_controller: ReportController = Depends(get_report_controller),
 ):
     data = await request.json()
+    # print(data)
     await report_controller.generate_report(ReportRequest(**data))
     return JSONResponse(
         status_code=status.HTTP_200_OK, content={"message": "Report created"}

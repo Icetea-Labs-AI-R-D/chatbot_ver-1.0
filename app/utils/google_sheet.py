@@ -2,7 +2,7 @@ import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from gspread_formatting import *
 # Path to the JSON credential file
-ss_cred_path = 'data/json/chatbotgamefi-a0dcf41e5bcd.json' 
+ss_cred_path = 'data/json/ttcs-1716408420345-77dba025e178.json' 
 
 # Define the scope
 scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive'] 
@@ -47,10 +47,12 @@ async def create_new_report(report: list):
     report.append("Chưa đọc")
     worksheet.insert_row(report, 2)
     format_cell_range(worksheet, 'A2:A2', blue_format)  # Format cell A2
-    format_cell_range(worksheet, 'B2:B2', blue_format)  # Format cell B2
-    format_cell_range(worksheet, 'C2:C2', blue_format)  # Format cell C2
-    format_cell_range(worksheet, 'D2:D2', blue_format)  # Format cell D2
-    format_cell_range(worksheet, 'E2:E2', blue_format)  # Format cell E2
-    format_cell_range(worksheet, 'F2:F2', blue_format)  # Format cell F2
-    format_cell_range(worksheet, 'G2:G2', blue_format)  # Format cell G2
-    format_cell_range(worksheet, 'H2:H2', orange_format)  # Format cell H2
+    format_cell_range(worksheet, 'B2:B2', blue_format)  # Format cell A2
+    format_cell_range(worksheet, 'C2:C2', blue_format)  # Format cell B2
+    format_cell_range(worksheet, 'D2:D2', blue_format)  # Format cell C2
+    format_cell_range(worksheet, 'E2:E2', blue_format)  # Format cell D2
+    format_cell_range(worksheet, 'F2:F2', blue_format)  # Format cell E2
+    format_cell_range(worksheet, 'G2:G2', blue_format)  # Format cell F2
+    format_cell_range(worksheet, 'H2:H2', blue_format)  # Format cell G2
+    format_cell_range(worksheet, 'I2:I2', blue_format)  # Format cell H2
+    format_cell_range(worksheet, 'J2:J2', orange_format)  # Format cell H2
