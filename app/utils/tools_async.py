@@ -17,7 +17,8 @@ load_dotenv('.env')
 list_ido_game = []
 # OpenAI embeddings
 embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY3'))
-chroma_client = chromadb.HttpClient()
+chroma_client = chromadb.HttpClient(host='chroma')  
+# chroma_client = chromadb.HttpClient()  
 async def get_upcoming_IDO_with_slug():
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {

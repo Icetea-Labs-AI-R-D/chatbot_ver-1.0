@@ -18,4 +18,4 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 EXPOSE 9191
 
-CMD [ "bash", "dev.sh" ]
+CMD ["python", "./app/app.py"]

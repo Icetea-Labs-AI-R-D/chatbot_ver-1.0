@@ -303,8 +303,7 @@ class OpenAIService:
             token = chunk.choices[0].delta.content
             if token is not None:
                 answer += token
-                # yield token
-        yield answer
+                yield token
         yield "<stop>"
         # Logic follow-up
         
@@ -438,6 +437,7 @@ class OpenAIService:
         if len(suggestions) != 0 and global_topic.get('topic', '') != 'end_phrase':
             yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
 
+        # yield "<stop>"
         # print(suggestions)
         
         message = {
@@ -524,9 +524,7 @@ class OpenAIService:
 
         For more details and the full list of games, visit the official [GameFi website](https://gamefi.org).
         """
-        for line in out.split("\n"):
-            yield line + '\n'
-        yield "<stop>"
+        yield out
             
         message = {
             "content_user": "list games",

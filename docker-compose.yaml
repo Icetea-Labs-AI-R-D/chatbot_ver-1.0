@@ -1,23 +1,10 @@
-version: "3.8"
+# version: "3.8"
 
 networks:
   net:
     driver: bridge
 
 services:
-
-  chatbot:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: 'chatbot'
-    ports:
-      - 9191:9191
-    networks:
-      - net
-    depends_on:
-      - mongo
-      - chroma
 
   mongo:
     image: 'mongo:7.0.8'
@@ -32,9 +19,10 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=gamefichatbot
     networks:
       - net
-#--------------------------------------------------------
+  #--------------------------------------------------------
   chroma:
     image: chromadb/chroma:0.5.2.dev9
+    container_name: chroma
     volumes:
       - chroma-data:/chroma/chroma
     environment:
@@ -45,9 +33,25 @@ services:
       - 8000:8000
     networks:
       - net
+  # -------------------------------------
 
-# -------------------------------------
-
+  chatbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: 'chatbot'
+    restart: always
+    ports:
+      - 9191:9191
+    networks:
+      - net
+    depends_on:
+      - mongo
+      - chroma
+    environment:
+      - CHROMA_HOST=chroma
+      - CHROMA_PORT=8000
+    command: bash -c "python3 create_database.py && bash dev.sh"
 
 volumes:
   mongo-data:

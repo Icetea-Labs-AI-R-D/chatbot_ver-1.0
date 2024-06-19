@@ -24,7 +24,8 @@ class ChromaService:
     openai_service: OpenAIService
 
     def __init__(self) -> None:
-        client = chromadb.HttpClient()  
+        client = chromadb.HttpClient(host='chroma')  
+        # client = chromadb.HttpClient()  
         self.openai_service = OpenAIService()
         # OpenAI embeddings
         self.embedding_function = OpenAIEmbeddingFunction(
