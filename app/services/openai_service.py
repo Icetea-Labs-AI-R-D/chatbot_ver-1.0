@@ -6,7 +6,7 @@ from langsmith import traceable
 from database.session import MongoManager
 from database.queue import AsyncQueue
 import random
-from utils.tools_async import get_upcoming_IDO_with_slug
+from utils.tools_async import get_upcoming_IDO
 from typing import List
 import ast
 import re
@@ -79,7 +79,8 @@ def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: lis
 
 # Use when rag is False to update lead sentence in context (rag is False -> selected_suggestions is not empty)
 def reformat_context_for_no_rag(context: str, global_topic: dict = {}, selected_suggestions: list = []):
-    list_context = context.strip().split('\n\n')
+    list_context = re.split(r'\n{2,}' ,context.strip())
+    
     keyword = selected_suggestions[-1]['keyword']
     for index, context in enumerate(list_context):
         if keyword in context:
@@ -230,7 +231,8 @@ class OpenAIService:
         """
         nl = "\n"
 
-        user_message = f"""Does any of these words in {topic_names} is mentioned in this sentence "{user_message}"\nResponse in a JSON format like this {{"is_mentioned": "True"/"False"}}"""
+        user_message = f"""Does any of these words in {enumerate(topic_names)} is mentioned in this sentence "{user_message}" 
+        Response in a JSON format like this {{"is_mentioned": "True"/"False", "topic_index": index in topic_names}}"""
         
         messages = [
                 {"role": "system", "content": system_prompt},
@@ -311,16 +313,24 @@ class OpenAIService:
         ## Drop keys with no data
         def process_list_question_from_context(context : str, question_dict_api:dict ):
             data = dict()
-            for item in context.strip().split('\n\n'):
+           
+            for item in re.split(r'\n{2,}' ,context.strip()):
                 if len(item.split('\n')) > 0:
+                   
+                    # print(item.split('\n')[1])
+                    # print()
                     data.update(ast.literal_eval(item.split('\n')[1])) 
+                    # pass
                 
+
             keys = list(question_dict_api.keys())
             list_question = []
             # print("###Data: ", data['data'].keys())
             # print("Question: ", keys)
 
             tmp_dict = {**question_dict_api}
+            
+            # print(data)
             
             # Filter keys with no data
             for key in keys:
@@ -454,15 +464,15 @@ class OpenAIService:
         await self.db.add_conversation(conversation["conversation_id"], message)
 
     async def list_upcoming_ido(self, conversation_id):
-        res = await get_upcoming_IDO_with_slug()
+        res = await get_upcoming_IDO("")
         nl = '\n'
-        out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item['name']}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform.<stop>"""
+        out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform.<stop>"""
         for line in out.split("\n"):
             yield line + '\n'
 
         yield "<stop>"
         
-        list_game_name = [item['name'] for item in res['list_project']]
+        list_game_name = [item for item in res['list_project']]
         random.shuffle(list_game_name)
         
         # item = {index: (key, value)}
@@ -499,7 +509,7 @@ class OpenAIService:
             "content_user": "list upcoming ido",
             "content_assistant": out,
             "topic": {},
-            "suggestion": [],
+            "suggestion": list_question,
             "context": "",
             "features_keywords": {},
             "selected_suggestions": [],

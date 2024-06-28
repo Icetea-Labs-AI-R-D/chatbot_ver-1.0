@@ -4,9 +4,6 @@ import asyncio
 import httpx
 from datetime import datetime, timezone
 from async_lru import alru_cache
-# from langchain.docstore.document import Document
-# from langchain_community.vectorstores import Chroma
-# from langchain_openai import OpenAIEmbeddings
 import os
 from dotenv import load_dotenv
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
@@ -17,7 +14,7 @@ load_dotenv('.env')
 list_ido_game = []
 # OpenAI embeddings
 embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY3'))
-chroma_client = chromadb.HttpClient(host='chroma')  
+chroma_client = chromadb.HttpClient(host=os.getenv('CHROMA_HOST'))  
 # chroma_client = chromadb.HttpClient()  
 async def get_upcoming_IDO_with_slug():
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
@@ -88,9 +85,6 @@ async def get_infor_overview_gamehub(name, keywords=[]):
     """Get token price, market cap, and other tokenomics information from GameFi API."""
     
     url = f'''https://v3.gamefi.org/api/v1/games/{name}?include_tokenomics=true&include_studios=true&include_downloads=true&include_categories=true&include_advisors=true&include_backers=true&include_networks=true&include_origins=true&include_videos=true'''
-    headers = {
-        'Accept': 'application/json'
-    }
     description = {
         "status": "The state of the game whether is is publishted or not",
         "avg_star_rating": "The average star rating of the project on gamefi.org",
@@ -116,9 +110,27 @@ async def get_infor_overview_gamehub(name, keywords=[]):
         "max_supply": "The total maximum number of tokens coins/tokens that will ever exist, including both mined and future available tokens. This information provides an overview of the limitations on the token's supply and helps readers understand the project's economic structure.",
         "published_at": "The date when the game was published or released",
     }
+    url_price = f'https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/latest?slug={name}'
+    headers = {
+        'Accept': 'application/json',
+        'X-CMC_PRO_API_KEY': '1aaeadf4-bf85-42ac-8850-5dba21ab4492'
+    }
+
     async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=headers)
+        response_price = await client.get(url_price, headers=headers)
         response = response.json()
+        response_price = response_price.json()
+
+    # Price
+    price = 0
+    symbol = ''
+    if response_price.get('data') is not None:
+        for key,item in response_price['data'].items():
+            price = item['quote']['USD']['price']
+            symbol = item['symbol']
+            break
+    # print(price)
     gameId = response['data']['item'].get('id', "")
     nameGame = response['data']['item'].get('name', "")
     status = response['data']['item'].get('status', "")
@@ -135,7 +147,9 @@ async def get_infor_overview_gamehub(name, keywords=[]):
     
     roadmap_text = response['data']['item'].get('roadmap_text', None)
     if roadmap_text:
-        roadmap_text = json.loads(roadmap_text)
+        if isinstance(roadmap_text, str):
+            roadmap_text = json.loads(roadmap_text)
+        # Assuming that if roadmap_text is already a dict, you don't need to process it further
         roadmap = roadmap_text.get('blocks', [])
         roadmap_text = ""
         for block in roadmap:
@@ -184,7 +198,12 @@ async def get_infor_overview_gamehub(name, keywords=[]):
             if data.get('items',[]) != []:
                 play_to_earn_model_text += "\n".join(data.get('items',[])) + "\n"
         play_to_earn_model = play_to_earn_model_text
-    
+    # Delete price in tokenomicsCompact
+    if price != 0:
+        for item in tokenomicsCompact:
+            if symbol == item['token_symbol']:
+                item['current_price'] = price
+                break
     overview = {
         "data": {
             "name": nameGame,
@@ -200,7 +219,7 @@ async def get_infor_overview_gamehub(name, keywords=[]):
             "rating-score": ratingScore,
             # "tokenomics-compact": tokenomicsCompact,
             "studios": studios,
-            **tokenomicsCompact[0]
+            "tokenomics-compact": tokenomicsCompact
         },
         "description": description
     }
@@ -398,7 +417,7 @@ async def get_overview_ido(name, keywords=[]):
         "token": {
             "type": "The specific category or standard this token adheres to, defining its functionality and interaction within its respective blockchain ecosystem.",
             "symbol": "The unique identifier or abbreviation for this token, used for trading and referencing in the cryptocurrency markets.",
-            "price": "The current market value of the token, often quoted in United States Dollars (USD), which can fluctuate based on supply and demand dynamics.",
+            "price": "The IDO price for this token, announced at IDO's launch, often quoted in United States Dollars (USD).",
             "decimals": "The maximum number of decimal places to which this token can be subdivided, indicating the smallest possible transaction unit for this token."
         },
         "currency": {
@@ -429,7 +448,7 @@ async def get_overview_ido(name, keywords=[]):
             "data": {}
         }
     # Remove key in data
-    remove_keys = ['id', 'chain_id', 'excerpt', 'address', 'logo', 'banner', 'contract_address', 'address_receiver', 'airdrop_chain_id', 'claim_schedule']
+    remove_keys = ['id', 'chain_id', 'excerpt', 'address', 'logo', 'banner', 'contract_address', 'address_receiver', 'airdrop_chain_id']
     for key in  remove_keys:
         if key in data:
             data.pop(key)
@@ -455,12 +474,17 @@ async def get_overview_ido(name, keywords=[]):
     for key in date_keys:
         if data['refund_policy'].get(key) is not None:
             data['refund_policy'][key] = to_date(data['refund_policy'][key])
-    for item in data['buying_phases']:
-        item.pop('id')
-        for key in date_keys:
-            if item.get(key) is not None:
-                item[key] = to_date(item[key])
-    
+    if data.get('buying_phases') is not None:
+        for item in data['buying_phases']:
+            item.pop('id')
+            for key in date_keys:
+                if item.get(key) is not None:
+                    item[key] = to_date(item[key])
+    if data.get('claim_schedule') is not None:
+        for item in data['claim_schedule']:
+            for key in date_keys:
+                if item.get(key) is not None:
+                    item[key] = to_date(item[key])
     # Cup the story, roadmap, revenue_streams, token_utilities
     story = ""
     main_story = ""
@@ -498,8 +522,57 @@ async def get_overview_ido(name, keywords=[]):
     total_raise = data['total_token'] * data['token']['price']
     data['total_raise'] = total_raise
     
-    
-    
+    # Status
+    status = {
+        "description": "Not announcement about the phases yet"
+    }
+    if data.get('claim_schedule') is not None:
+        phase = "CLAIM PHASE"
+        date = data.get('claim_schedule')[0].get('from')
+        status = {
+            "phase": phase,
+            "from": date
+        }
+    if data.get('refund_policy') is not None:
+        phase = "REFUND PHASE"
+        date_from = datetime.fromisoformat(data.get('refund_policy')['from'])
+        date_to = datetime.fromisoformat(data.get('refund_policy')['to'])
+        date_now = datetime.now(timezone.utc)
+        if date_now > date_from and date_now < date_to:
+           status = {
+            "phase": phase,
+            "from": str(date_from),
+            "to": str(date_to)
+            }
+        
+    if data.get('buying_phases') is not None:
+        for item in data.get('buying_phases'):
+            date_from = datetime.fromisoformat(item.get('from'))
+            date_to = datetime.fromisoformat(item.get('to'))
+            date_now = datetime.now(timezone.utc)
+            if date_now > date_from and date_now < date_to:
+                status = {
+                    "phase": item['name'],
+                    "from": str(date_from),
+                    "to": str(date_to),
+                    "description": item['description']
+                }
+    if data.get('whitelist') is not None:
+        date_from = datetime.fromisoformat(data.get('whitelist').get('from'))
+        date_to = datetime.fromisoformat(data.get('whitelist').get('to'))
+        date_now = datetime.now(timezone.utc)
+        if date_now > date_from and date_now < date_to:
+            status = {
+                "phase": "WHITELIST PHASE",
+                "from": str(date_from),
+                "to": str(date_to),
+            }
+    data['status'] = status
+    # Replace claim policy with vesting schedule
+    if data.get('claim_policy') is not None:
+        data['vesting_schedule'] = data['claim_policy']
+        data.pop('claim_policy', None)
+
     overview = {
         "description": description,
         "data": data
@@ -539,7 +612,7 @@ async def get_tokenomics_gamehub(name, keywords=[]):
     data = response['data']['items'][0]
     data.pop('id')
     data.pop('icon')
-
+    data.pop('current_price')
     #Token Utilities
     token_utilities = ""
     
@@ -638,22 +711,16 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     "slug": "Abbreviation for the project name.",
     "name": "Name of project.",
     "description": "Providing an overview of the project",
-    "status": "Status of the IDO, as Preorder, Created,...",
-    "claim_policy": "Vesting / includes the vesting period, release rate, and any other provisions regarding the trading freedom of tokens after the IDO.",
-    "total_token": "Total number of tokens available for the IDO.",
-    "ath": "The maximum return on investment that the project's token has achieved since its all-time high.",
+    "status": "Status of the IDO on GameFi.org.",
+    "vesting_schedule": "Scheduled vesting period for the project's token.",
     "whitelist": "The timeframe during which the whitelist is open to receive registrations from individuals who want to participate in the project's IDO.",
     "refund_policy": "The policy regarding refunding funds in case the IDO is unsuccessful or if any issues arise. This information may include the conditions and regulations for requesting a refund, the timeframe, and the process for refunding.",
     "buying_phases": "The time or period during which users can purchase tokens or participate in the project's IDO.",
     "token": {
         "type": "The specific category or standard this token adheres to, defining its functionality and interaction within its respective blockchain ecosystem.",
         "symbol": "The unique identifier or abbreviation for this token, used for trading and referencing in the cryptocurrency markets.",
-        "price": "The current market value of the token, often quoted in United States Dollars (USD), which can fluctuate based on supply and demand dynamics.",
+        "price": "The IDO price for this token, announced at IDO's launch, unit of calculation is USDT.",
         "decimals": "The maximum number of decimal places to which this token can be subdivided, indicating the smallest possible transaction unit for this token."
-    },
-    "currency": {
-        "type": "The unique symbol identifying the currency",
-        "decimals": "Defines the smallest unit of the currency that can be handled in transactions."
     },
     "social_networks": "Provide information about the links to the project's social media pages or social media platforms of IDO project.",
     "roadmap": "The project's roadmap, which outlines the key milestones and objectives that the project aims to achieve in the future.",
@@ -667,7 +734,7 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     "partners": "Provide information about the partners that are supporting the project. This information may include the names of the partners, their contributions, and the benefits they bring to the project.",
     "business_model": "Provide information about the business model that the project is implementing. This information may include the revenue streams, target markets, value propositions, and other key elements that define the project's business model.",
     "tokenomics": "Provide information about the tokenomics of the project. This information may include the token distribution, token supply, token allocation, token utility, and other key elements that define the project's tokenomics.",
-    "total_raise": "The total amount of funds the project aims to raise through the Initial DEX Offering (IDO) process and other funding rounds. This information provides an overview of the level of attractiveness and interest from the community and potential investors towards the project."
+    "total_raise": "The total amount of funds the project aims to raise through the Initial DEX Offering (IDO) process and other funding rounds. This information provides an overview of the level of attractiveness and interest from the community and potential investors towards the project, unit of calculation is USD.", 
     }
     # Some list key to remove
     list_remove_item = ['id', 'game_slug','excerpt', 'banner', 'logo',
@@ -707,14 +774,17 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
         project.pop(key, None)
     # Remove key in token
     for key in list_token_remove:
-        project["token"].pop(key, None)
+        if project.get("token") is not None:
+            project["token"].pop(key, None)
     # Remove key in currency
     for key in list_token_remove:
-        project["currency"].pop(key, None)
+        if project.get("currency") is not None:
+            project["currency"].pop(key, None)
     # Change time to date
     for key in list_key_time:
-        if project['whitelist'].get(key) is not None:
-            project['whitelist'][key] = to_date(project['whitelist'][key])
+        if project.get('whitelist') is not None:
+            if project['whitelist'].get(key) is not None:
+                project['whitelist'][key] = to_date(project['whitelist'][key])
     # Bying phases
     if project.get('buying_phases') is not None:
         for item in project['buying_phases']:
@@ -726,6 +796,12 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
         for key in list_key_time:
             if project['refund_policy'].get(key) is not None:
                 project['refund_policy'][key] = to_date(project['refund_policy'][key])
+    # Claim schedule
+    if project.get('claim_schedule') is not None:
+        for item in project['claim_schedule']:
+            for key in list_key_time:
+                if item.get(key) is not None:
+                    item[key] = to_date(item[key])
     # Cup story
     story = ""
     for item in project['story']['blocks']:
@@ -767,7 +843,67 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     else:
         token_price = project['token']['price']   
     total_raise = project['total_token'] * token_price
-    project['total_raise'] = total_raise
+    project['total_raise'] = int(total_raise)
+
+    # # Status
+    status = {
+        "description": "Not announcement about the phases yet"
+    }
+    if project.get('claim_schedule') is not None:
+        phase = "CLAIM PHASE"
+        if len(project.get('claim_schedule')) > 0:
+            date = project.get('claim_schedule')[0].get('from')
+            status = {
+                "phase": phase,
+                "from": date
+            }
+    if project.get('refund_policy') is not None:
+        phase = "REFUND PHASE"
+        if project['refund_policy'] != {}:
+            if project['refund_policy'].get('from') is not None:
+                date_from = datetime.fromisoformat(project.get('refund_policy')['from'])
+                date_to = datetime.fromisoformat(project.get('refund_policy')['to'])
+                date_now = datetime.now(timezone.utc)
+                if date_now > date_from and date_now < date_to:
+                    status = {
+                        "phase": phase,
+                        "from": str(date_from),
+                        "to": str(date_to)
+                        }
+    
+    if project.get('buying_phases') is not None:
+        if len(project.get('buying_phases')) > 0:
+            for item in project.get('buying_phases'):
+                date_from = datetime.fromisoformat(item.get('from'))
+                date_to = datetime.fromisoformat(item.get('to'))
+                date_now = datetime.now(timezone.utc)
+                if date_now > date_from and date_now < date_to:
+                    status = {
+                        "phase": item['name'],
+                        "from": str(date_from),
+                        "to": str(date_to),
+                        "description": item['description']
+                    }
+    if project.get('whitelist') is not None:
+        if project['whitelist'].get('from') is not None:
+            date_from = datetime.fromisoformat(project.get('whitelist').get('from'))
+            date_to = datetime.fromisoformat(project.get('whitelist').get('to'))
+            date_from_nb = date_from.timestamp()
+            date_to_nb = date_to.timestamp()
+            date_now = datetime.now(timezone.utc)
+            date_now_nb = date_now.timestamp()
+            if date_now >= date_from and date_now <= date_to:
+                status = {
+                    "phase": "WHITELIST PHASE",
+                    "from": str(date_from),
+                    "to": str(date_to),
+                }
+    project['status'] = status
+
+    # Replace claim policy with vesting schedule
+    if project.get('claim_policy') is not None:
+        project['vesting_schedule'] = project['claim_policy']
+        project.pop('claim_policy', None)
     # Add description
     overview = {
         "description": description,
@@ -925,7 +1061,7 @@ async def call_tools_async(feature_dict : dict) -> str:
         # tasks = list(map(lambda x: tools_fn[x['api']](x['param']), tasks))
         results = await asyncio.gather(*tasks)
         for index, result in enumerate(results): 
-            context += f'''{list_rs[index]}{result}\n'''
+            context += f'''{list_rs[index]}{result}\n\n'''
         return context
     # except Exception as e:
     #     print("Error:",e)

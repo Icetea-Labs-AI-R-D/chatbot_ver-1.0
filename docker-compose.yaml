@@ -51,7 +51,7 @@ services:
     environment:
       - CHROMA_HOST=chroma
       - CHROMA_PORT=8000
-    command: bash -c "python3 create_database.py && bash dev.sh"
+    command: bash -c "python ./app/app.py"
 
 volumes:
   mongo-data:

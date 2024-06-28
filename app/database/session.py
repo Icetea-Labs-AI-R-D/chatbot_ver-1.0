@@ -1,7 +1,9 @@
 from motor import motor_asyncio, core
 import logging
 import datetime
-
+from dotenv import load_dotenv
+import os
+load_dotenv(".env")
 
 class MongoManager:
     client: motor_asyncio.AsyncIOMotorClient = None
@@ -9,7 +11,8 @@ class MongoManager:
 
     def __init__(self) -> None:
         self.client = motor_asyncio.AsyncIOMotorClient(
-            "mongodb://root:gamefichatbot@mongodb:27017/", 
+            f"mongodb://root:gamefichatbot@{os.getenv('MONGO_HOST')}:27017/", 
+            # "mongodb://root:gamefichatbot@localhost:27017/", 
             maxPoolSize=10, 
             minPoolSize=10,
         )

@@ -24,7 +24,7 @@ class ChromaService:
     openai_service: OpenAIService
 
     def __init__(self) -> None:
-        client = chromadb.HttpClient(host='chroma')  
+        client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST"))  
         # client = chromadb.HttpClient()  
         self.openai_service = OpenAIService()
         # OpenAI embeddings
@@ -49,7 +49,7 @@ class ChromaService:
 
     async def async_similarity_search(self, k: str = "", _filter: dict = {}):
         result = self.vectordb_content.query(
-            query_texts=[k], n_results=3, where=_filter
+            query_texts=[k.lower()], n_results=3, where=_filter
         )
         result = [
             {
@@ -62,6 +62,7 @@ class ChromaService:
 
     async def async_similarity_search_with_scores(self, k: str = "", index: int = 0):
         result = self.vectordb_docs.query(query_texts=[k.lower()], n_results=1)
+        
         result = [
             {
                 "page_content": result["documents"][0][i],
@@ -69,23 +70,33 @@ class ChromaService:
             }
             for i in range(len(result["ids"][0]))
         ]
-
+        # print(result)
         return (result[0], index)
 
-    async def validate_change_topic(self, new_topic: dict, user_message: str, openai_client):
+    async def validate_change_topic(self, new_topic: list, user_message: str, openai_client):
         pattern = r'[ \-_]+' 
-        words = re.split(pattern=pattern, string=new_topic['metadata']['source'])
-        words.extend(re.split(pattern=pattern, string=new_topic['page_content']))
-        # print(user_message)
-        # print(words)
-        for word in words:
-            if word in user_message.lower():
-                return True
-        response = await  self.openai_service.check_change_topic(topic_names = words, user_message=user_message, openai_client=openai_client)
+        list_words = []
+        for topic in new_topic:
+            words = re.split(pattern=pattern, string=topic[0]['metadata']['source'])
+            words.extend(re.split(pattern=pattern, string=topic[0]['page_content']))
+            list_words.append(words)
+        reject_bow = ['of', 'in', 'on', 'at']
+        for index, words in enumerate(list_words):
+            for word in words:
+                if (word in user_message.lower()) and (word not in reject_bow):
+                    return {
+                        "is_valid": True,
+                        "topic_index": index
+                    }
+        response = await  self.openai_service.check_change_topic(topic_names = list_words, user_message=user_message, openai_client=openai_client)
         is_valid_change = ast.literal_eval(response)['is_mentioned']
+        index = ast.literal_eval(response)['topic_index']
         # print(response)
         # print("Is_valid_change", is_valid_change)
-        return is_valid_change
+        return {
+            "is_valid": is_valid_change,
+            "topic_index": index    
+        }
     
     @traceable(run_type="retriever")
     async def retrieve_keyword(self, keyword: dict, global_topic: dict, user_message: str = "", openai_client = None) -> dict:
@@ -95,7 +106,7 @@ class ChromaService:
             retrieved_topics = []
             retrieved_tasks = []
             keyword = keyword.get("keywords", [])
-            
+          
             if len(keyword) == 0 and user_message != "":
                 keyword = [user_message]
             
@@ -107,21 +118,26 @@ class ChromaService:
             ]
 
             retrieved_topics = await asyncio.gather(*retrieved_tasks)
+            # print(retrieved_topics)
             retrieved_topics = list(
                 filter(lambda x: x[0]["metadata"]["type"] == "topic", retrieved_topics)
             )
 
             topics = retrieved_topics
-            
+          
             if len(topics) > 0:
                 topic = topics[0]
                 
                 keywords = list(filter(lambda x: x[1] != topic[1], keywords))
-                if global_topic != topic:
-                    check = await self.validate_change_topic(new_topic=topic[0], user_message=user_message, openai_client=openai_client)
-                    if check == True or check == "True":
+                if global_topic not in topics:
+                    check = await self.validate_change_topic(new_topic=topics, user_message=user_message, openai_client=openai_client)
+                    # print(check)
+                    if check['is_valid'] == True or check['is_valid'] == "True":
+                        index = check['topic_index']
+                        topic = topics[index]
                         topic = topic[0]["metadata"]
                         global_topic = topic
+                    
                 
                 
                 

@@ -874,7 +874,8 @@
                 "most recent rate",
                 "live value",
                 "nowadays price",
-                "current_price"
+                "current_price",
+                "current price"
             ],
             "public_price": [
                 "market value",
@@ -1639,19 +1640,6 @@
                 "vesting duration",
                 "vesting timetable",
                 "vesting_schedule"
-            ],
-            "current_price": [
-                "present value",
-                "instant cost",
-                "up-to-date price",
-                "real-time value",
-                "current rate",
-                "contemporary price",
-                "existing value",
-                "latest cost",
-                "nowadays rate",
-                "today's price",
-                "current_price"
             ],
             "public_price": [
                 "market value",
@@ -2601,19 +2589,6 @@
             ]
         },
         "overview_ido_upcoming": {
-            "slug": [
-                "blockchain token",
-                "digital asset",
-                "cryptocurrency",
-                "crypto coin",
-                "tokenized asset",
-                "blockchain-based token",
-                "virtual currency",
-                "digital token",
-                "crypto token",
-                "tokenized cryptocurrency",
-                "slug"
-            ],
             "name": [
                 "identifier",
                 "title",
@@ -2770,32 +2745,6 @@
                 "blockchain clarification",
                 "description"
             ],
-            "excerpt": [
-                "passage",
-                "extract",
-                "snippet",
-                "portion",
-                "segment",
-                "quote",
-                "paragraph",
-                "section",
-                "part",
-                "sample",
-                "excerpt"
-            ],
-            "type": [
-                "blockchain technology",
-                "distributed ledger",
-                "cryptocurrency",
-                "smart contract",
-                "digital asset",
-                "blockchain system",
-                "decentralized database",
-                "virtual currency",
-                "crypto",
-                "immutable record",
-                "type"
-            ],
             "status": [
                 "condition",
                 "state",
@@ -2847,131 +2796,6 @@
                 "final destination address",
                 "address where funds are received",
                 "address_receiver"
-            ],
-            "airdrop_chain_id": [
-                "airdrop blockchain identifier",
-                "token distribution network id",
-                "giveaway ledger code",
-                "bounty campaign blockchain tag",
-                "free tokens chain number",
-                "airdrop distributed ledger id",
-                "token giveaway network code",
-                "bounty program blockchain identifier",
-                "complimentary coins chain id",
-                "freebies blockchain token id",
-                "airdrop_chain_id"
-            ],
-            "sort": [
-                "arrange",
-                "organize",
-                "classify",
-                "order",
-                "categorize",
-                "blockchain sorting",
-                "smart contract arrangement",
-                "ledger organization",
-                "distributed database classification",
-                "transaction order",
-                "sort"
-            ],
-            "total_token": [
-                "overall token",
-                "complete token",
-                "entire token",
-                "whole token",
-                "full token",
-                "total cryptocurrency unit",
-                "aggregate digital currency token",
-                "sum of all tokens",
-                "combined token amount",
-                "entirety of tokens",
-                "total_token"
-            ],
-            "bonus_progress": [
-                "extra reward advancement",
-                "additional benefit development",
-                "premium increment",
-                "incentive growth",
-                "supplementary advancement",
-                "bonus improvement",
-                "extra reward level",
-                "additional benefit stage",
-                "premium boost",
-                "incentive increase",
-                "bonus_progress"
-            ],
-            "display": [
-                "show",
-                "exhibit",
-                "present",
-                "demonstrate",
-                "reveal",
-                "displaying",
-                "exhibiting",
-                "presenting",
-                "demonstrating",
-                "revealing",
-                "display"
-            ],
-            "need_kyc": [
-                "kyc verification",
-                "know your customer",
-                "customer identification process",
-                "identity verification procedure",
-                "user authentication",
-                "need_kyc"
-            ],
-            "featured": [
-                "highlighted",
-                "prominent",
-                "showcased",
-                "spotlighted",
-                "recommended",
-                "featured content",
-                "top pick",
-                "selected",
-                "recommended items",
-                "prime",
-                "featured"
-            ],
-            "deployed": [
-                "implemented",
-                "launched",
-                "activated",
-                "executed",
-                "put into operation",
-                "deployed solution",
-                "implemented system",
-                "activated technology",
-                "executed project",
-                "launched application",
-                "deployed"
-            ],
-            "winner_published": [
-                "victor announced",
-                "champion revealed",
-                "successful person disclosed",
-                "triumphant individual made public",
-                "first-place finisher published",
-                "victor declared",
-                "champion unveiled",
-                "successful person released",
-                "triumphant individual exposed",
-                "first-place finisher shared",
-                "winner_published"
-            ],
-            "sibling": [
-                "brother or sister",
-                "sister or brother",
-                "related by blood",
-                "family member",
-                "kin",
-                "blockchain sibling",
-                "sister chain",
-                "interconnected chain",
-                "related blockchain",
-                "associated ledger",
-                "sibling"
             ],
             "ath": [
                 "altcoin",
@@ -3037,19 +2861,6 @@
                 "refund conditions",
                 "reimbursement policy",
                 "refund_policy"
-            ],
-            "forbidden_countries": [
-                "restricted nations",
-                "prohibited countries",
-                "blocked territories",
-                "banned regions",
-                "forbidden states",
-                "blacklisted nations",
-                "barred countries",
-                "not allowed territories",
-                "disallowed regions",
-                "restricted states",
-                "forbidden_countries"
             ],
             "social_networks": [
                 "social media platforms",
@@ -3194,45 +3005,6 @@
                 "straightforward execution policy",
                 "fcfs_policy"
             ],
-            "rule": [
-                "regulation",
-                "guideline",
-                "protocol",
-                "standard",
-                "rulebook",
-                "compliance requirement",
-                "legislative framework",
-                "code of conduct",
-                "governance principle",
-                "policy directive",
-                "rule"
-            ],
-            "series_content": [
-                "blockchain content series",
-                "chain information sequence",
-                "cryptocurrency data set",
-                "ledger material collection",
-                "digital asset content",
-                "block series",
-                "chain content sequence",
-                "crypto data series",
-                "ledger information set",
-                "digital asset series",
-                "series_content"
-            ],
-            "box_types": [
-                "types of boxes",
-                "varieties of containers",
-                "categories of crates",
-                "kinds of cartons",
-                "classifications of packages",
-                "box varieties",
-                "container types",
-                "crate categories",
-                "carton kinds",
-                "package classifications",
-                "box_types"
-            ],
             "backers": [
                 "supporters",
                 "investors",
@@ -3298,27 +3070,6 @@
                 "beforehand ordering stage",
                 "pre-order_phase"
             ],
-            "guaranteed": [
-                "assured",
-                "certain",
-                "confirmed",
-                "secured",
-                "ensured",
-                "guaranteed transaction",
-                "secured blockchain",
-                "verified contract",
-                "assured agreement",
-                "certain deal",
-                "guaranteed"
-            ],
-            "fcfs": [
-                "first-come-first-served",
-                "first in, first out",
-                "first-come, first-go",
-                "first-serve-first-come",
-                "first-come, first-serve",
-                "fcfs"
-            ],
             "revenue_stream": [
                 "income flow",
                 "earnings channel",
@@ -3344,6 +3095,42 @@
                 "sum of investments",
                 "complete financial backing",
                 "total_raise"
+            ],
+            "fdv": [
+                "fdv",
+                "FDV",
+                "Fully Diluted Valuation",
+                "Total Valuation",
+                "Maximum Valuation"
+            ],
+            "listing": [
+                "listing",
+                "enlisting",
+                "trading registration",
+                "public trading",
+                "public listing"
+            ],
+            "total_supply": [
+                "overall supply",
+                "aggregate supply",
+                "total issuance",
+                "total supply"
+            ],
+            "initial_market_cap": [
+                "initial market cap",
+                "starting market cap",
+                "initial market value",
+                "initial capital value",
+                "initial capitalization",
+                "launch market cap"
+            ],
+            "initial_circulating_supply": [
+                "initial circulating supply",
+                "initial circulation",
+                "starting circulating supply",
+                "initial supply in circulation",
+                "initial token circulation",
+                "initial token supply"
             ]
         }
     },
@@ -3708,6 +3495,7 @@
         },
         "ido": {
             "web3war": [
+                "web3war",
                 "w3w",
                 "web3w",
                 "web3warrior",
@@ -3718,7 +3506,6 @@
                 "web3war token integration",
                 "web3war virtual battles",
                 "web3war community",
-                "web3war",
                 "fps"
             ],
             "pecland-private": [

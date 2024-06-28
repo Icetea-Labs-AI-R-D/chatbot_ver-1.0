@@ -56,7 +56,7 @@ class ChatController:
                     {"role": "assistant", "content": _["content_assistant"]},
                 ]
             )
-        user_question = prompt
+        user_question = prompt.lower()
         context = "[]"
         features_keywords = {}
         suggestions = []
@@ -65,7 +65,7 @@ class ChatController:
             suggestions = raw_history[-1].get("suggestion", [])
         suggestion = {}
         for s in suggestions:
-            if s.get("question", "") == user_question:
+            if s.get("question", "") == prompt:
                 suggestion = s
                 selected_suggestions.append(suggestion)
                 break

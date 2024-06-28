@@ -1,0 +1,1 @@
+docker stop $(docker ps -qf name=chatbot)
