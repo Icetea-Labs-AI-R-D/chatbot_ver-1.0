@@ -524,7 +524,8 @@ async def get_overview_ido(name, keywords=[]):
     
     # Status
     status = {
-        "description": "Not announcement about the phases yet"
+        "data": "Not announcement about the phases yet",
+        'isNull': True
     }
     if data.get('claim_schedule') is not None:
         phase = "CLAIM PHASE"
@@ -708,38 +709,41 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
         "Accept": "application/json",
     }
     description = {
-    "slug": "Abbreviation for the project name.",
     "name": "Name of project.",
     "description": "Providing an overview of the project",
     "status": "Status of the IDO on GameFi.org.",
     "vesting_schedule": "Scheduled vesting period for the project's token.",
     "whitelist": "The timeframe during which the whitelist is open to receive registrations from individuals who want to participate in the project's IDO.",
-    "refund_policy": "The policy regarding refunding funds in case the IDO is unsuccessful or if any issues arise. This information may include the conditions and regulations for requesting a refund, the timeframe, and the process for refunding.",
+    "refund_policy": "The policy regarding refunding funds in case the IDO is unsuccessful or if any issues arise.",
     "buying_phases": "The time or period during which users can purchase tokens or participate in the project's IDO.",
     "token": {
-        "type": "The specific category or standard this token adheres to, defining its functionality and interaction within its respective blockchain ecosystem.",
-        "symbol": "The unique identifier or abbreviation for this token, used for trading and referencing in the cryptocurrency markets.",
-        "price": "The IDO price for this token, announced at IDO's launch, unit of calculation is USDT.",
-        "decimals": "The maximum number of decimal places to which this token can be subdivided, indicating the smallest possible transaction unit for this token."
+        "price": "The IDO price for this token on GameFi.org, announced at IDO's launch, unit of calculation is USDT.",
     },
-    "social_networks": "Provide information about the links to the project's social media pages or social media platforms of IDO project.",
+    "social_networks": "Information about the links to the project's social media pages of IDO project.",
     "roadmap": "The project's roadmap, which outlines the key milestones and objectives that the project aims to achieve in the future.",
-    "revenue_streams": "Provide information about the sources of income that the project is expected to generate during its operation.",
-    "token_utilities": "Provide information about the applications and features that the project's token will provide.",
-    "highlights": "Provide information about the unique and standout aspects of the project. This information may include significant achievements, advanced technologies utilized, competitive advantages, market opportunities, or any other strengths that the project aims to highlight to attract the attention of the community and potential investors during the IDO process",
+    "revenue_streams": "Information about the sources of income that the IDO project is expected to generate during its operation.",
+    "token_utilities": "Information about the applications and features that the project's token will provide.",
+    "highlights": "Information about the unique and standout aspects of the IDO project.",
     "launchpad": "The platform or service that is hosting the IDO for the project.",
-    "team": "Provide information about the team members and their roles in the project. This information may include the team members' names, positions, experiences, and contributions to the project.",
-    "investors_and_partners": "Provide information about the investors and partners that are supporting the project. This information may include the names of the investors and partners, their contributions, and the benefits they bring to the project.",
-    "investors": "Provide information about the investors that are supporting the project. This information may include the names of the investors, their contributions, and the benefits they bring to the project.",
-    "partners": "Provide information about the partners that are supporting the project. This information may include the names of the partners, their contributions, and the benefits they bring to the project.",
-    "business_model": "Provide information about the business model that the project is implementing. This information may include the revenue streams, target markets, value propositions, and other key elements that define the project's business model.",
-    "tokenomics": "Provide information about the tokenomics of the project. This information may include the token distribution, token supply, token allocation, token utility, and other key elements that define the project's tokenomics.",
-    "total_raise": "The total amount of funds the project aims to raise through the Initial DEX Offering (IDO) process and other funding rounds. This information provides an overview of the level of attractiveness and interest from the community and potential investors towards the project, unit of calculation is USD.", 
+    "team": "Information about the team members and their roles in the project IDO.",
+    "investors_and_partners": "Information about the investors and partners that are supporting the IDO project.",
+    "investors": "Information about the investors that are supporting the IDO project.",
+    "partners": "Information about the partners that are supporting the IDO project.",
+    "business_model": "Information about the business model that the IDO project is implementing. ",
+    "tokenomics": "Information about the tokenomics of the project. ",
+    "total_raise": "Total funds raised during token sale event of IDO on GameFi.org, unit of calculation is USD.", 
+    "fdv": "fully diluted valuation, provide total token value at full issuance.",
+    "total_supply": "Total supply of the IDO project",
+    "listing_date": "Initial public trading date for tokens of IDO",
+    "initial_market_cap": "Token value at initial public offering of IDO",
+    "initial_circulating_supply": "Circulating supply of IDO project at initial public offering"
     }
     # Some list key to remove
     list_remove_item = ['id', 'game_slug','excerpt', 'banner', 'logo',
         'airdrop_chain_id','display', 'need_kyc', 'featured', 'deployed', 'winner_published',
-        'series_content', 'rule', 'box_types', 'sibling','contract_address', 'address_receiver'
+        'series_content', 'rule', 'box_types', 'sibling','contract_address', 'address_receiver',
+        'categories', 'created_at', 'backers', 'fcfs_policy', 'sort', 'type', 'bonus_progress', 'ath',
+        'forbidden_countries'
     ]
     list_token_remove = [
         'chain_id', 'logo', 'address'
@@ -763,12 +767,44 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
         response = await client.get(url, headers=headers)
         response = response.json()
     data = response["data"]
+    # Cryptorank
+    list_slug = []
+    list_slug.append(name);
+    if name.find("-") != -1:
+        slug1 = name.replace('-','')
+        list_slug.append(slug1)
+        slug2 = name.replace('-','_')
+        list_slug.append(slug2)
+    if name.find("_") != -1:
+        slug1 = name.replace('_','')
+        list_slug.append(slug1)
+        slug3 = name.replace('_','-')
+        list_slug.append(slug3);
+    async with httpx.AsyncClient() as client:
+        for slug in list_slug:
+            url = f'''https://api.cryptorank.io/v0/coins/{slug}'''
+            response = await client.get(url)
+            data_cryptorank = response.json()
+            if data_cryptorank.get('statusCode') is None or data_cryptorank.get('statusCode') != 404:
+                break
+    # print(data_cryptorank['data']['icoFullyDilutedMarketCap'])
+    # print(data_cryptorank['data']['totalSupply'])
+    # print(data_cryptorank['data']['listingDate'])
+    # print(data_cryptorank['data']['initialMarketCap'])
+    # print(data_cryptorank['data']['initialSupply'])
     project = {}
     # Take project by name
     for prj in data:
         if prj.get("slug") == name:
             project = prj
             break
+    
+    # Add cryptorank data
+    project['fdv'] = data_cryptorank['data']['icoFullyDilutedMarketCap']
+    project['total_supply'] = data_cryptorank['data']['totalSupply']
+    project['listing_date'] = data_cryptorank['data']['listingDate']
+    project['initial_market_cap'] = data_cryptorank['data']['initialMarketCap']
+    project['initial_circulating_supply'] = data_cryptorank['data']['initialSupply']
     # Remove key of project
     for key in list_remove_item:
         project.pop(key, None)
@@ -847,7 +883,8 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
 
     # # Status
     status = {
-        "description": "Not announcement about the phases yet"
+        "data": "Not announcement about the phases yet",
+        'isNull': True
     }
     if project.get('claim_schedule') is not None:
         phase = "CLAIM PHASE"
@@ -899,6 +936,8 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
                     "to": str(date_to),
                 }
     project['status'] = status
+
+    # 
 
     # Replace claim policy with vesting schedule
     if project.get('claim_policy') is not None:

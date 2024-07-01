@@ -5,15 +5,6 @@
         "Introduce the Axie Infinity game."
     ],
     "backer_gamehub": {
-        "community_rank": {
-            "id": "c490d38e-bc15-4d7b-8ce2-ea7696f72284",
-            "questions": [
-                "Rank of <game-name> in the community?",
-                "Community rank of <game-name>?",
-                "<game-name>'s rank in the community?"
-            ],
-            "is_related": false
-        },
         "token_price": {
             "id": "4e0a8549-f7e8-4811-85d8-e050861ea434",
             "questions": [
@@ -60,14 +51,6 @@
             ],
             "is_related": true
         },
-        "twitter_interaction": {
-            "id": "f9d0d76c-b0a0-43d3-b6c1-06614236492e",
-            "questions": [
-                "How is the Twitter interaction for <game-name>?",
-                "Twitter interaction of <game-name>?"
-            ],
-            "is_related": true
-        },
         "community_rank": {
             "id": "c490d38e-bc15-4d7b-8ce2-ea7696f72284",
             "questions": [
@@ -83,33 +66,6 @@
                 "Rank of <game-name> in the market?",
                 "Market rank of <game-name>?",
                 "What is the market rank of <game-name>?"
-            ],
-            "is_related": true
-        },
-        "twitter_rank": {
-            "id": "42f9cf07-49c4-47d4-a2e7-e874df85e481",
-            "questions": [
-                "Rank of <game-name> on Twitter?",
-                "Twitter rank of <game-name>?",
-                "<game-name>'s Twitter rank?"
-            ],
-            "is_related": true
-        },
-        "telegram_rank": {
-            "id": "1673d878-29b2-42c6-9b7c-28f90bb805dc",
-            "questions": [
-                "What is the Telegram rank of <game-name>?",
-                "Telegram rank of <game-name>?",
-                "Rank of <game-name> on Telegram?"
-            ],
-            "is_related": true
-        },
-        "discord_rank": {
-            "id": "e085bc40-9b28-4296-b816-89b62f9797d2",
-            "questions": [
-                "Discord position of <game-name>?",
-                "Discord rank of <game-name>?",
-                "Rank of <game-name> on Discord?"
             ],
             "is_related": true
         },
@@ -133,24 +89,6 @@
             ],
             "is_related": true
         },
-        "social_signal_24h": {
-            "id": "86612d07-483d-4454-bf5b-ee8a8f5659e0",
-            "questions": [
-                "Social signal 24h of <game-name>?",
-                "Social signal in 24 hours for <game-name>? ",
-                "24h social signal for <game-name>?"
-            ],
-            "is_related": true
-        },
-        "social_score_24h": {
-            "id": "73dbfb92-ac16-49c8-8282-b9667ff16d3b",
-            "questions": [
-                "Social score 24h of <game-name>?",
-                "Social score in 24 hours for <game-name>?",
-                "<game-name>'s 24-hour social score?"
-            ],
-            "is_related": true
-        },
         "uaw_24h": {
             "id": "721595c0-c25b-4ae7-b57e-3814da92bd99",
             "questions": [
@@ -168,23 +106,6 @@
                 "<game-name>'s 24-hour transactions?"
             ],
             "is_related": true
-        },
-        "holders_24h": {
-            "id": "effe5449-f875-4b97-a942-0d7804db91bd",
-            "questions": [
-                "Holders 24h of <game-name>?",
-                "What is the holders 24h of <game-name>?"
-            ],
-            "is_related": true
-        },
-        "volume_24h_change": {
-            "id": "8c6cd341-ae17-40e8-b91e-8cb4a0b0f21a",
-            "questions": [
-                "Volume 24h change of <game-name>?",
-                "What is the volume 24h change of <game-name>?",
-                "24-hour volume variation of <game-name>?"
-            ],
-            "is_related": false
         }
     },
     "on-chain-performance_gamehub": {
@@ -222,32 +143,6 @@
                 "Market capitalization of <game-name>?",
                 "What is the market cap of <game-name>?",
                 "<game-name>'s market cap?"
-            ],
-            "is_related": true
-        },
-        "market_cap_7d_change": {
-            "id": "440d2361-6ee5-4096-97f5-7f27a30deafe",
-            "questions": [
-                "Market cap change in 7 days for <game-name>?",
-                "7-day market cap variation of <game-name>?",
-                "<game-name>'s 7-day market cap change?"
-            ],
-            "is_related": true
-        },
-        "uaw_7d_change": {
-            "id": "a21e3b03-1c63-4fb3-ad31-357b5d5aa877",
-            "questions": [
-                "UAW change in 7 days for <game-name>?",
-                "<game-name>'s 7-day UAW change?"
-            ],
-            "is_related": true
-        },
-        "nft_transaction_7d_change": {
-            "id": "659e8810-8224-4a54-a95d-bbe3ce99d6f0",
-            "questions": [
-                "NFT transaction change in 7 days for <game-name>?",
-                "7d NFT transaction change for <game-name>?",
-                "<game-name> 7d NFT transaction fluctuation?"
             ],
             "is_related": true
         },
@@ -310,14 +205,6 @@
         }
     },
     "overview_gamehub": {
-        "status": {
-            "id": "0d65db1c-9e2f-40f6-89cf-050a87edaf6d",
-            "questions": [
-                "Status of <game-name>?",
-                "What is the status of <game-name>?"
-            ],
-            "is_related": true
-        },
         "published_at": {
             "id": "7c1da13f-d9b3-469b-996f-a971838a1896",
             "questions": [
@@ -548,8 +435,8 @@
         "status": {
             "id": "f60b1cf7-889d-46ed-a389-9ea67ba7df4e",
             "questions": [
-                "Status of <game-name>?",
-                "What is the status of <game-name>?"
+                "Status of <game-name> IDO on GameFi.org?",
+                "What is the status of <game-name> IDO on GameFi.org?"
             ],
             "is_related": true
         },
@@ -558,7 +445,6 @@
             "questions": [
                 "Vesting schedule of <game-name> IDO?",
                 "What is the vesting schedule of <game-name> IDO?",
-                "Policy on claims for <game-name>?",
                 "<game-name>'s IDO vesting schedule?"
             ],
             "is_related": true
@@ -566,26 +452,16 @@
         "refund_policy": {
             "id": "905d4b43-b46a-4622-8ebf-bff72c2d9802",
             "questions": [
-                "Refund policy of <game-name>?",
-                "What is the refund policy of <game-name>?",
-                "<game-name>'s refund policy?",
-                "Policy on refunds for <game-name>?"
-            ],
-            "is_related": true
-        },
-        "total_token": {
-            "id": "acf4e146-62ed-44cc-9a64-3b7cb20934a1",
-            "questions": [
-                "Total token of <game-name>?",
-                "How many tokens does <game-name> have in total?",
-                "<game-name>'s total token count?"
+                "Refund policy of <game-name> IDO on GameFi.org?",
+                "What is the refund policy of <game-name> IDO on GameFi.org?",
+                "<game-name>'s IDO refund policy on GameFi.org?"
             ],
             "is_related": true
         },
         "token": {
             "id": "a1cb4978-fd8b-4d2d-b121-cc13eb839e5a",
             "questions": [
-                "Token IDO price of <game-name>?",
+                "IDO token price of <game-name>?",
                 "What is the IDO price of <game-name> token?",
                 "<game-name>'s IDO token price?"
             ],
@@ -604,7 +480,7 @@
             "id": "6d6d830c-3018-454d-b24b-032129207e20",
             "questions": [
                 "Roadmap of <game-name>?",
-                "What is the roadmap for <game-name>?",
+                "What is the roadmap of <game-name>?",
                 "<game-name>'s roadmap?",
                 "Can you share the roadmap of <game-name>?"
             ],
@@ -642,7 +518,7 @@
         "launchpads": {
             "id": "57847a9c-0096-4633-b08f-d18d03f56908",
             "questions": [
-                "Launchpad of <game-name>?",
+                "Launchpads list of <game-name> IDO?",
                 "What is the launchpad of <game-name>?"
             ],
             "is_related": true
@@ -650,10 +526,9 @@
         "total_raise": {
             "id": "8f99aad9-d1a4-4ca8-8775-218da7305dad",
             "questions": [
-                "Total raised of <game-name>?",
-                "Total funds raised by <game-name>?",
-                "Total amount raised for <game-name>?",
-                "<game-name>'s total raise amount?"
+                "Total raised of <game-name> IDO on GameFi.org?",
+                "Total funds raised of <game-name> IDO on GameFi.org??",
+                "<game-name> IDO's total raise amount on GameFi.org?"
             ],
             "is_related": true
         }
@@ -767,7 +642,29 @@
                 "Launchpads list of <game-name> IDO?"
             ],
             "is_related": true
-        }
+        },
+        "fdv": {
+            "id": "f6d41aea-747e-46b1-9e0f-66640a7a5db4",
+            "questions": [
+                "Fully diluted valuation of <game-name>?",
+                "What is the FDV of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "total_supply": {
+            "id": "ec31b0e9-0674-4560-9e88-c12f7f7c2d31",
+            "questions": [
+                "Total supply of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "initial_market_cap": {
+            "id": "ec31b0e9-0674-4560-9e88-c12f7f7c2d31",
+            "questions": [
+                "Initial market cap of <game-name>?"
+            ],
+            "is_related": true
+        },
     },
     "overview_list_ido_upcoming": {
         "status": {
@@ -776,17 +673,16 @@
                 "Status of <game-name> IDO on GameFi.org?",
                 "What is the status of <game-name> IDO on GameFi.org?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "vesting_schedule": {
             "id": "41c678aa-d5e5-4b5a-a6c5-6a32eeb57da6",
             "questions": [
-                "Claim policy of <game-name>?",
-                "What is the claim policy of <game-name>?",
-                "Policy on claims for <game-name>?",
-                "<game-name>'s claim policy?"
+                "Vesting schedule of <game-name> IDO?",
+                "What is the vesting schedule of <game-name> IDO?",
+                "<game-name>'s IDO vesting schedule?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "white_list": {
             "id": "e9636188-3fbf-4356-84cb-8ae7e22c848d",
@@ -796,7 +692,7 @@
                 "Whitelist opening date of <game-name> IDO on GameFi.org?",
                 "Opening date of the whitelist for <game-name> IDO on GameFi.org?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "refund_policy": {
             "id": "cc3225b3-61e4-4f49-8eea-385b4f993aa6",
@@ -805,7 +701,7 @@
                 "Refund policy of <game-name> IDO on GameFi.org?",
                 "What is the refund policy of <game-name> IDO on GameFi.org?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "token_price": {
             "id": "4084584b-e7b2-4c4b-9a20-eea6f7b3fb7e",
@@ -813,7 +709,7 @@
                 "IDO token price of <game-name>?",
                 "<game-name>'s IDO token price?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "roadmap": {
             "id": "cf4b832b-e9ec-4c98-84e4-f6e8cbb6376f",
@@ -822,7 +718,7 @@
                 "What is the roadmap of <game-name>?",
                 "<game-name>'s roadmap?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "social_networks": {
             "id": "7c6a69df-48f8-4b70-b72a-e2fb13e5cc00",
@@ -831,7 +727,7 @@
                 "Social channels of <game-name>?",
                 "What are the social channels of <game-name>?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "total_raise": {
             "id": "955f84fb-f6f3-4ce3-be5a-71bdf6bd8f18",
@@ -840,7 +736,7 @@
                 "Total funds raised of <game-name> IDO on GameFi.org?",
                 "<game-name> IDO's total raise amount on GameFi.org?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "highlights": {
             "id": "69af019f-2a98-4a23-a65b-0d1e1c2caab3",
@@ -850,7 +746,7 @@
                 "What are the highlights of <game-name>?",
                 "<game-name>'s main highlights?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "revenue_streams": {
             "id": "673350bb-57d5-476a-9dec-e9a5ffe6498f",
@@ -860,7 +756,7 @@
                 "Sources of revenue for <game-name>?",
                 "How does <game-name> generate revenue?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "token_utilities": {
             "id": "66d10411-e1ed-43c0-b26c-f1a12aec8f8c",
@@ -869,7 +765,7 @@
                 "What are the token utilities of <game-name>?",
                 "<game-name>'s token utilities?"
             ],
-            "is_related": true
+            "is_related": false
         },
         "launchpad": {
             "id": "70592a9f-62c3-43f3-ba1a-33aa31591967",
@@ -878,7 +774,7 @@
                 "<game-name> IDO's launchpads?",
                 "Launchpads list of <game-name> IDO?"
             ],
-            "is_related": true
+            "is_related": false
         }
     }
 }

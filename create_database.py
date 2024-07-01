@@ -129,15 +129,7 @@ if __name__ == "__main__":
                     
     
     embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY1'))
-    client = chromadb.HttpClient(host="chroma")
-    
-    # client = chromadb.HttpClient()
-    try:
-        client.delete_collection("vector_docs")
-        client.delete_collection("vector_content")
-        client.delete_collection("vector_topic")
-    except:
-        pass
+    client = chromadb.HttpClient(host=os.getenv("CHROMA_HOST"))
     
     vector_docs = client.get_or_create_collection(
         name="vector_docs", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
@@ -145,6 +137,14 @@ if __name__ == "__main__":
         name="vector_content", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
     vector_topic = client.get_or_create_collection(
         name="vector_topic", embedding_function=embedding_function, metadata={"hnsw:space": "cosine"})
+
+    try:
+        vector_docs.delete(ids=vector_docs.get()['ids'])
+        vector_content.delete(ids=vector_content.get()['ids'])
+        vector_topic.delete(ids=vector_topic.get()['ids'])
+    except:
+        pass
+    
 
     add_full_data_to_vector(data_all, vector_docs)
     add_full_data_to_vector(data_content, vector_content)

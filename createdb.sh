@@ -1,1 +1,1 @@
-python3 ./script/create_database.py
+CHROMA_HOST='localhost' python3 ./create_database.py

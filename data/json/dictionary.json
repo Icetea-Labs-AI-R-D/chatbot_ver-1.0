@@ -1,137 +1,5 @@
 {
     "content": {
-        "community-performance_gamehub": {
-            "community-performance": [
-                "network efficiency",
-                "blockchain productivity",
-                "community effectiveness",
-                "peer-to-peer network capability",
-                "group accomplishment",
-                "decentralized system efficiency",
-                "community strength",
-                "blockchain performance",
-                "decentralized network effectiveness",
-                "group productivity",
-                "community-performance"
-            ],
-            "telegram_group_users": [
-                "users of telegram group",
-                "members of telegram group",
-                "participants in telegram group",
-                "people in telegram group",
-                "individuals in telegram group",
-                "telegram group members",
-                "telegram group participants",
-                "telegram group users",
-                "telegram community members",
-                "telegram chat participants",
-                "telegram_group_users"
-            ],
-            "twitter_followers": [
-                "followers on twitter",
-                "twitter audience",
-                "social media followers",
-                "twitter supporters",
-                "follower count",
-                "twitter connections",
-                "twitter fans",
-                "follower base",
-                "twitter following",
-                "follower numbers",
-                "twitter_followers"
-            ],
-            "discord_users": [
-                "users on discord",
-                "discord members",
-                "participants in discord",
-                "individuals using discord",
-                "people on discord",
-                "members of discord server",
-                "active discord users",
-                "engaged discord community",
-                "registered discord accounts",
-                "online discord participants",
-                "discord_users"
-            ],
-            "twitter_interaction": [
-                "social media engagement",
-                "online interaction on twitter",
-                "digital communication on twitter",
-                "social network involvement",
-                "web-based engagement on twitter",
-                "twitter activity",
-                "online presence on twitter",
-                "digital connection on twitter",
-                "social media participation",
-                "web interaction on twitter",
-                "twitter_interaction"
-            ],
-            "community_rank": [
-                "rank within the community",
-                "community standing",
-                "position in the community",
-                "community rating",
-                "community status",
-                "community placement",
-                "social network rank",
-                "group ranking",
-                "society level",
-                "community hierarchy",
-                "community_rank"
-            ],
-            "market_rank": [
-                "rank in the market",
-                "market standing",
-                "position in the market",
-                "market rating",
-                "market placement",
-                "market position",
-                "market order",
-                "market hierarchy",
-                "market classification",
-                "market level",
-                "market_rank"
-            ],
-            "twitter_rank": [
-                "rank on twitter",
-                "twitter position",
-                "social media ranking",
-                "twitter popularity",
-                "twitter score",
-                "social network standing",
-                "position on twitter",
-                "twitter influence level",
-                "social media status",
-                "twitter engagement ranking",
-                "twitter_rank"
-            ],
-            "telegram_group_rank": [
-                "telegram channel rating",
-                "telegram community ranking",
-                "telegram group position",
-                "telegram chat hierarchy",
-                "telegram forum standing",
-                "telegram channel score",
-                "telegram community status",
-                "telegram group placement",
-                "telegram chat order",
-                "telegram forum level",
-                "telegram_group_rank"
-            ],
-            "discord_rank": [
-                "discord level",
-                "discord hierarchy",
-                "discord position",
-                "discord status",
-                "discord standing",
-                "level in discord",
-                "hierarchy on discord",
-                "position within discord",
-                "status in discord",
-                "standing on discord",
-                "discord_rank"
-            ]
-        },
         "daily-index_gamehub": {
             "daily-index": [
                 "daily indicator",
@@ -159,27 +27,6 @@
                 "leading gamefi platforms",
                 "gamefi_ranking"
             ],
-            "social_signal_24h": [
-                "social media activity in the last 24 hours",
-                "24-hour social media signal",
-                "daily social network impact",
-                "real-time social presence over a day",
-                "one-day social media influence",
-                "social network signal within 24 hours",
-                "day-long social media impact",
-                "24-hour social networking effect",
-                "daily social media activity",
-                "social signal within a day",
-                "social_signal_24h"
-            ],
-            "social_score_24h": [
-                "social reputation score in the last 24 hours",
-                "community rating over the past day",
-                "online presence rating for the previous 24 hours",
-                "social media influence score within the last day",
-                "24-hour social engagement index",
-                "social_score_24h"
-            ],
             "uaw_24h": [
                 "uaw 24-hour",
                 "universal awareness 24-hour",
@@ -205,19 +52,6 @@
                 "transactions across 24 hours",
                 "transactions for a whole day",
                 "transactions_24h"
-            ],
-            "holders_24h": [
-                "owners in 24 hours",
-                "users within 24 hours",
-                "participants in a day",
-                "accounts in a day",
-                "wallets within 24 hours",
-                "holders over 24 hours",
-                "owners during the last day",
-                "users within the past 24 hours",
-                "participants in a single day",
-                "accounts within the last day",
-                "holders_24h"
             ]
         },
         "on-chain-performance_gamehub": {
@@ -260,14 +94,6 @@
                 "system throughput",
                 "volume"
             ],
-            "volume_24h_changed": [
-                "24-hour volume change",
-                "changed volume in 24 hours",
-                "24-hour trading volume difference",
-                "fluctuation in 24-hour volume",
-                "variation in daily volume",
-                "volume_24h_changed"
-            ],
             "market_cap": [
                 "market capitalization",
                 "total market value",
@@ -280,45 +106,6 @@
                 "blockchain industry size",
                 "virtual asset market value",
                 "market_cap"
-            ],
-            "market_cap_7d_changed": [
-                "7-day market cap change",
-                "market capitalization 7-day variation",
-                "7-day market cap fluctuation",
-                "market cap change over a week",
-                "7-day market capitalization shift",
-                "market cap movement in the last 7 days",
-                "7-day market cap difference",
-                "market capitalization change over the past week",
-                "7-day market cap adjustment",
-                "market cap variation in the last 7 days",
-                "market_cap_7d_changed"
-            ],
-            "uaw_7d_changed": [
-                "uaw 7-day changed",
-                "uaw weekly variation",
-                "uaw 7-day difference",
-                "uaw seven-day adjustment",
-                "uaw one week shift",
-                "uaw 7-day fluctuation",
-                "uaw weekly modification",
-                "uaw 7-day transformation",
-                "uaw seven-day alteration",
-                "uaw one week adjustment",
-                "uaw_7d_changed"
-            ],
-            "nft_transaction_7d_changed": [
-                "nft transaction change in the last 7 days",
-                "variation in nft transactions over the past week",
-                "nft transaction difference in the previous 7 days",
-                "fluctuation in nft transactions within the last week",
-                "nft transaction alteration in the past 7 days",
-                "nft transaction 7-day shift",
-                "nft transaction week-long adjustment",
-                "nft transaction 7-day difference",
-                "nft transaction one-week modification",
-                "nft transaction 7-day transformation",
-                "nft_transaction_7d_changed"
             ],
             "volume_rank": [
                 "rank by volume",
@@ -380,19 +167,6 @@
                 "distributed ledger standing",
                 "onchain_rank"
             ],
-            "market_rank": [
-                "rank in the market",
-                "position in the market",
-                "market standing",
-                "market placement",
-                "market position",
-                "ranking in the industry",
-                "industry rank",
-                "crypto market rank",
-                "digital asset ranking",
-                "blockchain market standing",
-                "market_rank"
-            ],
             "circulating_supply": [
                 "circulating amount",
                 "available supply",
@@ -433,19 +207,6 @@
                 "crypto whitepaper",
                 "blockchain documentation",
                 "whitepaper"
-            ],
-            "status": [
-                "state",
-                "condition",
-                "position",
-                "situation",
-                "standing",
-                "blockchain status",
-                "cryptocurrency state",
-                "ledger condition",
-                "smart contract position",
-                "distributed ledger situation",
-                "status"
             ],
             "published_at": [
                 "release date",
@@ -1462,32 +1223,6 @@
                 "telegram channel level",
                 "telegram_channel_rank"
             ],
-            "twitter_rank": [
-                "twitter score",
-                "social media ranking",
-                "twitter influence level",
-                "ranking on twitter",
-                "twitter popularity index",
-                "twitter engagement rank",
-                "social media influence level on twitter",
-                "twitter presence rating",
-                "twitter activity level",
-                "twitter visibility score",
-                "twitter_rank"
-            ],
-            "discord_rank": [
-                "discord level",
-                "discord hierarchy",
-                "discord position",
-                "discord standing",
-                "discord order",
-                "server rank on discord",
-                "discord role ranking",
-                "discord status level",
-                "discord authority position",
-                "discord place",
-                "discord_rank"
-            ],
             "social_health": [
                 "community well-being",
                 "public health",
@@ -2115,19 +1850,6 @@
                 "cryptocurrency classification",
                 "digital ledger ordering",
                 "sort"
-            ],
-            "total_token": [
-                "aggregate token",
-                "complete token",
-                "entire token",
-                "whole token",
-                "totality of token",
-                "full token amount",
-                "overall token quantity",
-                "complete sum of token",
-                "entirety of token supply",
-                "total number of tokens",
-                "total_token"
             ],
             "bonus_progress": [
                 "extra reward advancement",

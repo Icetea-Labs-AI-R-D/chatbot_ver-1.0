@@ -231,7 +231,7 @@ class OpenAIService:
         """
         nl = "\n"
 
-        user_message = f"""Does any of these words in {enumerate(topic_names)} is mentioned in this sentence "{user_message}" 
+        user_message = f"""Does any of these words in {list(enumerate(topic_names))} is mentioned in this sentence "{user_message}" 
         Response in a JSON format like this {{"is_mentioned": "True"/"False", "topic_index": index in topic_names}}"""
         
         messages = [
@@ -296,16 +296,24 @@ class OpenAIService:
         stream = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
             messages=messages,
-            stream=True,
+            # stream=True,
         )
 
-        answer = ""
+        answer = stream.choices[0].message.content
 
-        async for chunk in stream:
-            token = chunk.choices[0].delta.content
-            if token is not None:
-                answer += token
-                yield token
+        # async for chunk in stream:
+        #     token = chunk.choices[0].delta.content
+        #     if token is not None:
+        #         answer += token
+                # yield token
+        
+        # Process image link
+        
+        image_url_pattern = r'(https?://[^\s]+(?:\.jpg|\.jpeg|\.png|\.gif))'
+
+        answer = re.sub(image_url_pattern, r'<image>\1</image>', answer)
+        
+        yield answer
         yield "<stop>"
         # Logic follow-up
         
@@ -329,12 +337,14 @@ class OpenAIService:
             # print("Question: ", keys)
 
             tmp_dict = {**question_dict_api}
-            
+            if 'status' in tmp_dict.get('data', {}) and tmp_dict['data']['status'].get('isNull', False) == True:
+                tmp_dict['data']['status'] = None
             # print(data)
             
             # Filter keys with no data
             for key in keys:
                 tmp_val = data['data'].get(key, "")
+                
                 if (tmp_val == "" or tmp_val == None or tmp_val == 0 or tmp_val == [] or tmp_val == {}) and question_dict_api[key]['is_related']:
                     # print("###Drop: ", key)
                     tmp_dict.pop(key)
@@ -375,7 +385,7 @@ class OpenAIService:
             list_question = list(map(lambda item:
                 {
                     'id': item[1]['id'],
-                    'question': item[1]['question'].replace('<game-name>', list_game_name[item[0]]),
+                    'question': item[1]['question'].replace('<game-name>', list_game_name[item[0] if item[0] < len(list_game_name) else random.randint(0, len(list_game_name)-1)]),
                     'is_related' : item[1]['is_related']
                 }, enumerate(list_question)))
             
@@ -425,18 +435,6 @@ class OpenAIService:
             
             suggestions = [item['question'] for item in list_question]
 
-        # conversation["history"].append({"role": "user", "content": question})
-        # conversation["history"].append({"role": "assistant", "content": answer})
-
-        # suggestion = await self.generate_suggestion(
-        #     context=context,
-        #     conversation=conversation["history"],
-        #     question_list=list_question,
-        #     global_topic=global_topic,
-        #     openai_client=openai_client,
-        # )
-        # suggestion = json.loads(suggestion)
-        # suggestions = [suggestion["suggestions"][:3]]
         
         # print(suggestions)
         reply_markup = {
@@ -466,7 +464,7 @@ class OpenAIService:
     async def list_upcoming_ido(self, conversation_id):
         res = await get_upcoming_IDO("")
         nl = '\n'
-        out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform.<stop>"""
+        out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform."""
         for line in out.split("\n"):
             yield line + '\n'
 
@@ -491,7 +489,7 @@ class OpenAIService:
         list_question = list(map(lambda item:
             {
                 'id': item[1]['id'],
-                'question': item[1]['question'].replace('<game-name>', list_game_name[item[0]]),
+                'question': item[1]['question'].replace('<game-name>', list_game_name[item[0] if item[0] < len(list_game_name) else random.randint(0, len(list_game_name)-1)]),
                 'is_related' : item[1]['is_related']
             }, enumerate(list_question)))
         
@@ -535,7 +533,8 @@ class OpenAIService:
         For more details and the full list of games, visit the official [GameFi website](https://gamefi.org).
         """
         yield out
-            
+        yield "<stop>"
+        
         message = {
             "content_user": "list games",
             "content_assistant": out,
