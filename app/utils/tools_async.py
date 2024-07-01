@@ -787,11 +787,7 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
             data_cryptorank = response.json()
             if data_cryptorank.get('statusCode') is None or data_cryptorank.get('statusCode') != 404:
                 break
-    # print(data_cryptorank['data']['icoFullyDilutedMarketCap'])
-    # print(data_cryptorank['data']['totalSupply'])
-    # print(data_cryptorank['data']['listingDate'])
-    # print(data_cryptorank['data']['initialMarketCap'])
-    # print(data_cryptorank['data']['initialSupply'])
+   
     project = {}
     # Take project by name
     for prj in data:
@@ -1105,3 +1101,16 @@ async def call_tools_async(feature_dict : dict) -> str:
     # except Exception as e:
     #     print("Error:",e)
     #     return ""
+
+
+@alru_cache(maxsize=32, ttl=60**3)
+async def get_upcoming_endpoint_response():
+    url = "https://ido.gamefi.org/api/v3/pools/upcoming"
+    headers = {
+        "Accept": "application/json",
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+    
+    return response    

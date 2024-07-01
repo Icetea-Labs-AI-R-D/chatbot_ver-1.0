@@ -7,6 +7,7 @@ from database.session import MongoManager
 from database.queue import AsyncQueue
 import random
 from utils.tools_async import get_upcoming_IDO
+import utils.tools_async as tools
 from typing import List
 import ast
 import re
@@ -23,7 +24,7 @@ def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: lis
     questions = list(filter(lambda x: x['id'] not in asked_ids, questions))
     
     force_rag = False
-    
+    # print(len(questions), global_topic['topic'])
     # Get all questions from topic if less than 3
     if len(questions) < 3 and 'upcoming' not in global_topic['topic']:
         # print("###Less than 3 questions")
@@ -44,9 +45,6 @@ def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: lis
             for k, v in value.items() if k != 'id']) 
         
     questions = list(filter(lambda x: x['id'] not in asked_ids, questions))
-    
-    # if force_rag:
-    #     print("###Force rag. Len questions: ", len(questions))
     
     related_questions = list(filter(lambda x: x['is_related'], questions))
     irrelated_questions = list(filter(lambda x: not x['is_related'], questions))
@@ -276,12 +274,12 @@ class OpenAIService:
         Context: {context}
 
         Let carefully analyze the context and the user's question to provide the best answer.
-        
         Answer BRIEFLY, with COMPLETE information and to the POINT of the user's question.
         The response style must be clear, easy to read, paragraphs that can have line breaks should be given line breaks.
         Note:
             - If the user's question is just normal communication questions (eg hello, thank you,...) that do not require information about games and IDO projects available on the GameFi platform, please respond as normal communication.
-            - If you can't find the information to answer the question, please answer that you couldn't find the information.
+            - If you can't find the information to answer the question, please answer that you couldn't find the information. 
+        Let's make sure to provide a friendly, engaging, and helpful experience for the user!
         """
 
         user_message = f"""{question}"""
@@ -295,6 +293,7 @@ class OpenAIService:
 
         stream = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
+            temperature=0.7,
             messages=messages,
             # stream=True,
         )
@@ -335,13 +334,13 @@ class OpenAIService:
             list_question = []
             # print("###Data: ", data['data'].keys())
             # print("Question: ", keys)
-
-            tmp_dict = {**question_dict_api}
-            if 'status' in tmp_dict.get('data', {}) and tmp_dict['data']['status'].get('isNull', False) == True:
-                tmp_dict['data']['status'] = None
+            # print("Status:", tmp_dict['data']['status'].get('isNull', False) == True)
+            if 'status' in data.get('data', {}) and data['data']['status'].get('isNull', False) == True:
+                data['data']['status'] = None
             # print(data)
             
             # Filter keys with no data
+            tmp_dict = {**question_dict_api}
             for key in keys:
                 tmp_val = data['data'].get(key, "")
                 
@@ -368,7 +367,7 @@ class OpenAIService:
         if global_topic.get("source", "") == "upcoming":
             list_game_name = ast.literal_eval(context.split('\n')[2].strip())['list_project']
             random.shuffle(list_game_name)
-            
+            game_data = await tools.get_upcoming_endpoint_response()
             # item = {index: (key, value)}
             # assign keyword
             list_question = list(map(lambda item:
@@ -388,6 +387,11 @@ class OpenAIService:
                     'question': item[1]['question'].replace('<game-name>', list_game_name[item[0] if item[0] < len(list_game_name) else random.randint(0, len(list_game_name)-1)]),
                     'is_related' : item[1]['is_related']
                 }, enumerate(list_question)))
+            
+            
+            # for i in range(0, max(len(list_question), 3), 1):
+                
+            #     list_question[i]['question'] = list_question[i]['question'].replace('<game-name>', list_game_name[i if i < len(list_game_name) else random.randint(0, len(list_game_name)-1)])
             
             suggestions =  [item['question'] for index, item in enumerate(list_question)]
         
@@ -421,7 +425,7 @@ class OpenAIService:
                     list_question = processed_list_question
 
             list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids, global_topic=global_topic, question_dict=self.question_dict)
-            
+          
             pattern = r'[ \-_]+' 
             
             game_name = ' '.join([word.capitalize() for word in re.split(pattern, global_topic['source'])])
@@ -434,7 +438,6 @@ class OpenAIService:
                     }, list_question))
             
             suggestions = [item['question'] for item in list_question]
-
         
         # print(suggestions)
         reply_markup = {
@@ -495,7 +498,6 @@ class OpenAIService:
         
         suggestions =  [item['question'] for index, item in enumerate(list_question)]
         
-        # print(suggestions)
         if len(suggestions) != 0:
             reply_markup = {
                 "text": "Maybe you want to know ⬇️:",
@@ -506,7 +508,7 @@ class OpenAIService:
         message = {
             "content_user": "list upcoming ido",
             "content_assistant": out,
-            "topic": {},
+            "topic": {'api': 'overview_list_ido_upcoming', 'source': 'upcoming', 'topic': 'list_ido_upcoming', 'type': 'topic'},
             "suggestion": list_question,
             "context": "",
             "features_keywords": {},

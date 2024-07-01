@@ -654,43 +654,68 @@
         "total_supply": {
             "id": "ec31b0e9-0674-4560-9e88-c12f7f7c2d31",
             "questions": [
-                "Total supply of <game-name>?"
+                "Total supply of <game-name>?",
+                "What is the total supply of <game-name>?"
             ],
             "is_related": true
         },
         "initial_market_cap": {
-            "id": "ec31b0e9-0674-4560-9e88-c12f7f7c2d31",
+            "id": "3f1459a8-eb97-40ef-9de0-4e3c1a681ef2",
             "questions": [
-                "Initial market cap of <game-name>?"
+                "Initial market cap of <game-name>?",
+                "What is the initial market cap of <game-name>?"
             ],
             "is_related": true
         },
+        "initial_circulating_supply": {
+            "id": "bc1bc58d-ced8-4405-a37c-f024226e9c2e",
+            "questions": [
+                "Initial circulating supply of <game-name>?",
+                "What is the initial circulating supply of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "business_model": {
+            "id": "f03ccc88-8bac-4c47-85fc-5d472ed6745c",
+            "questions": [
+                "Business model of <game-name>?",
+                "What is the business model of <game-name>?",
+                "<game-name>'s business model?"
+            ],
+            "is_related": true
+        },
+        "team": {
+            "id": "13af5dad-6061-4380-980b-7c7d1940b637",
+            "questions": [
+                "Who are the team members behind the <game-name>?",
+                "Who is the <game-name> team?"
+            ],
+            "is_related": true
+        },
+        "partners": {
+            "id": "ea944cc9-a650-4de1-adad-d5e0a621bba7",
+            "questions": [
+                "Who are <game-name>'s partners?",
+                "Who partners with <game-name>?"
+            ],
+            "is_related": true
+        },
+        "investors": {
+            "id": "de3c812a-75c7-4c6b-b4f4-1777075b6d41",
+            "questions": [
+                "Who are <game-name>'s investors?",
+                "Who invested in Better Fan?"
+            ],
+            "is_related": true
+        }
     },
     "overview_list_ido_upcoming": {
-        "status": {
-            "id": "055b41c0-e1af-44c3-84f3-09a0164f88e1",
-            "questions": [
-                "Status of <game-name> IDO on GameFi.org?",
-                "What is the status of <game-name> IDO on GameFi.org?"
-            ],
-            "is_related": false
-        },
         "vesting_schedule": {
             "id": "41c678aa-d5e5-4b5a-a6c5-6a32eeb57da6",
             "questions": [
                 "Vesting schedule of <game-name> IDO?",
                 "What is the vesting schedule of <game-name> IDO?",
                 "<game-name>'s IDO vesting schedule?"
-            ],
-            "is_related": false
-        },
-        "white_list": {
-            "id": "e9636188-3fbf-4356-84cb-8ae7e22c848d",
-            "questions": [
-                "What is the whitelist schedule of <game-name> IDO on GameFi.org?",
-                "When does <game-name> IDO whitelist open on GameFi.org?",
-                "Whitelist opening date of <game-name> IDO on GameFi.org?",
-                "Opening date of the whitelist for <game-name> IDO on GameFi.org?"
             ],
             "is_related": false
         },
