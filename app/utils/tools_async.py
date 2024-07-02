@@ -12,6 +12,13 @@ import chromadb
 load_dotenv('.env')
 
 list_ido_game = []
+# Load file slug_id.json
+path_to_json = os.path.join(
+    os.path.dirname(__file__), "../../data/json/slug_id.json"
+)
+with open(path_to_json, 'r') as filename:
+    slug_id = json.load(filename)
+
 # OpenAI embeddings
 embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY3'))
 chroma_client = chromadb.HttpClient(host=os.getenv('CHROMA_HOST'))  
@@ -80,7 +87,7 @@ async def update_topic_vector_db(vector_db):
     print(f"Added {len(new_topic)} items to vector {vector_db.name}")
     print(f"Total items in vector {vector_db.name} after update: {vector_db.count()}")
 
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_infor_overview_gamehub(name, keywords=[]):
     """Get token price, market cap, and other tokenomics information from GameFi API."""
     
@@ -240,7 +247,7 @@ async def get_infor_overview_gamehub(name, keywords=[]):
     #         overview['data'].pop(key)
     return overview
 
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_on_chain_performance_gamehub(name, keywords=[]):
     """Get game on-chain performance from GameFi API."""
    
@@ -271,7 +278,7 @@ async def get_on_chain_performance_gamehub(name, keywords=[]):
     }
     return res
 
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_community_performance_gamehub(name, keywords=[]):
     """Get community performance of a game from GameFi API."""
     
@@ -303,7 +310,7 @@ async def get_community_performance_gamehub(name, keywords=[]):
         "description": description
     }
     return res
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_daily_index_gamehub(name, keywords=[]):
     """Get daily ranking, social score, uaw, transaction and holder information in the last 24 hours of a game from GameFi API."""
    
@@ -332,7 +339,7 @@ async def get_daily_index_gamehub(name, keywords=[]):
         "description": description
     }
     
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_social_score_gamehub(name, keywords=[]):
     """Get social score of a game from GameFi API."""
     
@@ -365,7 +372,7 @@ async def get_social_score_gamehub(name, keywords=[]):
     }
     return res
 
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_top_backers_gamehub(name, keywords=[]):
     """Get all backers of a game from GameFi API."""
     
@@ -400,7 +407,7 @@ async def get_top_backers_gamehub(name, keywords=[]):
 def to_date(time):
     return str(datetime.fromtimestamp(time, timezone.utc))
 
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_overview_ido(name, keywords=[]):
 
     description = {
@@ -600,10 +607,10 @@ async def get_overview_ido(name, keywords=[]):
     
     return overview
 
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_tokenomics_gamehub(name, keywords=[]):
-    listID = {'mobox': 'cda1dd30-0128-4ffe-bb65-29001e1ad0e9', 'the-sandbox': '08c1027f-4984-487a-a968-3c710ef2bd00', 'binaryx': '9e2def2a-f701-4721-a2c7-925b83018adf', 'axie-infinity': 'f96d0db8-d551-40c3-905c-e6e002c920e3', 'x-world-games': 'ffb52c78-016e-44f1-bfea-b57286d91898', 'thetan-arena': '149b050a-f391-4397-8dc0-163ea2e14138', 'alien-worlds': '0c49e040-be09-40ee-a178-e77bf404796e', 'league-of-kingdoms': '5293cb42-c26e-4a32-b80e-f595adc07083', 'burgercities': 'b91204b9-4197-4e4a-b5c7-56343ef49141', 'kryptomon': '0b54a231-070a-4474-ad6e-a17afba9a6c6', 'wanaka-farm': '466a5862-7e68-467b-85ef-cb677f5e96c5', 'sidus-heroes': '04054d55-b1ec-4234-9f10-c789b3b56065', 'ninneko': 'd2f84664-d28d-4729-8a0a-0ed33c39c521', 'cryptoblades': 'ad82204a-23d5-4ffe-a1ae-f8fb1f71b5f7', 'ultimate-champions': 'a1ee2386-33de-47cc-a3fe-11d0342de2e9', 'monsterra': 'b0b1271c-7b48-4bdc-a555-6ce95fc8bdfe', 'polychain-monsters': '47e03d0d-c353-47b0-b99c-a2a82dd875ae', 'iguverse': 'a47d016f-76e8-4f9c-819d-7c81daad7e91', 'heroes-empires': '79075231-aa7d-4b52-97d5-4390521f108b', 'illuvium': 'd3bf9ecf-58f1-488d-a3dc-8bead33eb930', 'xana': '3a0e8a04-255b-435b-856c-0723c01f08db', 'aqua-farm': '9a6373c8-9c46-40b5-9d23-c4fcbe873b20', 'mines-of-dalarnia': '60424918-41f0-4334-9ce3-2671f1febe88', 'magiccraft': 'a3110df8-f298-483c-aa0b-ce4fcae44841', 'derace': '31dcd5f2-5293-4db4-abf7-679671b25e1b', 'bit-hotel': '15385c8c-8c0b-445b-94b5-07fb1c918d4b', 'splinterlands': '98b3ca34-4683-4faf-be40-6814e8fe71b6', 'bullieverse': 'bb978fae-ce1a-4d3c-b18d-223a4ce285ff', 'gunstar-metaverse': '0f9abc34-1d34-46fc-8885-9dd5ed324692', 'gods-unchained': '3df2ee8f-df08-4604-b101-b59e0b3387db'}
-    url = f'''https://v3.gamefi.org/api/v1/tokenomics/{listID[name]}?include_statistics=true&include_contracts=true'''
+    global slug_id
+    url = f'''https://v3.gamefi.org/api/v1/tokenomics/{slug_id[name]}?include_statistics=true&include_contracts=true'''
     headers = {
         'Accept': 'application/json'
     }
@@ -669,7 +676,7 @@ async def get_tokenomics_gamehub(name, keywords=[]):
         "data": data
     }
 
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_upcoming_IDO(name, keywords=[]):
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
@@ -702,7 +709,7 @@ async def get_upcoming_IDO(name, keywords=[]):
     return overview    
    
 
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_upcoming_IDO_overview(name, keywords=[]):
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
@@ -731,7 +738,7 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     "partners": "Information about the partners that are supporting the IDO project.",
     "business_model": "Information about the business model that the IDO project is implementing. ",
     "tokenomics": "Information about the tokenomics of the project. ",
-    "total_raise": "Total funds raised during token sale event of IDO on GameFi.org, unit of calculation is USD.", 
+    "total_raise": "Total funds raise during token   sale event of IDO on GameFi.org, unit of calculation is USD.", 
     "fdv": "fully diluted valuation, provide total token value at full issuance.",
     "total_supply": "Total supply of the IDO project",
     "listing_date": "Initial public trading date for tokens of IDO",
@@ -796,11 +803,12 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
             break
     
     # Add cryptorank data
-    project['fdv'] = data_cryptorank['data']['icoFullyDilutedMarketCap']
-    project['total_supply'] = data_cryptorank['data']['totalSupply']
-    project['listing_date'] = data_cryptorank['data']['listingDate']
-    project['initial_market_cap'] = data_cryptorank['data']['initialMarketCap']
-    project['initial_circulating_supply'] = data_cryptorank['data']['initialSupply']
+    if data_cryptorank.get('data') is not None:
+        project['fdv'] = data_cryptorank['data']['icoFullyDilutedMarketCap']
+        project['total_supply'] = data_cryptorank['data']['totalSupply']
+        project['listing_date'] = data_cryptorank['data']['listingDate']
+        project['initial_market_cap'] = data_cryptorank['data']['initialMarketCap']
+        project['initial_circulating_supply'] = data_cryptorank['data']['initialSupply']
     # Remove key of project
     for key in list_remove_item:
         project.pop(key, None)
@@ -891,7 +899,7 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
                 "from": date
             }
     if project.get('refund_policy') is not None:
-        phase = "REFUND PHASE"
+        phase = "REFUND PHASE"  
         if project['refund_policy'] != {}:
             if project['refund_policy'].get('from') is not None:
                 date_from = datetime.fromisoformat(project.get('refund_policy')['from'])
@@ -1030,7 +1038,7 @@ async def call_tools_async(feature_dict : dict) -> str:
             'overview_gamehub' : 'get_infor_overview_gamehub',
             'overview_ido' : 'get_infor_overview_ido',
             # 'team_gamehub' : 'getTeam',
-            'community-performance_gamehub' : 'get_community_performance_gamehub',
+            # 'community-performance_gamehub' : 'get_community_performance_gamehub',
             'backer_gamehub' : 'get_top_backers_gamehub',
             'tokenomic_gamehub' : 'get_tokenomics_gamehub',
             'overview_list_ido_upcoming': 'get_upcoming_IDO',
@@ -1103,7 +1111,7 @@ async def call_tools_async(feature_dict : dict) -> str:
     #     return ""
 
 
-@alru_cache(maxsize=32, ttl=60**3)
+@alru_cache(maxsize=32, ttl=60**2)
 async def get_upcoming_endpoint_response():
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {

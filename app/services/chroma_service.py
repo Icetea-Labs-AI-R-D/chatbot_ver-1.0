@@ -111,7 +111,8 @@ class ChromaService:
                 keyword = [user_message]
             
             keywords = [(k, index) for index, k in enumerate(keyword)]
-
+            keywords.append((user_message, len(keyword)))
+            
             retrieved_tasks = [
                 self.async_similarity_search_with_scores(k, index)
                 for k, index in keywords

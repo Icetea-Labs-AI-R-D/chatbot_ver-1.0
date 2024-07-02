@@ -57,3 +57,4 @@ volumes:
   mongo-data:
   mongo-config:
   chroma-data:
+    driver: local

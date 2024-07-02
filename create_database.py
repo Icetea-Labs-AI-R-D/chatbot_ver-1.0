@@ -39,7 +39,8 @@ def get_upcoming_IDO():
         list_project_name.append(
             {
                'name': item['name'],
-               'slug': item['slug']
+               'slug': item['slug'],
+               'symbol': item['token']['symbol']
             }
         )
     overview = {
@@ -71,6 +72,11 @@ def update_topic_vector_db(vector_db):
         new_topic.append(item)
         item = {
             'page_content': doc['slug'],
+            'metadata': {'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'}
+        }
+        new_topic.append(item)
+        item = {
+            'page_content': doc['symbol'],
             'metadata': {'api': 'overview_ido_upcoming', 'source': doc['slug'], 'type': 'topic', 'topic': 'ido_upcoming'}
         }
         new_topic.append(item)

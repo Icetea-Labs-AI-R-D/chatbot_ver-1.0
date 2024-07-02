@@ -299,53 +299,37 @@ class OpenAIService:
         )
 
         answer = stream.choices[0].message.content
-
-        # async for chunk in stream:
-        #     token = chunk.choices[0].delta.content
-        #     if token is not None:
-        #         answer += token
-                # yield token
-        
-        # Process image link
         
         image_url_pattern = r'(https?://[^\s]+(?:\.jpg|\.jpeg|\.png|\.gif))'
 
-        answer = re.sub(image_url_pattern, r'<image>\1</image>', answer)
+        re_answer = re.sub(image_url_pattern, lambda match: f'<image>{match.group(0)}</image>', answer)
         
-        yield answer
+        # print(re_answer)
+        
+        yield re_answer
         yield "<stop>"
         # Logic follow-up
-        
-        
+
         ## Drop keys with no data
         def process_list_question_from_context(context : str, question_dict_api:dict ):
             data = dict()
            
             for item in re.split(r'\n{2,}' ,context.strip()):
                 if len(item.split('\n')) > 0:
-                   
-                    # print(item.split('\n')[1])
-                    # print()
                     data.update(ast.literal_eval(item.split('\n')[1])) 
-                    # pass
-                
-
+            
             keys = list(question_dict_api.keys())
             list_question = []
-            # print("###Data: ", data['data'].keys())
-            # print("Question: ", keys)
-            # print("Status:", tmp_dict['data']['status'].get('isNull', False) == True)
-            if 'status' in data.get('data', {}) and data['data']['status'].get('isNull', False) == True:
-                data['data']['status'] = None
-            # print(data)
             
+            
+            if 'status' in data.get('data', {}) and type(data['data']['status']) == dict and data['data']['status'].get('isNull', False) == True:
+                data['data']['status'] = None
             # Filter keys with no data
             tmp_dict = {**question_dict_api}
             for key in keys:
                 tmp_val = data['data'].get(key, "")
                 
                 if (tmp_val == "" or tmp_val == None or tmp_val == 0 or tmp_val == [] or tmp_val == {}) and question_dict_api[key]['is_related']:
-                    # print("###Drop: ", key)
                     tmp_dict.pop(key)
 
             for k, v in tmp_dict.items():
@@ -365,9 +349,8 @@ class OpenAIService:
         
         
         if global_topic.get("source", "") == "upcoming":
-            list_game_name = ast.literal_eval(context.split('\n')[2].strip())['list_project']
-            random.shuffle(list_game_name)
-            game_data = await tools.get_upcoming_endpoint_response()
+            # list_game_name = ast.literal_eval(context.split('\n')[2].strip())['list_project']
+            # random.shuffle(list_game_name)
             # item = {index: (key, value)}
             # assign keyword
             list_question = list(map(lambda item:
@@ -378,21 +361,48 @@ class OpenAIService:
                     'keyword': item[1][0]
                 }, enumerate(self.question_dict["overview_list_ido_upcoming"].items())))
             
-            list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids, global_topic=global_topic, question_dict=self.question_dict)
+            res = await tools.get_upcoming_endpoint_response()
+            games_info = res.get('data', [])
+            random.shuffle(list_question)
+            random.shuffle(games_info)
             
-            # Map game names
-            list_question = list(map(lambda item:
-                {
-                    'id': item[1]['id'],
-                    'question': item[1]['question'].replace('<game-name>', list_game_name[item[0] if item[0] < len(list_game_name) else random.randint(0, len(list_game_name)-1)]),
-                    'is_related' : item[1]['is_related']
-                }, enumerate(list_question)))
+            selected_questions = []
+            selected_keywords = []
+            count = 0
+            tmp = 0
+            # print('lne question', len(list_question))
+            # print('len game', len(games_info))
+            while len(selected_questions) < 3 and count < 2:
+                count += 1
+                for game in games_info:
+                    for question in list_question:
+                        tmp += 1
+                        
+                        if question['keyword'] in selected_keywords:
+                            continue
+                        if question['keyword'] in game and game[question['keyword']] != "" and game[question['keyword']] != None and game[question['keyword']] != 0 and game[question['keyword']] != [] and game[question['keyword']] != {}:
+                            tmp_queston = {
+                                'id': question['id'],
+                                'question': random.choice(question['questions']).replace('<game-name>', game['name']),
+                                'is_related' : False,
+                            }
+                            selected_questions.append(tmp_queston)
+                            selected_keywords.append(question['keyword'])
+                            tmp += 1
+                            break
+            # print('tmp', tmp)
+            list_question = selected_questions       
+            # print(list_question)
+            # list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids, global_topic=global_topic, question_dict=self.question_dict)
             
-            
-            # for i in range(0, max(len(list_question), 3), 1):
-                
-            #     list_question[i]['question'] = list_question[i]['question'].replace('<game-name>', list_game_name[i if i < len(list_game_name) else random.randint(0, len(list_game_name)-1)])
-            
+            # # Map game names
+            # list_question = list(map(lambda item:
+            #     {
+            #         'id': item[1]['id'],
+            #         'question': item[1]['question'].replace('<game-name>', list_game_name[item[0] if item[0] < len(list_game_name) else random.randint(0, len(list_game_name)-1)]),
+            #         'is_related' : item[1]['is_related']
+            #     }, enumerate(list_question)))
+                    
             suggestions =  [item['question'] for index, item in enumerate(list_question)]
         
         elif global_topic.get("source", "") == "":
@@ -446,6 +456,7 @@ class OpenAIService:
         }
         # If suggestions is not empty, return suggestions
         if len(suggestions) != 0 and global_topic.get('topic', '') != 'end_phrase':
+            # print('yield reply_markup')
             yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
 
         # yield "<stop>"
@@ -468,6 +479,7 @@ class OpenAIService:
         res = await get_upcoming_IDO("")
         nl = '\n'
         out = f"""Here are the upcoming IDO projects on GameFi:\n{nl.join([f"{index+1}. {item}" for index, item in enumerate(res['list_project'])])}\nThese projects are part of the upcoming IDOs (Initial DEX Offerings) on the GameFi platform."""
+        # print(out)
         for line in out.split("\n"):
             yield line + '\n'
 
@@ -503,6 +515,7 @@ class OpenAIService:
                 "text": "Maybe you want to know ⬇️:",
                 "follow_up":suggestions,
             }
+            # print('yield lskdjflsfd')
             yield f"<reply_markup>{json.dumps(reply_markup)}</reply_markup>"
             
         message = {
