@@ -349,9 +349,6 @@ class OpenAIService:
         
         
         if global_topic.get("source", "") == "upcoming":
-            # list_game_name = ast.literal_eval(context.split('\n')[2].strip())['list_project']
-            # random.shuffle(list_game_name)
-            # item = {index: (key, value)}
             # assign keyword
             list_question = list(map(lambda item:
                 {
@@ -392,16 +389,7 @@ class OpenAIService:
                             break
             # print('tmp', tmp)
             list_question = selected_questions       
-            # print(list_question)
-            # list_question = select_3_question_from_list(list_question, asked_ids=selected_suggestion_ids, global_topic=global_topic, question_dict=self.question_dict)
-            
-            # # Map game names
-            # list_question = list(map(lambda item:
-            #     {
-            #         'id': item[1]['id'],
-            #         'question': item[1]['question'].replace('<game-name>', list_game_name[item[0] if item[0] < len(list_game_name) else random.randint(0, len(list_game_name)-1)]),
-            #         'is_related' : item[1]['is_related']
-            #     }, enumerate(list_question)))
+         
                     
             suggestions =  [item['question'] for index, item in enumerate(list_question)]
         
