@@ -118,7 +118,7 @@ class OpenAIService:
         system_prompt = """
         ### Task ###
         You are a helpful agent designed to paraphrase the user message into a complete sentence and extract the keywords.
-        User message is question about GamFi, IDO,...
+        User message is a question about GamFi, IDO,...
 
         ### Description Task ### 
         DO STEP BY STEP:
@@ -126,10 +126,10 @@ class OpenAIService:
         - In this step, extract the keyword from the user's message.
         - Keywords should be a list of words that are important in the user's message. They can be nouns, verbs, adjectives, etc.
         - Make sure to extract the keyword that is relevant to the user's message.
-        - At the end of this step, there will get a list called "keywords".
+        - At the end of this step, there will be a list called "keywords".
         2. Provide a response to the user's message.
         - In this step, provide a response to the user's message.
-        - Give the response in JSON format contains 1 keys: "keywords".
+        - Give the response in JSON format containing 1 key: "keywords".
 
         ### Note ###
         - The output should be a JSON format.
@@ -235,7 +235,7 @@ class OpenAIService:
         messages = [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message}
-            ]
+        ]
 
         response = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
@@ -284,12 +284,12 @@ class OpenAIService:
 
         user_message = f"""{question}"""
 
-        messages = [{"role": "system", "content": system_message}]+ history + [
+        messages = [{"role": "system", "content": system_message}] + history + [
             {"role": "user", "content": user_message}
         ]
         
         if new_conversation == 1:
-            yield f"<notify>✅ **Starting new dialog due to timeout**</notify>"
+            yield "<notify>✅ **Starting new dialog due to timeout**</notify>"
 
         stream = await openai_client.chat.completions.create(
             model="gpt-3.5-turbo-0125",
@@ -310,6 +310,54 @@ class OpenAIService:
         yield "<stop>"
         # Logic follow-up
 
+        if rag == True :
+            system_prompt = """
+            You are a helpful agent!
+            """
+            
+            prompt = f"""
+                You are given an answer and a user question. Based on these, you need to select the most appropriate keyword from the given list to answer the user's question.
+                ### Answer:
+                {answer}
+                ### User Question:
+                {question}
+                ### Keyword List:
+                {[(id, x['source']) for id, x in enumerate(features_keywords['content'])]}
+                ### Topic:
+                {global_topic['source']}
+                ### Task:
+                !It is not required to choose a keyword if it is not relevant enough.
+                Based on the topic, answer, and user's question, without using the topic, select only one keyword from the given list that is most relevant to answer the user's question.
+                Only select the keyword that is most relevant to the question and answer. If none of the keywords are suitable, please select 'None of the above' and return {{"id": -1}}.
+                ### Expected Result JSON format:
+                {{'id': index in the content list}}
+            """ 
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt}
+            ]
+
+            response = await openai_client.chat.completions.create(
+                model="gpt-3.5-turbo-0125",
+                temperature=0,
+                response_format={"type": "json_object"},
+                messages=messages,
+            )
+
+            key = response.choices[0].message.content
+            index = json.loads(key).get('id', -1)
+            
+            if int(index) >= 0 and int(index) < len(features_keywords['content']):
+                content = features_keywords['content'][index]
+                relevant_question = self.question_dict.get(content.get('api', ""), {}).get(content.get('source', ""), {})
+                if relevant_question != {}: 
+                    suggest = {
+                        'id': relevant_question['id'],
+                        'questions': relevant_question['questions'][0],
+                        'is_related': relevant_question['is_related'],
+                        'keyword': content.get('source', '')
+                    }
+                    selected_suggestions.append(suggest)
         ## Drop keys with no data
         def process_list_question_from_context(context : str, question_dict_api:dict ):
             data = dict()
@@ -365,30 +413,28 @@ class OpenAIService:
             
             selected_questions = []
             selected_keywords = []
-            count = 0
-            tmp = 0
-            # print('lne question', len(list_question))
-            # print('len game', len(games_info))
-            while len(selected_questions) < 3 and count < 2:
-                count += 1
-                for game in games_info:
-                    for question in list_question:
-                        tmp += 1
+            
+            for i in range(2):
+                for index, game in enumerate(games_info):
+                    for ques in list_question:
                         
-                        if question['keyword'] in selected_keywords:
+                        if ques['keyword'] in selected_keywords:
                             continue
-                        if question['keyword'] in game and game[question['keyword']] != "" and game[question['keyword']] != None and game[question['keyword']] != 0 and game[question['keyword']] != [] and game[question['keyword']] != {}:
+                        
+                        if ques['keyword'] in game and game[ques['keyword']] != "" and game[ques['keyword']] != None and game[ques['keyword']] != 0 and game[ques['keyword']] != [] and game[ques['keyword']] != {}:
                             tmp_queston = {
-                                'id': question['id'],
-                                'question': random.choice(question['questions']).replace('<game-name>', game['name']),
+                                'id': ques['id'],
+                                'question': random.choice(ques['questions']).replace('<game-name>', game['name']),
                                 'is_related' : False,
                             }
                             selected_questions.append(tmp_queston)
-                            selected_keywords.append(question['keyword'])
-                            tmp += 1
+                            selected_keywords.append(ques['keyword'])
                             break
-            # print('tmp', tmp)
-            list_question = selected_questions       
+                    if len(selected_questions) == 3:
+                        break
+                if len(selected_questions) == 3:
+                        break
+            list_question = selected_questions[:3]       
          
                     
             suggestions =  [item['question'] for index, item in enumerate(list_question)]

@@ -164,10 +164,14 @@ async def get_infor_overview_gamehub(name, keywords=[]):
             if data.get('text','') != '':
                 roadmap_text += data.get('text','') + "\n"
             if data.get('items',[]) != []:
-                roadmap_text += "\n".join(data.get('items',[])) + "\n"
+                if type(data) == dict and type(data.get('items')[0]) == dict and data.get('items')[0].get('content') is not None:
+                    roadmap_text += data.get('items')[0].get('content') + "\n"
+                else:
+                    roadmap_text += "\n".join(data.get('items',[])) + "\n"
     play_mode = response['data']['item'].get('play_mode', None)
     if play_mode:
-        play_mode = json.loads(play_mode)
+        if type(play_mode) == str:
+            play_mode = json.loads(play_mode)
         play_mode = play_mode.get('blocks', [])
         play_mode_text = ""
         for block in play_mode:
@@ -175,7 +179,10 @@ async def get_infor_overview_gamehub(name, keywords=[]):
             if data.get('text','') != '':
                 play_mode_text += data.get('text','') + "\n"
             if data.get('items',[]) != []:
-                play_mode_text += "\n".join(data.get('items',[])) + "\n"
+                if type(data) == dict and type(data.get('items')[0]) == dict and data.get('items')[0].get('content') is not None:
+                    play_mode_text += data.get('items')[0].get('content') + "\n"
+                else:
+                    play_mode_text += "\n".join(data.get('items',[])) + "\n"
         play_mode = play_mode_text
     
     introduction = response['data']['item'].get('introduction', None)    
@@ -216,17 +223,17 @@ async def get_infor_overview_gamehub(name, keywords=[]):
             "name": nameGame,
             "status": status,
             "published_at": published_at,
-            "white-paper": white_paper,
+            "white_paper": white_paper,
             "banners": banners,
             "introduction": introduction,
-            "roadmap-text": roadmap_text,
-            "play-mode": play_mode,
-            "play-to-earn-model": play_to_earn_model,
-            "social-media": links,
-            "rating-score": ratingScore,
+            "roadmap_text": roadmap_text,
+            "play_mode": play_mode,
+            "play_to_earn_model": play_to_earn_model,
+            "social_media": links,
+            "rating_score": ratingScore,
             # "tokenomics-compact": tokenomicsCompact,
             "studios": studios,
-            "tokenomics-compact": tokenomicsCompact
+            "tokenomics_compact": tokenomicsCompact
         },
         "description": description
     }
@@ -237,8 +244,8 @@ async def get_infor_overview_gamehub(name, keywords=[]):
                 "status": status,
                 # "published_at": published_at, 
                 "introduction": introduction,
-                "social-media": links,
-                "tokenomics-compact": tokenomicsCompact,
+                "social_media": links,
+                "tokenomics_compact": tokenomicsCompact,
             }
         }
     # else:
@@ -392,7 +399,7 @@ async def get_top_backers_gamehub(name, keywords=[]):
             listBacker.append(
                 {
                     "name": name,
-                    "link-website": linkWebsite 
+                    "link_website": linkWebsite 
                 }
             )
     except:
@@ -543,15 +550,16 @@ async def get_overview_ido(name, keywords=[]):
         }
     if data.get('refund_policy') is not None:
         phase = "REFUND PHASE"
-        date_from = datetime.fromisoformat(data.get('refund_policy')['from'])
-        date_to = datetime.fromisoformat(data.get('refund_policy')['to'])
-        date_now = datetime.now(timezone.utc)
-        if date_now > date_from and date_now < date_to:
-           status = {
-            "phase": phase,
-            "from": str(date_from),
-            "to": str(date_to)
-            }
+        if data['refund_policy'].get('from') is not None:
+            date_from = datetime.fromisoformat(data.get('refund_policy')['from'])
+            date_to = datetime.fromisoformat(data.get('refund_policy')['to'])
+            date_now = datetime.now(timezone.utc)
+            if date_now > date_from and date_now < date_to:
+                status = {
+                    "phase": phase,
+                    "from": str(date_from),
+                    "to": str(date_to)
+                    }
         
     if data.get('buying_phases') is not None:
         for item in data.get('buying_phases'):
@@ -565,9 +573,9 @@ async def get_overview_ido(name, keywords=[]):
                     "to": str(date_to),
                     "description": item['description']
                 }
-    if data.get('whitelist') is not None:
-        date_from = datetime.fromisoformat(data.get('whitelist').get('from'))
-        date_to = datetime.fromisoformat(data.get('whitelist').get('to'))
+    if data.get('whitelist') is not None and data.get('whitelist').get('from') is not None and data.get('whitelist').get('to') is not None:
+        date_from = datetime.fromisoformat(data.get('whitelist').get('from', ''))
+        date_to = datetime.fromisoformat(data.get('whitelist').get('to', ''))
         date_now = datetime.now(timezone.utc)
         if date_now > date_from and date_now < date_to:
             status = {
@@ -668,9 +676,10 @@ async def get_tokenomics_gamehub(name, keywords=[]):
     }
     data['vesting_schedule'] = vesting_schedule
 
-    # Contracts
-    for item in data['contracts']:
-        item.pop('id')
+    # Contracts 
+    if data.get('contracts') is not None:
+        for item in data['contracts']:
+            item.pop('id')
         
     return {
         "data": data
@@ -1121,4 +1130,208 @@ async def get_upcoming_endpoint_response():
         response = await client.get(url, headers=headers)
         response = response.json()
     
+    for i in range(len(response.get('data', []))):
+        response['data'][i] = await format_upcoming_IDO_overview(response['data'][i])
+    
     return response    
+
+async def format_upcoming_IDO_overview(data):
+    headers = {
+        "Accept": "application/json",
+    }
+
+    # Some list key to remove
+    list_remove_item = ['id', 'game_slug','excerpt', 'banner', 'logo',
+        'airdrop_chain_id','display', 'need_kyc', 'featured', 'deployed', 'winner_published',
+        'series_content', 'rule', 'box_types', 'sibling','contract_address', 'address_receiver',
+        'categories', 'created_at', 'backers', 'fcfs_policy', 'sort', 'type', 'bonus_progress', 'ath',
+        'forbidden_countries'
+    ]
+    list_token_remove = [
+        'chain_id', 'logo', 'address'
+    ]
+    # List future
+    list_future = ['Business Model', 'Roadmap', 'Tokenomics', 'Revenue Stream', 'Team', 'Token Utilities','Investors and Partners', 'Investors', 'Partners']
+    list_key_story ={
+        "Business Model": "business_model",
+        "Roadmap": "roadmap",
+        "Tokenomics": "tokenomics",
+        "Revenue Stream": "revenue_streams",
+        "Team": "team",
+        "Token Utilities": "token_utilities",
+        "Investors and Partners": "investors_and_partners",
+        "Investors": "investors",
+        "Partners": "partners"
+    }
+    list_key_time = ['from', 'to']
+    name = data['slug']
+    # Cryptorank
+    list_slug = []
+    list_slug.append(data['slug'])
+    if name.find("-") != -1:
+        slug1 = name.replace('-','')
+        list_slug.append(slug1)
+        slug2 = name.replace('-','_')
+        list_slug.append(slug2)
+    if name.find("_") != -1:
+        slug1 = name.replace('_','')
+        list_slug.append(slug1)
+        slug3 = name.replace('_','-')
+        list_slug.append(slug3);
+    async with httpx.AsyncClient() as client:
+        for slug in list_slug:
+            url = f'''https://api.cryptorank.io/v0/coins/{slug}'''
+            response = await client.get(url)
+            data_cryptorank = response.json()
+            if data_cryptorank.get('statusCode') is None or data_cryptorank.get('statusCode') != 404:
+                break
+   
+    project = data
+    
+    # Add cryptorank data
+    if data_cryptorank.get('data') is not None:
+        project['fdv'] = data_cryptorank['data']['icoFullyDilutedMarketCap']
+        project['total_supply'] = data_cryptorank['data']['totalSupply']
+        project['listing_date'] = data_cryptorank['data']['listingDate']
+        project['initial_market_cap'] = data_cryptorank['data']['initialMarketCap']
+        project['initial_circulating_supply'] = data_cryptorank['data']['initialSupply']
+    # Remove key of project
+    for key in list_remove_item:
+        project.pop(key, None)
+    # Remove key in token
+    for key in list_token_remove:
+        if project.get("token") is not None:
+            project["token"].pop(key, None)
+    # Remove key in currency
+    for key in list_token_remove:
+        if project.get("currency") is not None:
+            project["currency"].pop(key, None)
+    # Change time to date
+    for key in list_key_time:
+        if project.get('whitelist') is not None:
+            if project['whitelist'].get(key) is not None:
+                project['whitelist'][key] = to_date(project['whitelist'][key])
+    # Bying phases
+    if project.get('buying_phases') is not None:
+        for item in project['buying_phases']:
+            for key in list_key_time:
+                if item.get(key) is not None:
+                    item[key] = to_date(item[key])
+    # Refund policy
+    if project.get('refund_policy') is not None:
+        for key in list_key_time:
+            if project['refund_policy'].get(key) is not None:
+                project['refund_policy'][key] = to_date(project['refund_policy'][key])
+    # Claim schedule
+    if project.get('claim_schedule') is not None:
+        for item in project['claim_schedule']:
+            for key in list_key_time:
+                if item.get(key) is not None:
+                    item[key] = to_date(item[key])
+    # Cup story
+    story = ""
+    for item in project['story']['blocks']:
+        if item['data'].get('text') is not None:
+            if item['data'].get('level') == 1:
+                if story != "":
+                    is_not_highlight = False
+                    for key in list_future:
+                        if key in story:
+                            project[list_key_story[key]] = story
+                            story = ""
+                            is_not_highlight = True
+                            break
+                    # Check highlight
+                    if is_not_highlight == False:
+                        project['highlights'] = story
+                        story = ""
+        # Text
+        if item['data'].get('text') is not None:
+            story += item['data'].get('text') + "\n"
+        # Items
+        if item['data'].get('items') is not None:
+            for i in item['data'].get('items'):
+                story += i + "\n"
+        # Image url
+        if item['data'].get('file') is not None:
+            story += item['data']['file'].get('url') + "\n"
+    # Pop story
+    project.pop('story')
+    # Check story
+    for future in list_future:
+        if future in story:
+            project[list_key_story[future]] = story
+            story = ""
+            break
+    # Calculate total raise
+    if project['token'].get('price') is None:
+        token_price = 0
+    else:
+        token_price = project['token']['price']   
+    total_raise = project['total_token'] * token_price
+    project['total_raise'] = int(total_raise)
+
+    # # Status
+    status = {
+        "data": "Not announcement about the phases yet",
+        'isNull': True
+    }
+    if project.get('claim_schedule') is not None:
+        phase = "CLAIM PHASE"
+        if len(project.get('claim_schedule')) > 0:
+            date = project.get('claim_schedule')[0].get('from')
+            status = {
+                "phase": phase,
+                "from": date
+            }
+    if project.get('refund_policy') is not None:
+        phase = "REFUND PHASE"  
+        if project['refund_policy'] != {}:
+            if project['refund_policy'].get('from') is not None:
+                date_from = datetime.fromisoformat(project.get('refund_policy')['from'])
+                date_to = datetime.fromisoformat(project.get('refund_policy')['to'])
+                date_now = datetime.now(timezone.utc)
+                if date_now > date_from and date_now < date_to:
+                    status = {
+                        "phase": phase,
+                        "from": str(date_from),
+                        "to": str(date_to)
+                        }
+    
+    if project.get('buying_phases') is not None:
+        if len(project.get('buying_phases')) > 0:
+            for item in project.get('buying_phases'):
+                date_from = datetime.fromisoformat(item.get('from'))
+                date_to = datetime.fromisoformat(item.get('to'))
+                date_now = datetime.now(timezone.utc)
+                if date_now > date_from and date_now < date_to:
+                    status = {
+                        "phase": item['name'],
+                        "from": str(date_from),
+                        "to": str(date_to),
+                        "description": item['description']
+                    }
+    if project.get('whitelist') is not None:
+        if project['whitelist'].get('from') is not None:
+            date_from = datetime.fromisoformat(project.get('whitelist').get('from'))
+            date_to = datetime.fromisoformat(project.get('whitelist').get('to'))
+            date_from_nb = date_from.timestamp()
+            date_to_nb = date_to.timestamp()
+            date_now = datetime.now(timezone.utc)
+            date_now_nb = date_now.timestamp()
+            if date_now >= date_from and date_now <= date_to:
+                status = {
+                    "phase": "WHITELIST PHASE",
+                    "from": str(date_from),
+                    "to": str(date_to),
+                }
+    project['status'] = status
+
+    # 
+
+    # Replace claim policy with vesting schedule
+    if project.get('claim_policy') is not None:
+        project['vesting_schedule'] = project['claim_policy']
+        project.pop('claim_policy', None)
+    # Add description
+    return project

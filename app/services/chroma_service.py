@@ -81,13 +81,13 @@ class ChromaService:
             words.extend(re.split(pattern=pattern, string=topic[0]['page_content']))
             list_words.append(words)
         reject_bow = ['of', 'in', 'on', 'at']
-        for index, words in enumerate(list_words):
-            for word in words:
-                if (word in user_message.lower()) and (word not in reject_bow):
-                    return {
-                        "is_valid": True,
-                        "topic_index": index
-                    }
+        # for index, words in enumerate(list_words):
+        #     for word in words:
+        #         if (word in user_message.lower()) and (word not in reject_bow):
+        #             return {
+        #                 "is_valid": True,
+        #                 "topic_index": index
+        #             }
         response = await  self.openai_service.check_change_topic(topic_names = list_words, user_message=user_message, openai_client=openai_client)
         is_valid_change = ast.literal_eval(response)['is_mentioned']
         index = ast.literal_eval(response)['topic_index']

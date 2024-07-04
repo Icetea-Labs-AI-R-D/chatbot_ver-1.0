@@ -1,7 +1,7 @@
 {
     "content": {
         "daily-index_gamehub": {
-            "daily-index": [
+            "daily_index": [
                 "daily indicator",
                 "day-to-day index",
                 "everyday benchmark",
@@ -55,7 +55,7 @@
             ]
         },
         "on-chain-performance_gamehub": {
-            "on-chain-performance": [
+            "on_chain_performance": [
                 "blockchain efficiency",
                 "on-chain effectiveness",
                 "ledger performance",
@@ -246,19 +246,6 @@
                 "foreword",
                 "exordium",
                 "introduction"
-            ],
-            "excerpt": [
-                "extract",
-                "passage",
-                "snippet",
-                "quotation",
-                "portion",
-                "short passage",
-                "selected text",
-                "fragment",
-                "citation",
-                "segment",
-                "excerpt"
             ],
             "platform": [
                 "blockchain platform",
@@ -1080,19 +1067,6 @@
             ]
         },
         "social-scores_gamehub": {
-            "social-scores": [
-                "social reputation points",
-                "community rating",
-                "network influence score",
-                "online engagement metrics",
-                "digital presence ranking",
-                "social standing points",
-                "group evaluation",
-                "virtual community influence rating",
-                "web interaction statistics",
-                "online impact assessment",
-                "social-scores"
-            ],
             "time": [
                 "timestamp",
                 "chronological order",

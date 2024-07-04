@@ -15,7 +15,7 @@
             ],
             "is_related": false
         },
-        "play-mode": {
+        "play_mode": {
             "id": "e9bf0f9b-f0e9-48cd-bc9b-63224cbd8f47",
             "questions": [
                 "What are the play modes of <game-name>?",
@@ -213,7 +213,7 @@
             ],
             "is_related": true
         },
-        "roadmap-text": {
+        "roadmap_text": {
             "id": "c130262e-06aa-4990-815e-b1b42cb41f18",
             "questions": [
                 "Roadmap of <game-name>?",
@@ -223,7 +223,7 @@
             ],
             "is_related": true
         },
-        "play-mode": {
+        "play_mode": {
             "id": "e9bf0f9b-f0e9-48cd-bc9b-63224cbd8f47",
             "questions": [
                 "What are the play modes of <game-name>?",
@@ -231,7 +231,7 @@
             ],
             "is_related": true
         },
-        "play-to-earn-model": {
+        "play_to_earn_model": {
             "id": "d43fae3b-ca59-41cd-8018-8dc769ca99f6",
             "questions": [
                 "Play-to-earn model of <game-name>?",

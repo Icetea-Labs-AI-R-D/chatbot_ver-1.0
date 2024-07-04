@@ -1,1 +1,1 @@
-python3 ./app/client.py
+CHROMA_HOST=localhost python3 ./app/client.py
