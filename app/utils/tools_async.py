@@ -8,6 +8,7 @@ import os
 from dotenv import load_dotenv
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 import chromadb
+import math
 
 load_dotenv('.env')
 
@@ -414,39 +415,63 @@ async def get_top_backers_gamehub(name, keywords=[]):
 def to_date(time):
     return str(datetime.fromtimestamp(time, timezone.utc))
 
+def round_up(number):
+    if number == 0:
+        return 0
+    # Tìm log cơ số 10 của số và làm tròn lên
+    power = int(math.log10(abs(number)))
+    # Tính bậc làm tròn gần nhất (10^power)
+    round_to = 10 ** power
+    return int(math.ceil(number / round_to) * round_to)
+
 @alru_cache(maxsize=32, ttl=60**2)
 async def get_overview_ido(name, keywords=[]):
 
     description = {
-        "slug": "Abbreviation for the project name.",
         "name": "Name of project.",
         "description": "Providing an overview of the project",
-        "status": "Status of the IDO.",
-        "claim_policy": "Vesting / includes the vesting period, release rate, and any other provisions regarding the trading freedom of tokens after the IDO.",
-        "total_token": "Total number of tokens available for the IDO.",
-        "ath": "The maximum return on investment that the project's token has achieved since its all-time high.",
+        "status": "Status of the IDO on GameFi.org.",
+        "vesting_schedule": "Scheduled vesting period for the project's token.",
         "whitelist": "The timeframe during which the whitelist is open to receive registrations from individuals who want to participate in the project's IDO.",
-        "refund_policy": "The policy regarding refunding funds in case the IDO is unsuccessful or if any issues arise. This information may include the conditions and regulations for requesting a refund, the timeframe, and the process for refunding.",
+        "refund_policy": "The policy regarding refunding funds in case the IDO is unsuccessful or if any issues arise.",
         "buying_phases": "The time or period during which users can purchase tokens or participate in the project's IDO.",
         "token": {
-            "type": "The specific category or standard this token adheres to, defining its functionality and interaction within its respective blockchain ecosystem.",
-            "symbol": "The unique identifier or abbreviation for this token, used for trading and referencing in the cryptocurrency markets.",
-            "price": "The IDO price for this token, announced at IDO's launch, often quoted in United States Dollars (USD).",
-            "decimals": "The maximum number of decimal places to which this token can be subdivided, indicating the smallest possible transaction unit for this token."
+            "price": "The IDO price for this token on GameFi.org, announced at IDO's launch, unit of calculation is USDT.",
         },
-        "currency": {
-            "type": "The unique symbol identifying the currency",
-            "decimals": "Defines the smallest unit of the currency that can be handled in transactions."
-        },
-        "social_networks": "Provide information about the links to the project's social media pages or social media platforms of IDO project.",
+        "social_networks": "Information about the links to the project's social media pages of IDO project.",
         "roadmap": "The project's roadmap, which outlines the key milestones and objectives that the project aims to achieve in the future.",
-        "revenue_streams": "Provide information about the sources of income that the project is expected to generate during its operation.",
-        "token_utilities": "Provide information about the applications and features that the project's token will provide.",
-        "highlights": "Provide information about the unique and standout aspects of the project. This information may include significant achievements, advanced technologies utilized, competitive advantages, market opportunities, or any other strengths that the project aims to highlight to attract the attention of the community and potential investors during the IDO process",
+        "revenue_streams": "Information about the sources of income that the IDO project is expected to generate during its operation.",
+        "token_utilities": "Information about the applications and features that the project's token will provide.",
+        "highlights": "Information about the unique and standout aspects of the IDO project.",
         "launchpad": "The platform or service that is hosting the IDO for the project.",
-        "total_raise": "The total amount of funds the project aims to raise through the Initial DEX Offering (IDO) process and other funding rounds. This information provides an overview of the level of attractiveness and interest from the community and potential investors towards the project."
+        "team": "Information about the team members and their roles in the project IDO.",
+        "investors_and_partners": "Information about the investors and partners that are supporting the IDO project.",
+        "investors": "Information about the investors that are supporting the IDO project.",
+        "partners": "Information about the partners that are supporting the IDO project.",
+        "business_model": "Information about the business model that the IDO project is implementing. ",
+        "tokenomics": "Information about the tokenomics of the project. ",
+        "fdv": "fully diluted valuation, provide total token value at full issuance.",
+        "total_supply": "Total supply of the IDO project",
+        "listing_date": "Initial public trading date for tokens of IDO",
+        "initial_market_cap": "Token value at initial public offering of IDO",
+        "initial_circulating_supply": "Circulating supply of IDO project at initial public offering",
+        "ath-roi": "Information about ATH ROI: measures maximum investment return of the IDO project.",
+        "total_raise_gamefi": "Total funds raise during token sale event of IDO on GameFi.org, unit of calculation is USD.", 
+        "total_raise_all": "Total funds raise during token sale event of IDO on all platforms, unit of calculation is USD."
     }
-
+    # List future
+    list_future = ['Business Model', 'Roadmap', 'Tokenomics', 'Revenue Stream', 'Team', 'Token Utilities','Investors and Partners', 'Investors', 'Partners']
+    list_key_story ={
+        "Business Model": "business_model",
+        "Roadmap": "roadmap",
+        "Tokenomics": "tokenomics",
+        "Revenue Stream": "revenue_streams",
+        "Team": "team",
+        "Token Utilities": "token_utilities",
+        "Investors and Partners": "investors_and_partners",
+        "Investors": "investors",
+        "Partners": "partners"
+    }
     url = f'''https://ido.gamefi.org/api/v3/pool/{name}'''
     headers = {
         'Accept': 'application/json'
@@ -456,13 +481,42 @@ async def get_overview_ido(name, keywords=[]):
         response = response.json()
     data = response.get('data', {})
     # data['about'] = data.drop('description')
+
+    # Cryptorank
+    list_slug = []
+    list_slug.append(name);
+    if name.find("-") != -1:
+        slug1 = name.replace('-','')
+        list_slug.append(slug1)
+        slug2 = name.replace('-','_')
+        list_slug.append(slug2)
+    if name.find("_") != -1:
+        slug1 = name.replace('_','')
+        list_slug.append(slug1)
+        slug3 = name.replace('_','-')
+        list_slug.append(slug3);
+    async with httpx.AsyncClient() as client:
+        for slug in list_slug:
+            url = f'''https://api.cryptorank.io/v0/coins/{slug}'''
+            response = await client.get(url)
+            data_cryptorank = response.json()
+            if data_cryptorank.get('statusCode') is None or data_cryptorank.get('statusCode') != 404:
+                break
+            
+
     if data == None:
         return {
             "description": {},
             "data": {}
         }
+    # Some list key to remove
+    remove_keys = ['id', 'game_slug','excerpt', 'banner', 'logo',
+        'airdrop_chain_id','display', 'need_kyc', 'featured', 'deployed', 'winner_published',
+        'series_content', 'rule', 'box_types', 'sibling','contract_address', 'address_receiver',
+        'categories', 'created_at', 'backers', 'fcfs_policy', 'sort', 'type', 'bonus_progress', 'ath',
+        'forbidden_countries','chain_id','address','decimals'
+    ]
     # Remove key in data
-    remove_keys = ['id', 'chain_id', 'excerpt', 'address', 'logo', 'banner', 'contract_address', 'address_receiver', 'airdrop_chain_id']
     for key in  remove_keys:
         if key in data:
             data.pop(key)
@@ -500,54 +554,57 @@ async def get_overview_ido(name, keywords=[]):
                 if item.get(key) is not None:
                     item[key] = to_date(item[key])
     # Cup the story, roadmap, revenue_streams, token_utilities
+    # Cup story
     story = ""
-    main_story = ""
-    for item in data['story']['blocks']:
-        if item['type'] == 'header':
-            header = item['data'].get('text')
-            if "Roadmap" in header:
-                main_story = story
-                story = ""
-            if "Revenue Streams" in header:
-                if "Roadmap" in story:
-                    data['roadmap'] = story
-                else:
-                    data['token_utilities'] = story
-                story = ""
-            if "Token Utilities" in header:
-                if "Roadmap" in story:
-                    data['roadmap'] = story
-                elif "Revenue Streams" in story:
-                    data['revenue_streams'] = story
-                else:
-                    main_story = story
-                story = ""
-        if item['data'].get('text') is not None:
-            story += item['data'].get('text') + "\n"
-        if item['data'].get('items') is not None:
-            for txt in item['data'].get('items'):
-                story += txt + "\n"
-    data.pop('story')
-    data['highlights'] = main_story
-    if "Token Utilities" in story:
-        data['token_utilities'] = story
-    else:
-        data['revenue_streams'] = story
+    if data.get('story') is not None:
+        if data['story'].get('blocks') is not None:
+            for item in data['story']['blocks']:
+                if item['data'].get('text') is not None:
+                    if item['data'].get('level') == 1:
+                        if story != "":
+                            is_not_highlight = False
+                            for key in list_future:
+                                if key in story:
+                                    data[list_key_story[key]] = story
+                                    story = ""
+                                    is_not_highlight = True
+                                    break
+                            # Check highlight
+                            if is_not_highlight == False:
+                                data['highlights'] = story
+                                story = ""
+                # Text
+                if item['data'].get('text') is not None:
+                    story += item['data'].get('text') + "\n"
+                # Items
+                if item['data'].get('items') is not None:
+                    for i in item['data'].get('items'):
+                        story += i + "\n"
+                # Image url
+                if item['data'].get('file') is not None:
+                    story += item['data']['file'].get('url') + "\n"
+    # Pop story
+    data.pop('story',None)
+    # Check story
+    for future in list_future:
+        if future in story:
+            data[list_key_story[future]] = story
+            story = ""
+            break
+    # Total raise on GameFi
     total_raise = data['total_token'] * data['token']['price']
-    data['total_raise'] = total_raise
-    
+    data['total_raise_gamefi'] = round(total_raise)
+    # Total raise all platforms
+    total_raise_all = 0
+    if data_cryptorank.get('data') is not None:
+        for item in data_cryptorank['data']['crowdsales']:
+            total_raise_all += item['raise']['USD']
+    data['total_raise_all'] = round(total_raise_all)
     # Status
     status = {
         "data": "Not announcement about the phases yet",
         'isNull': True
     }
-    if data.get('claim_schedule') is not None:
-        phase = "CLAIM PHASE"
-        date = data.get('claim_schedule')[0].get('from')
-        status = {
-            "phase": phase,
-            "from": date
-        }
     if data.get('refund_policy') is not None:
         phase = "REFUND PHASE"
         if data['refund_policy'].get('from') is not None:
@@ -573,6 +630,11 @@ async def get_overview_ido(name, keywords=[]):
                     "to": str(date_to),
                     "description": item['description']
                 }
+            end_time_buy = date_to
+        if date_now > end_time_buy:
+            status = {
+                "data": "This IDO on GameFi.org is completed."
+            }
     if data.get('whitelist') is not None and data.get('whitelist').get('from') is not None and data.get('whitelist').get('to') is not None:
         date_from = datetime.fromisoformat(data.get('whitelist').get('from', ''))
         date_to = datetime.fromisoformat(data.get('whitelist').get('to', ''))
@@ -588,7 +650,27 @@ async def get_overview_ido(name, keywords=[]):
     if data.get('claim_policy') is not None:
         data['vesting_schedule'] = data['claim_policy']
         data.pop('claim_policy', None)
-
+    # ATH Roi
+    if data_cryptorank.get('data') is not None:
+        if data_cryptorank['data'].get('crowdsales') is not None:
+            for item in data_cryptorank['data']['crowdsales']:
+                if item.get('idoPlatformKey') == 'game-fi':
+                    data['ath'] = item['athRoi']['value']
+                    break
+    
+    # Add cryptorank data
+    if data_cryptorank.get('data') is not None:
+        if data_cryptorank['data'].get('fullyDilutedMarketCap') is not None:
+            data['fdv'] = data_cryptorank['data']['fullyDilutedMarketCap']
+        if data_cryptorank['data'].get('totalSupply') is not None:
+            data['total_supply'] = data_cryptorank['data']['totalSupply']
+        if data_cryptorank['data'].get('listingDate') is not None:
+            data['listing_date'] = data_cryptorank['data']['listingDate']
+        if data_cryptorank['data'].get('initialMarketCap') is not None:
+            data['initial_market_cap'] = data_cryptorank['data']['initialMarketCap']
+        if data_cryptorank['data'].get('initialSupply') is not None:
+            data['initial_circulating_supply'] = data_cryptorank['data']['initialSupply']
+    
     overview = {
         "description": description,
         "data": data
@@ -614,7 +696,6 @@ async def get_overview_ido(name, keywords=[]):
         }
     
     return overview
-
 @alru_cache(maxsize=32, ttl=60**2)
 async def get_tokenomics_gamehub(name, keywords=[]):
     global slug_id
@@ -752,7 +833,10 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     "total_supply": "Total supply of the IDO project",
     "listing_date": "Initial public trading date for tokens of IDO",
     "initial_market_cap": "Token value at initial public offering of IDO",
-    "initial_circulating_supply": "Circulating supply of IDO project at initial public offering"
+    "initial_circulating_supply": "Circulating supply of IDO project at initial public offering",
+    "ath": "Information about ATH ROI: measures maximum investment return of the IDO project.",
+    "total_raise_gamefi": "Total funds raise during token sale event of IDO on GameFi.org, unit of calculation is USD.", 
+    "total_raise_all": "Total funds raise during token sale event of IDO on all platforms, unit of calculation is USD."
     }
     # Some list key to remove
     list_remove_item = ['id', 'game_slug','excerpt', 'banner', 'logo',
@@ -813,11 +897,24 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     
     # Add cryptorank data
     if data_cryptorank.get('data') is not None:
-        project['fdv'] = data_cryptorank['data']['icoFullyDilutedMarketCap']
-        project['total_supply'] = data_cryptorank['data']['totalSupply']
-        project['listing_date'] = data_cryptorank['data']['listingDate']
-        project['initial_market_cap'] = data_cryptorank['data']['initialMarketCap']
-        project['initial_circulating_supply'] = data_cryptorank['data']['initialSupply']
+        if data_cryptorank['data'].get('icoFullyDilutedMarketCap') is not None:
+            project['fdv'] = data_cryptorank['data']['icoFullyDilutedMarketCap']
+        if data_cryptorank['data'].get('totalSupply') is not None:
+            project['total_supply'] = data_cryptorank['data']['totalSupply']
+        if data_cryptorank['data'].get('listingDate') is not None:
+            project['listing_date'] = data_cryptorank['data']['listingDate']
+        if data_cryptorank['data'].get('initialMarketCap') is not None:
+            project['initial_market_cap'] = data_cryptorank['data']['initialMarketCap']
+        if data_cryptorank['data'].get('initialSupply') is not None:
+            project['initial_circulating_supply'] = data_cryptorank['data']['initialSupply']
+    # ATH Roi
+    if data_cryptorank.get('data') is not None:
+        if data_cryptorank['data'].get('crowdsales') is not None:
+            for item in data_cryptorank['data']['crowdsales']:
+                if item.get('idoPlatformKey') == 'game-fi':
+                    if item.get('athRoi') is not None:
+                        project['ath'] = item['athRoi']['value']
+                        break
     # Remove key of project
     for key in list_remove_item:
         project.pop(key, None)
@@ -891,22 +988,22 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
         token_price = 0
     else:
         token_price = project['token']['price']   
+    # Total raise
     total_raise = project['total_token'] * token_price
-    project['total_raise'] = int(total_raise)
+    # Total raise on GameFi
+    project['total_raise_gamefi'] = round(total_raise)
+    # Total raise all platforms
+    total_raise_all = 0
+    if data_cryptorank.get('data') is not None:
+        for item in data_cryptorank['data']['crowdsales']:
+            total_raise_all += item['raise']['USD']
+    project['total_raise_all'] = round(total_raise_all)
 
     # # Status
     status = {
         "data": "Not announcement about the phases yet",
         'isNull': True
     }
-    if project.get('claim_schedule') is not None:
-        phase = "CLAIM PHASE"
-        if len(project.get('claim_schedule')) > 0:
-            date = project.get('claim_schedule')[0].get('from')
-            status = {
-                "phase": phase,
-                "from": date
-            }
     if project.get('refund_policy') is not None:
         phase = "REFUND PHASE"  
         if project['refund_policy'] != {}:
@@ -934,6 +1031,11 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
                         "to": str(date_to),
                         "description": item['description']
                     }
+                time_buy_end = date_to
+            if date_now > time_buy_end:
+                status = {
+                    "data": "This IDO on GameFi.org is completed."
+                }
     if project.get('whitelist') is not None:
         if project['whitelist'].get('from') is not None:
             date_from = datetime.fromisoformat(project.get('whitelist').get('from'))
@@ -1047,7 +1149,7 @@ async def call_tools_async(feature_dict : dict) -> str:
             'overview_gamehub' : 'get_infor_overview_gamehub',
             'overview_ido' : 'get_infor_overview_ido',
             # 'team_gamehub' : 'getTeam',
-            # 'community-performance_gamehub' : 'get_community_performance_gamehub',
+            'community-performance_gamehub' : 'get_community_performance_gamehub',
             'backer_gamehub' : 'get_top_backers_gamehub',
             'tokenomic_gamehub' : 'get_tokenomics_gamehub',
             'overview_list_ido_upcoming': 'get_upcoming_IDO',
@@ -1269,7 +1371,7 @@ async def format_upcoming_IDO_overview(data):
     else:
         token_price = project['token']['price']   
     total_raise = project['total_token'] * token_price
-    project['total_raise'] = int(total_raise)
+    project['total_raise'] = round(total_raise)
 
     # # Status
     status = {

@@ -20,19 +20,17 @@ class SuggestQuestion:
     is_related: bool
 
 def select_3_question_from_list(questions: List[SuggestQuestion], asked_ids: list = [], global_topic: dict = {}, question_dict: dict = {}):
-    tmp_questions = questions
     questions = list(filter(lambda x: x['id'] not in asked_ids, questions))
     
     force_rag = False
     # print(len(questions), global_topic['topic'])
     # Get all questions from topic if less than 3
-    if len(questions) < 3 and 'upcoming' not in global_topic['topic']:
+    if len(questions) < 3 and 'upcoming' not in global_topic['topic'] and 'ido' not in global_topic['topic']:
         # print("###Less than 3 questions")
         force_rag = True
         # Filter api question and remove questions of upcoming game
         list_api = [key for key in question_dict.keys() if global_topic['topic'] in key and 'upcoming' not in key]
         sub_dict = dict(filter(lambda x: x[0] in list_api, question_dict.items()))
-        questions = tmp_questions
         
         for key, value in sub_dict.items():
             questions.extend([
@@ -226,12 +224,27 @@ class OpenAIService:
     ):
         system_prompt = f"""
         You are a helpful agent!
+        Your task is to check if any of the topics in the list of topics is mentioned in the user's message.
+        Let check very carefully and strictly.
+        You will be penalized if you make a wrong answer.
         """
-        nl = "\n"
+        nl = "\n        "
 
-        user_message = f"""Does any of these words in {list(enumerate(topic_names))} is mentioned in this sentence "{user_message}" 
-        Response in a JSON format like this {{"is_mentioned": "True"/"False", "topic_index": index in topic_names}}"""
-        
+        user_message = f"""
+        Given a list of topics: 
+        {nl.join([f"{index}. {topic}" for index, topic in enumerate(topic_names)])}
+        Please check if any of the topics in the list of topics is mentioned in the user's message.
+
+        User's message: "{user_message}"
+
+        If any, return "is_mentioned" is True and "topic_index" is the index of the word in the list of topics.
+        Opposite, return "is_mentioned" is False and "topic_index" is -1.
+        Response in a JSON format like this:
+        {{
+        "is_mentioned": "True"/"False", 
+        "topic_index": index in topic_names
+        }}
+        """        
         messages = [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message}
@@ -252,7 +265,7 @@ class OpenAIService:
         self,
         question: str,
         conversation: list = [],
-        context: str = "[]",
+        context: str = "Empty",
         global_topic: dict = None,
         openai_client: AsyncOpenAI = None,
         features_keywords: dict = {},
@@ -270,15 +283,15 @@ class OpenAIService:
         system_message = f"""
         You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
         YOUR TASK is to accurately answer information about games and IDO projects available on the GameFi platform, helping users better understand those information. 
-        Answer the question based only on the following context:
-        Context: {context}
+        Answer the question based ONLY on the following context:
+        Context: "{context}"
 
         Let carefully analyze the context and the user's question to provide the best answer.
         Answer BRIEFLY, with COMPLETE information and to the POINT of the user's question.
         The response style must be clear, easy to read, paragraphs that can have line breaks should be given line breaks.
         Note:
             - If the user's question is just normal communication questions (eg hello, thank you,...) that do not require information about games and IDO projects available on the GameFi platform, please respond as normal communication.
-            - If you can't find the information to answer the question, please answer that you couldn't find the information. 
+            - If you can't find the information to answer the question in the context, please answer that you don't have information about that. 
         Let's make sure to provide a friendly, engaging, and helpful experience for the user!
         """
 
@@ -304,10 +317,9 @@ class OpenAIService:
 
         re_answer = re.sub(image_url_pattern, lambda match: f'<image>{match.group(0)}</image>', answer)
         
-        # print(re_answer)
+        re_answer += "<stop>"
         
         yield re_answer
-        yield "<stop>"
         # Logic follow-up
 
         if rag == True :

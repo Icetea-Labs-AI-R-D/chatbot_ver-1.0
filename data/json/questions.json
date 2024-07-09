@@ -268,88 +268,6 @@
             "is_related": false
         }
     },
-    "social-scores_gamehub": {
-        "social_score": {
-            "id": "a1bea083-93e7-444e-b3fc-269e2e52e7c8",
-            "questions": [
-                "Social scores of <game-name>?",
-                "What are the social scores of <game-name>?"
-            ],
-            "is_related": true
-        },
-        "telegram_group_score": {
-            "id": "3c90f01c-b15c-47a2-b534-9b1a8399454a",
-            "questions": [
-                "Telegram group score of <game-name>?",
-                "Score of <game-name> Telegram group?",
-                "<game-name>'s Telegram group score?"
-            ],
-            "is_related": true
-        },
-        "telegram_channel_score": {
-            "id": "5b074d4c-a696-4196-bc35-993bd865de64",
-            "questions": [
-                "Telegram channel score of <game-name>?",
-                "Score of <game-name> Telegram channel?",
-                "What is the Telegram channel score of <game-name>?"
-            ],
-            "is_related": true
-        },
-        "twitter_score": {
-            "id": "6c3c558b-eeb9-44cb-8da7-b689beb5b79f",
-            "questions": [
-                "Twitter score of <game-name>?",
-                "What is the Twitter score of <game-name>?",
-                "Current Twitter score of <game-name>?"
-            ],
-            "is_related": true
-        },
-        "discord_score": {
-            "id": "2713767d-44dc-4fba-8216-211dcb8e0cc2",
-            "questions": [
-                "Discord score of <game-name>?",
-                "What is the Discord score of <game-name>?",
-                "<game-name>'s Discord score?"
-            ],
-            "is_related": true
-        },
-        "social_rank": {
-            "id": "972ba9e1-2398-4a4f-8662-aa7b22055cbe",
-            "questions": [
-                "Social rank of <game-name>?",
-                "Rank of <game-name> on social platforms?",
-                "<game-name>'s social rank?"
-            ],
-            "is_related": true
-        },
-        "twitter_rank": {
-            "id": "3343cb72-7486-4db4-8505-fb4e0e4326b0",
-            "questions": [
-                "Twitter rank of <game-name>?",
-                "How does <game-name> rank on Twitter?",
-                "How is <game-name> ranked on Twitter?"
-            ],
-            "is_related": true
-        },
-        "discord_rank": {
-            "id": "756c352c-4563-48e0-9cf6-99c9ca342e7c",
-            "questions": [
-                "Discord rank of <game-name>?",
-                "How does <game-name> rank on Discord?",
-                "Rank of <game-name> on Discord?"
-            ],
-            "is_related": true
-        },
-        "tokenomic_infor": {
-            "id": "350f85c5-3587-41d6-8830-1bd990cca9e4",
-            "questions": [
-                "Tokenomic info of <game-name>?",
-                "Tokenomic details of <game-name>?",
-                "<game-name>'s tokenomic information?"
-            ],
-            "is_related": false
-        }
-    },
     "tokenomic_gamehub": {
         "valuation": {
             "id": "a3fde067-3d84-40bb-84bb-ef89162d936f",
@@ -433,108 +351,6 @@
     },
     "overview_ido": {
         "status": {
-            "id": "f60b1cf7-889d-46ed-a389-9ea67ba7df4e",
-            "questions": [
-                "Status of <game-name> IDO on GameFi.org?",
-                "What is the status of <game-name> IDO on GameFi.org?"
-            ],
-            "is_related": true
-        },
-        "vesting_schedule": {
-            "id": "b44972b2-45e1-41a9-ab24-c97cedd19c74",
-            "questions": [
-                "Vesting schedule of <game-name> IDO?",
-                "What is the vesting schedule of <game-name> IDO?",
-                "<game-name>'s IDO vesting schedule?"
-            ],
-            "is_related": true
-        },
-        "refund_policy": {
-            "id": "905d4b43-b46a-4622-8ebf-bff72c2d9802",
-            "questions": [
-                "Refund policy of <game-name> IDO on GameFi.org?",
-                "What is the refund policy of <game-name> IDO on GameFi.org?",
-                "<game-name>'s IDO refund policy on GameFi.org?"
-            ],
-            "is_related": true
-        },
-        "token": {
-            "id": "a1cb4978-fd8b-4d2d-b121-cc13eb839e5a",
-            "questions": [
-                "IDO token price of <game-name>?",
-                "What is the IDO price of <game-name> token?",
-                "<game-name>'s IDO token price?"
-            ],
-            "is_related": true
-        },
-        "social_networks": {
-            "id": "955ef47b-6fa7-49df-ad4d-d35d60137d05",
-            "questions": [
-                "What social channels does <game-name> have?",
-                "Social channels of <game-name>?",
-                "What are the social channels of <game-name>?"
-            ],
-            "is_related": true
-        },
-        "roadmap": {
-            "id": "6d6d830c-3018-454d-b24b-032129207e20",
-            "questions": [
-                "Roadmap of <game-name>?",
-                "What is the roadmap of <game-name>?",
-                "<game-name>'s roadmap?",
-                "Can you share the roadmap of <game-name>?"
-            ],
-            "is_related": true
-        },
-        "revenue_streams": {
-            "id": "d4c1d309-cdec-4a46-a92b-0d727917c8d6",
-            "questions": [
-                "Revenue streams of <game-name>?",
-                "What are the revenue streams of <game-name>?",
-                "Sources of revenue for <game-name>?",
-                "How does <game-name> generate revenue?"
-            ],
-            "is_related": true
-        },
-        "token_utilities": {
-            "id": "0943c3d3-001b-40e3-b4f5-c2ca5d0c2876",
-            "questions": [
-                "Token utilities of <game-name>?",
-                "What are the token utilities of <game-name>?",
-                "<game-name>'s token utilities?"
-            ],
-            "is_related": true
-        },
-        "highlights": {
-            "id": "13319cd4-f5f5-44ac-85d1-25e6d97007b7",
-            "questions": [
-                "Highlights of <game-name>?",
-                "Major highlights of <game-name>?",
-                "What are the highlights of <game-name>?",
-                "<game-name>'s main highlights?"
-            ],
-            "is_related": true
-        },
-        "launchpads": {
-            "id": "57847a9c-0096-4633-b08f-d18d03f56908",
-            "questions": [
-                "Launchpads list of <game-name> IDO?",
-                "What is the launchpad of <game-name>?"
-            ],
-            "is_related": true
-        },
-        "total_raise": {
-            "id": "8f99aad9-d1a4-4ca8-8775-218da7305dad",
-            "questions": [
-                "Total raised of <game-name> IDO on GameFi.org?",
-                "Total funds raised of <game-name> IDO on GameFi.org??",
-                "<game-name> IDO's total raise amount on GameFi.org?"
-            ],
-            "is_related": true
-        }
-    },
-    "overview_ido_upcoming": {
-        "status": {
             "id": "055b41c0-e1af-44c3-84f3-09a0164f88e1",
             "questions": [
                 "Status of <game-name> IDO on GameFi.org?",
@@ -596,12 +412,21 @@
             ],
             "is_related": true
         },
-        "total_raise": {
+        "total_raise_gamefi": {
             "id": "955f84fb-f6f3-4ce3-be5a-71bdf6bd8f18",
             "questions": [
-                "Total raised of <game-name> IDO on GameFi.org?",
-                "Total funds raised of <game-name> IDO on GameFi.org?",
+                "Total raise of <game-name> IDO on GameFi.org?",
+                "Total funds raise of <game-name> IDO on GameFi.org?",
                 "<game-name> IDO's total raise amount on GameFi.org?"
+            ],
+            "is_related": true
+        },
+        "total_raise_all": {
+            "id": "955f84fb-f6f3-4ce3-be5a-71bdf6bd8f19",
+            "questions": [
+                "Total raise of <game-name> IDO on all platforms?",
+                "Total funds raise of <game-name> IDO on all platforms?",
+                "<game-name> IDO's total raise amount on all platforms?"
             ],
             "is_related": true
         },
@@ -704,7 +529,208 @@
             "id": "de3c812a-75c7-4c6b-b4f4-1777075b6d41",
             "questions": [
                 "Who are <game-name>'s investors?",
-                "Who invested in Better Fan?"
+                "Who invested in <game-name>?"
+            ],
+            "is_related": true
+        },
+        "ath-roi": {
+            "id": "de3c812a-75c7-4c6b-b4f4-1667075b6d41",
+            "questions": [
+                "ATH ROI of <game-name>?",
+                "What is the ATH ROI of <game-name>?"
+            ],
+            "is_related": true
+        }
+    },
+    "overview_ido_upcoming": {
+        "status": {
+            "id": "055b41c0-e1af-44c3-84f3-09a0164f88e1",
+            "questions": [
+                "Status of <game-name> IDO on GameFi.org?",
+                "What is the status of <game-name> IDO on GameFi.org?"
+            ],
+            "is_related": true
+        },
+        "vesting_schedule": {
+            "id": "41c678aa-d5e5-4b5a-a6c5-6a32eeb57da6",
+            "questions": [
+                "Vesting schedule of <game-name> IDO?",
+                "What is the vesting schedule of <game-name> IDO?",
+                "<game-name>'s IDO vesting schedule?"
+            ],
+            "is_related": true
+        },
+        "white_list": {
+            "id": "e9636188-3fbf-4356-84cb-8ae7e22c848d",
+            "questions": [
+                "What is the whitelist schedule of <game-name> IDO on GameFi.org?",
+                "When does <game-name> IDO whitelist open on GameFi.org?",
+                "Whitelist opening date of <game-name> IDO on GameFi.org?",
+                "Opening date of the whitelist for <game-name> IDO on GameFi.org?"
+            ],
+            "is_related": true
+        },
+        "refund_policy": {
+            "id": "cc3225b3-61e4-4f49-8eea-385b4f993aa6",
+            "questions": [
+                "<game-name>'s IDO refund policy on GameFi.org?",
+                "Refund policy of <game-name> IDO on GameFi.org?",
+                "What is the refund policy of <game-name> IDO on GameFi.org?"
+            ],
+            "is_related": true
+        },
+        "token_price": {
+            "id": "4084584b-e7b2-4c4b-9a20-eea6f7b3fb7e",
+            "questions": [
+                "IDO token price of <game-name>?",
+                "<game-name>'s IDO token price?"
+            ],
+            "is_related": true
+        },
+        "roadmap": {
+            "id": "cf4b832b-e9ec-4c98-84e4-f6e8cbb6376f",
+            "questions": [
+                "Roadmap of <game-name>?",
+                "What is the roadmap of <game-name>?",
+                "<game-name>'s roadmap?"
+            ],
+            "is_related": true
+        },
+        "social_networks": {
+            "id": "7c6a69df-48f8-4b70-b72a-e2fb13e5cc00",
+            "questions": [
+                "What social channels does <game-name> have?",
+                "Social channels of <game-name>?",
+                "What are the social channels of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "total_raise_gamefi": {
+            "id": "955f84fb-f6f3-4ce3-be5a-71bdf6bd8f18",
+            "questions": [
+                "Total raise of <game-name> IDO on GameFi.org?",
+                "Total funds raise of <game-name> IDO on GameFi.org?",
+                "<game-name> IDO's total raise amount on GameFi.org?"
+            ],
+            "is_related": true
+        },
+        "total_raise_all": {
+            "id": "955f84fb-f6f3-4ce3-be5a-71bdf6bd8f19",
+            "questions": [
+                "Total raise of <game-name> IDO on all platforms?",
+                "Total funds raise of <game-name> IDO on all platforms?",
+                "<game-name> IDO's total raise amount on all platforms?"
+            ],
+            "is_related": true
+        },
+        "highlights": {
+            "id": "69af019f-2a98-4a23-a65b-0d1e1c2caab3",
+            "questions": [
+                "Highlights of <game-name>?",
+                "Major highlights of <game-name>?",
+                "What are the highlights of <game-name>?",
+                "<game-name>'s main highlights?"
+            ],
+            "is_related": true
+        },
+        "revenue_streams": {
+            "id": "673350bb-57d5-476a-9dec-e9a5ffe6498f",
+            "questions": [
+                "Revenue streams of <game-name>?",
+                "What are the revenue streams of <game-name>?",
+                "Sources of revenue for <game-name>?",
+                "How does <game-name> generate revenue?"
+            ],
+            "is_related": true
+        },
+        "token_utilities": {
+            "id": "66d10411-e1ed-43c0-b26c-f1a12aec8f8c",
+            "questions": [
+                "Token utilities of <game-name>?",
+                "What are the token utilities of <game-name>?",
+                "<game-name>'s token utilities?"
+            ],
+            "is_related": true
+        },
+        "launchpad": {
+            "id": "70592a9f-62c3-43f3-ba1a-33aa31591967",
+            "questions": [
+                "Which launchpads will launch <game-name> IDO?",
+                "<game-name> IDO's launchpads?",
+                "Launchpads list of <game-name> IDO?"
+            ],
+            "is_related": true
+        },
+        "fdv": {
+            "id": "f6d41aea-747e-46b1-9e0f-66640a7a5db4",
+            "questions": [
+                "Fully diluted valuation of <game-name>?",
+                "What is the FDV of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "total_supply": {
+            "id": "ec31b0e9-0674-4560-9e88-c12f7f7c2d31",
+            "questions": [
+                "Total supply of <game-name>?",
+                "What is the total supply of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "initial_market_cap": {
+            "id": "3f1459a8-eb97-40ef-9de0-4e3c1a681ef2",
+            "questions": [
+                "Initial market cap of <game-name>?",
+                "What is the initial market cap of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "initial_circulating_supply": {
+            "id": "bc1bc58d-ced8-4405-a37c-f024226e9c2e",
+            "questions": [
+                "Initial circulating supply of <game-name>?",
+                "What is the initial circulating supply of <game-name>?"
+            ],
+            "is_related": true
+        },
+        "business_model": {
+            "id": "f03ccc88-8bac-4c47-85fc-5d472ed6745c",
+            "questions": [
+                "Business model of <game-name>?",
+                "What is the business model of <game-name>?",
+                "<game-name>'s business model?"
+            ],
+            "is_related": true
+        },
+        "team": {
+            "id": "13af5dad-6061-4380-980b-7c7d1940b637",
+            "questions": [
+                "Who are the team members behind the <game-name>?",
+                "Who is the <game-name> team?"
+            ],
+            "is_related": true
+        },
+        "partners": {
+            "id": "ea944cc9-a650-4de1-adad-d5e0a621bba7",
+            "questions": [
+                "Who are <game-name>'s partners?",
+                "Who partners with <game-name>?"
+            ],
+            "is_related": true
+        },
+        "investors": {
+            "id": "de3c812a-75c7-4c6b-b4f4-1777075b6d41",
+            "questions": [
+                "Who are <game-name>'s investors?",
+                "Who invested in <game-name>?"
+            ],
+            "is_related": true
+        },
+        "ath-roi": {
+            "id": "de3c812a-75c7-4c6b-b4f4-1667075b6d41",
+            "questions": [
+                "ATH ROI of <game-name>?",
+                "What is the ATH ROI of <game-name>?"
             ],
             "is_related": true
         }

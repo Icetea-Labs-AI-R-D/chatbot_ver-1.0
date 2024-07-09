@@ -57,7 +57,7 @@ class ChatController:
                 ]
             )
         user_question = prompt.lower()
-        context = "[]"
+        context = "Empty"
         features_keywords = {}
         suggestions = []
         rag = True

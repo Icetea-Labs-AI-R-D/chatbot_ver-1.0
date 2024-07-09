@@ -1,5 +1,46 @@
 {
     "content": {
+        "community-performance_gamehub": {
+            "telegram_group_users": [
+                "users of telegram group",
+                "members of telegram group",
+                "participants in telegram group",
+                "people in telegram group",
+                "individuals in telegram group",
+                "telegram group members",
+                "telegram group participants",
+                "telegram group users",
+                "telegram community members",
+                "telegram chat participants",
+                "telegram_group_users"
+            ],
+            "twitter_followers": [
+                "followers on twitter",
+                "twitter audience",
+                "social media followers",
+                "twitter supporters",
+                "follower count",
+                "twitter connections",
+                "twitter fans",
+                "follower base",
+                "twitter following",
+                "follower numbers",
+                "twitter_followers"
+            ],
+            "discord_users": [
+                "users on discord",
+                "discord members",
+                "participants in discord",
+                "individuals using discord",
+                "people on discord",
+                "members of discord server",
+                "active discord users",
+                "engaged discord community",
+                "registered discord accounts",
+                "online discord participants",
+                "discord_users"
+            ]
+        },
         "daily-index_gamehub": {
             "daily_index": [
                 "daily indicator",
@@ -1066,151 +1107,6 @@
                 "score"
             ]
         },
-        "social-scores_gamehub": {
-            "time": [
-                "timestamp",
-                "chronological order",
-                "duration",
-                "period",
-                "timing",
-                "block time",
-                "time interval",
-                "temporal",
-                "timeframe",
-                "time span",
-                "time"
-            ],
-            "timeframe": [
-                "time frame",
-                "duration",
-                "timeline",
-                "period",
-                "time interval",
-                "specific time range",
-                "temporal scope",
-                "time span",
-                "time horizon",
-                "time limit",
-                "timeframe"
-            ],
-            "social_score": [
-                "social reputation",
-                "community rating",
-                "network score",
-                "online influence level",
-                "digital presence ranking",
-                "social standing",
-                "group evaluation",
-                "internet impact assessment",
-                "virtual community feedback",
-                "web reputation grade",
-                "social_score"
-            ],
-            "telegram_group_score": [
-                "telegram community rating",
-                "group reputation on telegram",
-                "score of telegram group",
-                "telegram channel performance",
-                "rating of telegram community",
-                "telegram group evaluation",
-                "telegram community rank",
-                "group standing on telegram",
-                "telegram channel score",
-                "telegram group assessment",
-                "telegram_group_score"
-            ],
-            "telegram_channel_score": [
-                "telegram group rating",
-                "channel reputation score",
-                "social media platform rating",
-                "messaging app channel grade",
-                "community group evaluation",
-                "telegram chat ranking",
-                "channel popularity index",
-                "social network channel score",
-                "messaging platform rating",
-                "community chat assessment",
-                "telegram_channel_score"
-            ],
-            "twitter_score": [
-                "twitter rating",
-                "social media score",
-                "tweet reputation",
-                "twitter influence",
-                "tweet credibility",
-                "social network rating",
-                "twitter engagement level",
-                "tweet impact",
-                "social media standing",
-                "twitter presence",
-                "twitter_score"
-            ],
-            "discord_score": [
-                "discord rating",
-                "discord reputation",
-                "discord evaluation",
-                "discord assessment",
-                "discord grade",
-                "score of discord",
-                "rating of discord platform",
-                "reputation of discord service",
-                "evaluation of discord application",
-                "assessment of discord performance",
-                "discord_score"
-            ],
-            "social_rank": [
-                "social standing",
-                "community ranking",
-                "network status",
-                "online position",
-                "digital reputation",
-                "social influence level",
-                "group hierarchy",
-                "virtual authority",
-                "online popularity ranking",
-                "digital social score",
-                "social_rank"
-            ],
-            "telegram_group_rank": [
-                "telegram community ranking",
-                "group order on telegram",
-                "telegram channel hierarchy",
-                "ranking of telegram group",
-                "telegram chat position",
-                "telegram community status",
-                "group standing on telegram",
-                "telegram channel placement",
-                "position of telegram group",
-                "telegram chat level",
-                "telegram_group_rank"
-            ],
-            "telegram_channel_rank": [
-                "telegram group ranking",
-                "channel position in telegram",
-                "telegram chat hierarchy",
-                "ranking of telegram community",
-                "telegram group order",
-                "telegram channel standing",
-                "telegram chat placement",
-                "telegram community rating",
-                "telegram group status",
-                "telegram channel level",
-                "telegram_channel_rank"
-            ],
-            "social_health": [
-                "community well-being",
-                "public health",
-                "societal wellness",
-                "social well-being",
-                "population health",
-                "social welfare",
-                "social fitness",
-                "societal health",
-                "community wellness",
-                "public welfare",
-                "social_health"
-            ]
-        },
         "tokenomic_gamehub": {
             "tokenomic": [
                 "token economy",
@@ -1708,6 +1604,123 @@
                 "abridgment",
                 "overview"
             ],
+            "roadmap": [
+                "plan of action",
+                "strategic plan",
+                "project timeline",
+                "development path",
+                "milestone schedule",
+                "progress roadmap",
+                "implementation strategy",
+                "journey map",
+                "route map",
+                "blueprint",
+                "roadmap"
+            ],
+            "revenue_streams": [
+                "income sources",
+                "earnings channels",
+                "revenue sources",
+                "profit streams",
+                "monetary streams",
+                "financial sources of income",
+                "cash flow channels",
+                "funds origins",
+                "income generators",
+                "profit pathways",
+                "revenue_streams"
+            ],
+            "token_utilities": [
+                "utility token",
+                "functionality token",
+                "usage token",
+                "practicality token",
+                "benefit token",
+                "token with utility",
+                "token with functionality",
+                "token for usage",
+                "token for practicality",
+                "token for benefits",
+                "token_utilities"
+            ],
+            "team": [
+                "group",
+                "crew",
+                "staff",
+                "squad",
+                "teamwork",
+                "collaborative group",
+                "working team",
+                "joint effort",
+                "task force",
+                "unit",
+                "team"
+            ],
+            "investors_and_partners": [
+                "stakeholders and collaborators",
+                "shareholders and allies",
+                "financial backers and associates",
+                "venture capitalists and affiliates",
+                "investing parties and supporters",
+                "partners and investors",
+                "alliance members and sponsors",
+                "equity holders and companions",
+                "business supporters and affiliates",
+                "investment backers and partners",
+                "investors_and_partners"
+            ],
+            "investors": [
+                "stakeholders",
+                "shareholders",
+                "participants",
+                "backers",
+                "financiers",
+                "crypto investors",
+                "blockchain investors",
+                "digital asset investors",
+                "cryptocurrency backers",
+                "virtual currency stakeholders",
+                "investors"
+            ],
+            "partners": [
+                "collaborators",
+                "allies",
+                "associates",
+                "cooperating parties",
+                "joint venture participants",
+                "business partners",
+                "strategic allies",
+                "cooperative associates",
+                "partnership members",
+                "collaborative entities",
+                "partners"
+            ],
+            "business_model": [
+                "profit model",
+                "revenue strategy",
+                "commercial approach",
+                "monetization plan",
+                "income model",
+                "business strategy for earnings",
+                "financial model",
+                "enterprise framework for revenue generation",
+                "company's approach to making money",
+                "business plan for profitability",
+                "business_model"
+            ],
+            "tokenomics": [
+                "token economics",
+                "crypto economics",
+                "digital asset economics",
+                "coinomics",
+                "cryptocurrency economics",
+                "tokenomic principles",
+                "economic model of tokens",
+                "financial aspects of digital assets",
+                "coin economics",
+                "virtual currency economics",
+                "tokenomics"
+            ],
             "description": [
                 "explanation",
                 "depiction",
@@ -1760,96 +1773,10 @@
                 "standing report",
                 "status"
             ],
-            "claim_policy": [
-                "policy for claims",
-                "claim regulations",
-                "claim guidelines",
-                "insurance claim rules",
-                "claim procedure",
-                "policy on claims processing",
-                "claim settlement policy",
-                "claim handling regulations",
-                "insurance claim process",
-                "policy for claim resolution",
-                "claim_policy"
-            ],
-            "contract_address": [
-                "address of contract",
-                "smart contract address",
-                "contract wallet address",
-                "blockchain contract address",
-                "ethereum contract address",
-                "contract hash",
-                "contract id",
-                "contract location",
-                "contract destination",
-                "digital contract address",
-                "contract_address"
-            ],
-            "address_receiver": [
-                "recipient address",
-                "receiver's address",
-                "destination address",
-                "receiving address",
-                "wallet address for receiving",
-                "address for receiving payments",
-                "address for receiving transactions",
-                "address for receiving crypto",
-                "recipient's wallet address",
-                "destination address for transfers",
-                "address_receiver"
-            ],
-            "airdrop_chain_id": [
-                "airdrop blockchain identifier",
-                "airdop distributed ledger code",
-                "airdrop network id",
-                "token giveaway chain code",
-                "free token blockchain number",
-                "airdrop chain identification",
-                "airdrop ledger code",
-                "token distribution network id",
-                "free token giveaway chain code",
-                "airdrop token blockchain number",
-                "airdrop_chain_id"
-            ],
-            "sort": [
-                "arrange",
-                "organize",
-                "classify",
-                "order",
-                "categorize",
-                "blockchain sorting",
-                "crypto arrangement",
-                "ledger organization",
-                "cryptocurrency classification",
-                "digital ledger ordering",
-                "sort"
-            ],
-            "bonus_progress": [
-                "extra reward advancement",
-                "additional benefit development",
-                "incentive growth",
-                "bonus advancement",
-                "reward progress",
-                "extra perk evolution",
-                "additional bonus improvement",
-                "incentive enhancement",
-                "bonus development",
-                "reward evolution",
-                "bonus_progress"
-            ],
-            "display": [
-                "show",
-                "exhibit",
-                "present",
-                "demonstrate",
-                "reveal",
-                "visualize",
-                "illustrate",
-                "depict",
-                "manifest",
-                "unveil",
-                "display"
+            "vesting_schedule": [
+                "vesting schedule",
+                "vesting_schedule",
+                "Vesting Schedule"
             ],
             "need_kyc": [
                 "know your customer",
@@ -1864,7 +1791,9 @@
                 "client validation",
                 "need_kyc"
             ],
-            "featured": [
+            "highlights": [
+                "highlight",
+                "highlights",
                 "highlighted",
                 "prominent",
                 "showcased",
@@ -1916,18 +1845,9 @@
                 "fellow sibling",
                 "sibling"
             ],
-            "ath": [
-                "smart contract",
-                "decentralized application",
-                "blockchain network",
-                "cryptocurrency",
-                "digital asset",
-                "automated transaction handling",
-                "distributed ledger technology",
-                "virtual currency",
-                "crypto token",
-                "immutable record system",
-                "ath"
+            "ath-roi": [
+                "ath roi",
+                "ath-roi"
             ],
             "token": [
                 "digital asset",
@@ -1975,19 +1895,6 @@
                 "repayment conditions",
                 "return agreement",
                 "refund_policy"
-            ],
-            "forbidden_countries": [
-                "restricted nations",
-                "prohibited countries",
-                "banned territories",
-                "blocked regions",
-                "excluded states",
-                "forbidden lands",
-                "not allowed countries",
-                "barred nations",
-                "outlawed territories",
-                "restricted regions",
-                "forbidden_countries"
             ],
             "social_networks": [
                 "social media platforms",
@@ -2132,45 +2039,6 @@
                 "arrival order principle",
                 "fcfs_policy"
             ],
-            "rule": [
-                "regulation",
-                "guideline",
-                "protocol",
-                "policy",
-                "standard",
-                "compliance rule",
-                "control measure",
-                "governance framework",
-                "legal requirement",
-                "code of conduct",
-                "rule"
-            ],
-            "series_content": [
-                "blockchain content series",
-                "crypto content series",
-                "digital ledger content sequence",
-                "cryptocurrency information series",
-                "distributed ledger material lineup",
-                "blockchain content stream",
-                "crypto content collection",
-                "digital ledger information series",
-                "cryptocurrency content sequence",
-                "distributed ledger material series",
-                "series_content"
-            ],
-            "box_types": [
-                "types of blockchain",
-                "categories of distributed ledger",
-                "varieties of cryptographic network",
-                "classifications of decentralized technology",
-                "kinds of digital ledger",
-                "blockchain classifications",
-                "distributed ledger categories",
-                "cryptographic network varieties",
-                "decentralized technology classifications",
-                "digital ledger kinds",
-                "box_types"
-            ],
             "backers": [
                 "supporters",
                 "investors",
@@ -2249,14 +2117,6 @@
                 "guaranteed reliability",
                 "guaranteed"
             ],
-            "fcfs": [
-                "first-come-first-served",
-                "first in first out",
-                "sequential processing",
-                "queue processing",
-                "ordered execution",
-                "fcfs"
-            ],
             "revenue_stream": [
                 "income source",
                 "earnings flow",
@@ -2270,18 +2130,53 @@
                 "revenue pathway",
                 "revenue_stream"
             ],
-            "total_raise": [
-                "total funding",
-                "cumulative raise",
-                "overall capital raise",
-                "aggregate fundraising",
-                "complete investment collection",
-                "total finance accumulation",
-                "combined funding amount",
-                "overall fundraising total",
-                "aggregate capital raised",
-                "complete sum of investments",
-                "total_raise"
+            "total_raise_gamefi": [
+                "total_raise_gamefi",
+                "total raise on GameFi.org",
+                "total raise on GameFi",
+                "total raise gamefi"
+            ],
+            "total_raise_all": [
+                "total_raise_all",
+                "total raise on all platforms",
+                "total raise on all",
+                "total raise all"
+            ],
+            "fdv": [
+                "fdv",
+                "FDV",
+                "Fully Diluted Valuation",
+                "Total Valuation",
+                "Maximum Valuation"
+            ],
+            "listing": [
+                "listing",
+                "enlisting",
+                "trading registration",
+                "public trading",
+                "public listing"
+            ],
+            "total_supply": [
+                "overall supply",
+                "aggregate supply",
+                "total issuance",
+                "total supply"
+            ],
+            "initial_market_cap": [
+                "initial market cap",
+                "starting market cap",
+                "initial market value",
+                "initial capital value",
+                "initial capitalization",
+                "launch market cap"
+            ],
+            "initial_circulating_supply": [
+                "initial circulating supply",
+                "initial circulation",
+                "starting circulating supply",
+                "initial supply in circulation",
+                "initial token circulation",
+                "initial token supply"
             ]
         },
         "overview_ido_upcoming": {
@@ -2454,18 +2349,10 @@
                 "smart contract situation",
                 "status"
             ],
-            "claim_policy": [
-                "policy for claims",
-                "claim regulation",
-                "insurance claim guidelines",
-                "claim procedure",
-                "claim settlement rules",
-                "coverage claim policy",
-                "claim submission requirements",
-                "claim processing protocol",
-                "claim approval criteria",
-                "claim resolution standards",
-                "claim_policy"
+            "vesting_schedule": [
+                "vesting schedule",
+                "vesting_schedule",
+                "Vesting Schedule"
             ],
             "contract_address": [
                 "smart contract address",
