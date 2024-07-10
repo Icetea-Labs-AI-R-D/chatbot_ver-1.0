@@ -222,29 +222,29 @@ class OpenAIService:
         user_message: str,
         openai_client: AsyncOpenAI = None,
     ):
+        nl = "    \n"
+        
         system_prompt = f"""
-        You are a helpful agent!
-        Your task is to check if any of the topics in the list of topics is mentioned in the user's message.
-        Let check very carefully and strictly.
-        You will be penalized if you make a wrong answer.
+You are a helpful agent!
+Given a list of topics:
+[
+{nl.join([f'- Topic {index}: "{topic.lower()}"' for index, topic in enumerate(list(set(topic_names)))])}
+] 
+Your task is to check if any of the topics in the list of topics is mentioned in the user's message.
+
+Response in a JSON format like this:
+
+{{
+"is_mentioned": "True"/"False", 
+"topic_index": index in list of topics
+}}
+
+Note:
+- Let check very carefully.
+- You will be penalized if you make a wrong answer.
         """
-        nl = "\n        "
 
-        user_message = f"""
-        Given a list of topics: 
-        {nl.join([f"{index}. {topic}" for index, topic in enumerate(topic_names)])}
-        Please check if any of the topics in the list of topics is mentioned in the user's message.
-
-        User's message: "{user_message}"
-
-        If any, return "is_mentioned" is True and "topic_index" is the index of the word in the list of topics.
-        Opposite, return "is_mentioned" is False and "topic_index" is -1.
-        Response in a JSON format like this:
-        {{
-        "is_mentioned": "True"/"False", 
-        "topic_index": index in topic_names
-        }}
-        """        
+        user_message = f"""{user_message.lower()}"""       
         messages = [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_message}
