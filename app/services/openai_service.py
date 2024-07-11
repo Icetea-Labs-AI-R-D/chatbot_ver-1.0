@@ -6,7 +6,7 @@ from langsmith import traceable
 from database.session import MongoManager
 from database.queue import AsyncQueue
 import random
-from utils.tools_async import get_upcoming_IDO
+from utils.tools_async import get_upcoming_IDO, get_infor_overview_gamefi
 import utils.tools_async as tools
 from typing import List
 import ast
@@ -228,7 +228,7 @@ class OpenAIService:
 You are a helpful agent!
 Given a list of topics:
 [
-{nl.join([f'- Topic {index}: "{topic.lower()}"' for index, topic in enumerate(list(set(topic_names)))])}
+{nl.join([f'- Topic {index}: "{topic.lower()}"' for index, topic in enumerate(list(topic_names))])}
 ] 
 Your task is to check if any of the topics in the list of topics is mentioned in the user's message.
 
@@ -282,7 +282,7 @@ Note:
         history = conversation.get("history", [])[-4:]
         system_message = f"""
         You are a friendly and informative chatbot, you can introduce yourself as 'GameFi Assistant'. 
-        YOUR TASK is to accurately answer information about games and IDO projects available on the GameFi platform, helping users better understand those information. 
+        YOUR TASK is to accurately answer information about IDO projects or Game World on GameFi.org, helping users better understand those information. 
         Answer the question based ONLY on the following context:
         Context: "{context}"
 
@@ -290,7 +290,7 @@ Note:
         Answer BRIEFLY, with COMPLETE information and to the POINT of the user's question.
         The response style must be clear, easy to read, paragraphs that can have line breaks should be given line breaks.
         Note:
-            - If the user's question is just normal communication questions (eg hello, thank you,...) that do not require information about games and IDO projects available on the GameFi platform, please respond as normal communication.
+            - If the user's question is just normal communication questions (eg hello, thank you,...) that do not require information about available IDO projects or Game World on GameFi.org, please respond as normal communication.
             - If you can't find the information to answer the question in the context, please answer that you don't have information about that. 
         Let's make sure to provide a friendly, engaging, and helpful experience for the user!
         """
@@ -304,72 +304,78 @@ Note:
         if new_conversation == 1:
             yield "<notify>✅ **Starting new dialog due to timeout**</notify>"
 
-        stream = await openai_client.chat.completions.create(
-            model="gpt-3.5-turbo-0125",
-            temperature=0.7,
-            messages=messages,
-            # stream=True,
-        )
-
-        answer = stream.choices[0].message.content
+        answer = ""
         
-        image_url_pattern = r'(https?://[^\s]+(?:\.jpg|\.jpeg|\.png|\.gif))'
-
-        re_answer = re.sub(image_url_pattern, lambda match: f'<image>{match.group(0)}</image>', answer)
-        
-        re_answer += "<stop>"
-        
-        yield re_answer
-        # Logic follow-up
-
-        if rag == True :
-            system_prompt = """
-            You are a helpful agent!
-            """
-            
-            prompt = f"""
-                You are given an answer and a user question. Based on these, you need to select the most appropriate keyword from the given list to answer the user's question.
-                ### Answer:
-                {answer}
-                ### User Question:
-                {question}
-                ### Keyword List:
-                {[(id, x['source']) for id, x in enumerate(features_keywords['content'])]}
-                ### Topic:
-                {global_topic['source']}
-                ### Task:
-                !It is not required to choose a keyword if it is not relevant enough.
-                Based on the topic, answer, and user's question, without using the topic, select only one keyword from the given list that is most relevant to answer the user's question.
-                Only select the keyword that is most relevant to the question and answer. If none of the keywords are suitable, please select 'None of the above' and return {{"id": -1}}.
-                ### Expected Result JSON format:
-                {{'id': index in the content list}}
-            """ 
-            messages = [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": prompt}
-            ]
-
-            response = await openai_client.chat.completions.create(
+        if global_topic.get('topic') == 'gamefi.org':
+            answer = await get_infor_overview_gamefi()
+            yield answer + "<stop>"
+        else:
+            stream = await openai_client.chat.completions.create(
                 model="gpt-3.5-turbo-0125",
-                temperature=0,
-                response_format={"type": "json_object"},
+                temperature=0.7,
                 messages=messages,
+                # stream=True,
             )
 
-            key = response.choices[0].message.content
-            index = json.loads(key).get('id', -1)
+            answer = stream.choices[0].message.content
             
-            if int(index) >= 0 and int(index) < len(features_keywords['content']):
-                content = features_keywords['content'][index]
-                relevant_question = self.question_dict.get(content.get('api', ""), {}).get(content.get('source', ""), {})
-                if relevant_question != {}: 
-                    suggest = {
-                        'id': relevant_question['id'],
-                        'questions': relevant_question['questions'][0],
-                        'is_related': relevant_question['is_related'],
-                        'keyword': content.get('source', '')
-                    }
-                    selected_suggestions.append(suggest)
+            image_url_pattern = r'(https?://[^\s]+(?:\.jpg|\.jpeg|\.png|\.gif))'
+
+            re_answer = re.sub(image_url_pattern, lambda match: f'<image>{match.group(0)}</image>', answer)
+            
+            re_answer += "<stop>"
+            
+            yield re_answer
+            # Logic follow-up
+
+            if rag == True :
+                system_prompt = """
+                You are a helpful agent!
+                """
+                
+                prompt = f"""
+                    You are given an answer and a user question. Based on these, you need to select the most appropriate keyword from the given list to answer the user's question.
+                    ### Answer:
+                    {answer}
+                    ### User Question:
+                    {question}
+                    ### Keyword List:
+                    {[(id, x['source']) for id, x in enumerate(features_keywords['content'])]}
+                    ### Topic:
+                    {global_topic['source']}
+                    ### Task:
+                    !It is not required to choose a keyword if it is not relevant enough.
+                    Based on the topic, answer, and user's question, without using the topic, select only one keyword from the given list that is most relevant to answer the user's question.
+                    Only select the keyword that is most relevant to the question and answer. If none of the keywords are suitable, please select 'None of the above' and return {{"id": -1}}.
+                    ### Expected Result JSON format:
+                    {{'id': index in the content list}}
+                """ 
+                messages = [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": prompt}
+                ]
+
+                response = await openai_client.chat.completions.create(
+                    model="gpt-3.5-turbo-0125",
+                    temperature=0,
+                    response_format={"type": "json_object"},
+                    messages=messages,
+                )
+
+                key = response.choices[0].message.content
+                index = json.loads(key).get('id', -1)
+                
+                if int(index) >= 0 and int(index) < len(features_keywords['content']):
+                    content = features_keywords['content'][index]
+                    relevant_question = self.question_dict.get(content.get('api', ""), {}).get(content.get('source', ""), {})
+                    if relevant_question != {}: 
+                        suggest = {
+                            'id': relevant_question['id'],
+                            'questions': relevant_question['questions'][0],
+                            'is_related': relevant_question['is_related'],
+                            'keyword': content.get('source', '')
+                        }
+                        selected_suggestions.append(suggest)
         ## Drop keys with no data
         def process_list_question_from_context(context : str, question_dict_api:dict ):
             data = dict()
@@ -451,8 +457,19 @@ Note:
                     
             suggestions =  [item['question'] for index, item in enumerate(list_question)]
         
+        elif global_topic.get('topic') == 'gamefi.org':
+            list_question = self.question_dict["general"][1:4]
+            suggestions = list_question
+            list_question = list(map(lambda x:
+                {
+                    'id': 1000,
+                    'question': x,
+                    'is_related' : False,
+                    'keyword': ""
+                }, list_question))
+        
         elif global_topic.get("source", "") == "":
-            list_question = self.question_dict["general"]
+            list_question = self.question_dict["general"][:3]
             suggestions = list_question
             list_question = list(map(lambda x:
                 {

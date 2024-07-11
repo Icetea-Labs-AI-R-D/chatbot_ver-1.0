@@ -35,6 +35,8 @@ class ChatController:
         global_topic = conversation.get(
             "global_topic", {"api": "", "source": "", "topic": "", "type": ""}
         )
+        if global_topic.get('topic') == 'end_phrase':
+            global_topic = {"api": "", "source": "", "topic": "", "type": ""}
         raw_history = list(
             map(
                 lambda x: {

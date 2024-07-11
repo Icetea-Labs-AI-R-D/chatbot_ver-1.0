@@ -93,6 +93,7 @@ class ChromaService:
         for i in range(len(list_topic)):
             list_topic[i] = ' '.join([word.capitalize() for word in list_topic[i].split('-')])
         response = await  self.openai_service.check_change_topic(topic_names = list_topic, user_message=user_message, openai_client=openai_client)
+        response = response.replace("null", "None")
         is_valid_change = ast.literal_eval(response)['is_mentioned']
         index = ast.literal_eval(response)['topic_index']
         # print(response)

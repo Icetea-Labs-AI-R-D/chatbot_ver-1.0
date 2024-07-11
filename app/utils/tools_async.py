@@ -23,7 +23,22 @@ with open(path_to_json, 'r') as filename:
 # OpenAI embeddings
 embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY3'))
 chroma_client = chromadb.HttpClient(host=os.getenv('CHROMA_HOST'))  
-# chroma_client = chromadb.HttpClient()  
+# chroma_client = chromadb.HttpClient() 
+
+async def get_infor_cryptorank(slug):
+    timeout = httpx.Timeout(3.0)
+    async with httpx.AsyncClient(timeout=timeout) as client:
+        url = f'https://api.cryptorank.io/v0/coins/{slug}'
+        try:
+            response = await client.get(url)
+            data_cryptorank = response.json()
+            if data_cryptorank.get('statusCode') is not None or data_cryptorank.get('statusCode') == 404:
+                data_cryptorank = {}
+        except httpx.RequestError:
+            data_cryptorank = {}
+        except httpx.TimeoutException:
+            data_cryptorank = {}
+    return data_cryptorank 
 async def get_upcoming_IDO_with_slug():
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
@@ -426,7 +441,6 @@ def round_up(number):
 
 @alru_cache(maxsize=32, ttl=60**2)
 async def get_overview_ido(name, keywords=[]):
-
     description = {
         "name": "Name of project.",
         "description": "Providing an overview of the project",
@@ -459,8 +473,43 @@ async def get_overview_ido(name, keywords=[]):
         "total_raise_gamefi": "Total funds raise during token sale event of IDO on GameFi.org, unit of calculation is USD.", 
         "total_raise_all": "Total funds raise during token sale event of IDO on all platforms, unit of calculation is USD."
     }
-    # List future
-    list_future = ['Business Model', 'Roadmap', 'Tokenomics', 'Revenue Stream', 'Team', 'Token Utilities','Investors and Partners', 'Investors', 'Partners']
+
+    url = f'''https://ido.gamefi.org/api/v3/pool/{name}'''
+    headers = {
+        'Accept': 'application/json'
+    }
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, headers=headers)
+        response = response.json()
+    data = response.get('data', {})
+    
+    data_cryptorank = await get_infor_cryptorank(name)
+    if data == None:
+        return {
+            "description": {},
+            "data": {}
+        }
+    # 1. Delete key
+    # 1.1. Remove key in data
+    key_remove_data = ['id', 'game_slug','excerpt', 'banner', 'logo',
+        'airdrop_chain_id','display', 'need_kyc', 'featured', 'deployed', 'winner_published',
+        'series_content', 'rule', 'box_types', 'sibling','contract_address', 'address_receiver',
+        'categories', 'created_at', 'backers', 'fcfs_policy', 'sort', 'type', 'bonus_progress', 'ath',
+        'forbidden_countries','currency'
+    ]
+    for key_remove in key_remove_data:
+        if key_remove in data:
+            data.pop(key_remove)
+    # 1.2. Remove key in token
+    key_remove_token = ['address', 'chain_id','logo', 'type', 'decimals']
+    if data.get('token') is not None:
+        for key_remove in key_remove_token:
+            if key_remove in data.get('token'):
+                data.get('token').pop(key_remove)
+    
+    # 2. Cup story to future
+    list_future = ['Business Model', 'Roadmap', 'Tokenomics', 'Revenue Stream', 
+                   'Team', 'Token Utilities','Investors and Partners', 'Investors', 'Partners']
     list_key_story ={
         "Business Model": "business_model",
         "Roadmap": "roadmap",
@@ -472,95 +521,13 @@ async def get_overview_ido(name, keywords=[]):
         "Investors": "investors",
         "Partners": "partners"
     }
-    url = f'''https://ido.gamefi.org/api/v3/pool/{name}'''
-    headers = {
-        'Accept': 'application/json'
-    }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url, headers=headers)
-        response = response.json()
-    data = response.get('data', {})
-    # data['about'] = data.drop('description')
-
-    # Cryptorank
-    list_slug = []
-    list_slug.append(name);
-    if name.find("-") != -1:
-        slug1 = name.replace('-','')
-        list_slug.append(slug1)
-        slug2 = name.replace('-','_')
-        list_slug.append(slug2)
-    if name.find("_") != -1:
-        slug1 = name.replace('_','')
-        list_slug.append(slug1)
-        slug3 = name.replace('_','-')
-        list_slug.append(slug3);
-    async with httpx.AsyncClient() as client:
-        for slug in list_slug:
-            url = f'''https://api.cryptorank.io/v0/coins/{slug}'''
-            response = await client.get(url)
-            data_cryptorank = response.json()
-            if data_cryptorank.get('statusCode') is None or data_cryptorank.get('statusCode') != 404:
-                break
-            
-
-    if data == None:
-        return {
-            "description": {},
-            "data": {}
-        }
-    # Some list key to remove
-    remove_keys = ['id', 'game_slug','excerpt', 'banner', 'logo',
-        'airdrop_chain_id','display', 'need_kyc', 'featured', 'deployed', 'winner_published',
-        'series_content', 'rule', 'box_types', 'sibling','contract_address', 'address_receiver',
-        'categories', 'created_at', 'backers', 'fcfs_policy', 'sort', 'type', 'bonus_progress', 'ath',
-        'forbidden_countries','chain_id','address','decimals'
-    ]
-    # Remove key in data
-    for key in  remove_keys:
-        if key in data:
-            data.pop(key)
-    # Remove key in token
-    token = data['token']
-    for key in remove_keys:
-        if key in token:
-            token.pop(key)
-    data['token'] = token
-
-    # Remove key in currency
-    currency = data['currency']
-    for key in remove_keys:
-        if key in currency:
-            currency.pop(key)
-    data['currency'] = currency
-
-    # Change the format of the date
-    date_keys = ['from', 'to', 'claimed_at']
-    for key in date_keys:
-        if data['whitelist'].get(key) is not None:
-            data['whitelist'][key] = to_date(data['whitelist'][key])
-    for key in date_keys:
-        if data['refund_policy'].get(key) is not None:
-            data['refund_policy'][key] = to_date(data['refund_policy'][key])
-    if data.get('buying_phases') is not None:
-        for item in data['buying_phases']:
-            item.pop('id')
-            for key in date_keys:
-                if item.get(key) is not None:
-                    item[key] = to_date(item[key])
-    if data.get('claim_schedule') is not None:
-        for item in data['claim_schedule']:
-            for key in date_keys:
-                if item.get(key) is not None:
-                    item[key] = to_date(item[key])
-    # Cup the story, roadmap, revenue_streams, token_utilities
-    # Cup story
     story = ""
-    if data.get('story') is not None:
-        if data['story'].get('blocks') is not None:
-            for item in data['story']['blocks']:
-                if item['data'].get('text') is not None:
-                    if item['data'].get('level') == 1:
+    # 2.1. Filter
+    if data.get('story') is not None and data.get('story') != []:
+        if data.get('story', {}).get('blocks') is not None:
+            for item in data.get('story').get('blocks'):
+                if item.get('data').get('text') is not None:
+                    if item.get('data').get('level') == 1:
                         if story != "":
                             is_not_highlight = False
                             for key in list_future:
@@ -574,109 +541,136 @@ async def get_overview_ido(name, keywords=[]):
                                 data['highlights'] = story
                                 story = ""
                 # Text
-                if item['data'].get('text') is not None:
-                    story += item['data'].get('text') + "\n"
+                if item.get('data').get('text') is not None:
+                    story += item.get('data').get('text') + "\n"
                 # Items
-                if item['data'].get('items') is not None:
-                    for i in item['data'].get('items'):
+                if item.get('data').get('items') is not None:
+                    for i in item.get('data').get('items'):
                         story += i + "\n"
                 # Image url
-                if item['data'].get('file') is not None:
-                    story += item['data']['file'].get('url') + "\n"
-    # Pop story
+                if item.get('data').get('file') is not None:
+                    story += item.get('data').get('file').get('url') + "\n"
+    # 2.2. Pop story
     data.pop('story',None)
-    # Check story
+    # 2.3. Check story
     for future in list_future:
         if future in story:
             data[list_key_story[future]] = story
             story = ""
             break
-    # Total raise on GameFi
-    total_raise = data['total_token'] * data['token']['price']
+    
+    # 3. Total raise
+    # 3.1. Total raise gamefi
+    total_raise = data.get('total_token',0) * data.get('token', {}).get('price', 0)
     data['total_raise_gamefi'] = round(total_raise)
-    # Total raise all platforms
+    # 3.2. Total raise all platforms
     total_raise_all = 0
     if data_cryptorank.get('data') is not None:
-        for item in data_cryptorank['data']['crowdsales']:
-            total_raise_all += item['raise']['USD']
+        for item in data_cryptorank['data'].get('crowdsales', []):
+            total_raise_all += item.get('raise', {}).get('USD', 0)
+
     data['total_raise_all'] = round(total_raise_all)
-    # Status
+
+    # 4. Status
     status = {
         "data": "Not announcement about the phases yet",
         'isNull': True
     }
+    # 4.1. Check refund phase
     if data.get('refund_policy') is not None:
         phase = "REFUND PHASE"
-        if data['refund_policy'].get('from') is not None:
-            date_from = datetime.fromisoformat(data.get('refund_policy')['from'])
-            date_to = datetime.fromisoformat(data.get('refund_policy')['to'])
-            date_now = datetime.now(timezone.utc)
+        if data.get('refund_policy').get('from') is not None:
+            date_from = data.get('refund_policy').get('from')
+            date_to = data.get('refund_policy').get('to')
+            date_now = datetime.now().timestamp()
             if date_now > date_from and date_now < date_to:
                 status = {
                     "phase": phase,
-                    "from": str(date_from),
-                    "to": str(date_to)
+                    "from": to_date(date_from),
+                    "to": to_date(date_to)
                     }
-        
+    # 4.2. Check buying phase
     if data.get('buying_phases') is not None:
         for item in data.get('buying_phases'):
-            date_from = datetime.fromisoformat(item.get('from'))
-            date_to = datetime.fromisoformat(item.get('to'))
-            date_now = datetime.now(timezone.utc)
+            date_from = item.get('from')
+            date_to = item.get('to')
+            date_now = datetime.now().timestamp()
             if date_now > date_from and date_now < date_to:
                 status = {
-                    "phase": item['name'],
-                    "from": str(date_from),
-                    "to": str(date_to),
-                    "description": item['description']
+                    "phase": item.get('name'),
+                    "from": to_date(date_from),
+                    "to": to_date(date_to),
+                    "description": item.get('description')
                 }
             end_time_buy = date_to
         if date_now > end_time_buy:
             status = {
                 "data": "This IDO on GameFi.org is completed."
             }
-    if data.get('whitelist') is not None and data.get('whitelist').get('from') is not None and data.get('whitelist').get('to') is not None:
-        date_from = datetime.fromisoformat(data.get('whitelist').get('from', ''))
-        date_to = datetime.fromisoformat(data.get('whitelist').get('to', ''))
-        date_now = datetime.now(timezone.utc)
-        if date_now > date_from and date_now < date_to:
-            status = {
-                "phase": "WHITELIST PHASE",
-                "from": str(date_from),
-                "to": str(date_to),
-            }
+    # 4.3. Check whitelist phase
+    if data.get('whitelist') is not None:
+        if data.get('whitelist').get('from') is not None:
+            date_from = data.get('whitelist').get('from')
+            date_to = data.get('whitelist').get('to')
+            date_now = datetime.now().timestamp()
+            if date_now > date_from and date_now < date_to:
+                status = {
+                    "phase": "WHITELIST PHASE",
+                    "from": to_date(date_from),
+                    "to": to_date(date_to),
+                }
     data['status'] = status
-    # Replace claim policy with vesting schedule
+    
+    # 5.Change the format of the date
+    list_key_time = ['from', 'to']
+    list_timeline = ['whitelist', 'buying_phases', 'refund_policy', 'claim_schedule']
+    for timeline in list_timeline: 
+        # Mảng
+        if isinstance(data.get(timeline), list):
+            for item in data.get(timeline):
+                for key in list_key_time:
+                    if item.get(key) is not None:
+                        item[key] = to_date(item.get(key))
+        # Dict
+        else:
+            for key in list_key_time:
+                if data.get(timeline) is not None:
+                    if data.get(timeline).get(key) is not None:
+                        data[timeline][key] = to_date(data.get(timeline).get(key))
+
+
+    # 6. Replace claim policy with vesting schedule
     if data.get('claim_policy') is not None:
         data['vesting_schedule'] = data['claim_policy']
         data.pop('claim_policy', None)
-    # ATH Roi
+
+    # 7. Data crytorank
+    # 7.1. ATH Roi
     if data_cryptorank.get('data') is not None:
-        if data_cryptorank['data'].get('crowdsales') is not None:
-            for item in data_cryptorank['data']['crowdsales']:
+        if data_cryptorank.get('data').get('crowdsales') is not None:
+            for item in data_cryptorank.get('data').get('crowdsales'):
                 if item.get('idoPlatformKey') == 'game-fi':
-                    data['ath'] = item['athRoi']['value']
+                    data['ath'] = item.get('athRoi').get('value')
                     break
-    
-    # Add cryptorank data
+    # 7.2. Add cryptorank data
     if data_cryptorank.get('data') is not None:
-        if data_cryptorank['data'].get('fullyDilutedMarketCap') is not None:
-            data['fdv'] = data_cryptorank['data']['fullyDilutedMarketCap']
-        if data_cryptorank['data'].get('totalSupply') is not None:
-            data['total_supply'] = data_cryptorank['data']['totalSupply']
-        if data_cryptorank['data'].get('listingDate') is not None:
-            data['listing_date'] = data_cryptorank['data']['listingDate']
-        if data_cryptorank['data'].get('initialMarketCap') is not None:
-            data['initial_market_cap'] = data_cryptorank['data']['initialMarketCap']
-        if data_cryptorank['data'].get('initialSupply') is not None:
-            data['initial_circulating_supply'] = data_cryptorank['data']['initialSupply']
+        if data_cryptorank.get('data').get('fullyDilutedMarketCap') is not None:
+            data['fdv'] = data_cryptorank.get('data').get('fullyDilutedMarketCap')
+        if data_cryptorank.get('data').get('totalSupply') is not None:
+            data['total_supply'] = data_cryptorank.get('data').get('totalSupply')
+        if data_cryptorank.get('data').get('listingDate') is not None:
+            data['listing_date'] = data_cryptorank.get('data').get('listingDate')
+        if data_cryptorank.get('data').get('initialMarketCap') is not None:
+            data['initial_market_cap'] = data_cryptorank.get('data').get('initialMarketCap')
+        if data_cryptorank.get('data').get('initialSupply') is not None:
+            data['initial_circulating_supply'] = data_cryptorank.get('data').get('initialSupply')
     
+
     overview = {
         "description": description,
         "data": data
     }
-    
-    
+
     if len(keywords) == 0:
         overview = {
             "description": {
@@ -767,7 +761,7 @@ async def get_tokenomics_gamehub(name, keywords=[]):
     }
 
 @alru_cache(maxsize=32, ttl=60**2)
-async def get_upcoming_IDO(name, keywords=[]):
+async def get_upcoming_IDO(name= "", keywords=[]):
     url = "https://ido.gamefi.org/api/v3/pools/upcoming"
     headers = {
         "Accept": "application/json",
@@ -791,13 +785,21 @@ async def get_upcoming_IDO(name, keywords=[]):
         # Schedule the update functions to run in the background
         asyncio.create_task(update_topic_vector_db(vectordb_topic))
         asyncio.create_task(update_topic_vector_db(vectordb_docs))
-        
+    
     overview = {
         "number_of_upcoming_IDO": len(list_project_name),
         "list_project": list_project_name
     }
     return overview    
-   
+
+async def get_upcoming_IDO_formated(name="", keywords=()):
+    res = await get_upcoming_IDO()
+    nl = '\n'
+    text = f"""Number of upcoming IDO projects: {res['number_of_upcoming_IDO']}
+List of upcoming IDO projects: 
+{nl.join(['  - ' + proj for proj in res['list_project']])}"""
+    return text
+        
 
 @alru_cache(maxsize=32, ttl=60**2)
 async def get_upcoming_IDO_overview(name, keywords=[]):
@@ -838,16 +840,6 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     "total_raise_gamefi": "Total funds raise during token sale event of IDO on GameFi.org, unit of calculation is USD.", 
     "total_raise_all": "Total funds raise during token sale event of IDO on all platforms, unit of calculation is USD."
     }
-    # Some list key to remove
-    list_remove_item = ['id', 'game_slug','excerpt', 'banner', 'logo',
-        'airdrop_chain_id','display', 'need_kyc', 'featured', 'deployed', 'winner_published',
-        'series_content', 'rule', 'box_types', 'sibling','contract_address', 'address_receiver',
-        'categories', 'created_at', 'backers', 'fcfs_policy', 'sort', 'type', 'bonus_progress', 'ath',
-        'forbidden_countries'
-    ]
-    list_token_remove = [
-        'chain_id', 'logo', 'address'
-    ]
     # List future
     list_future = ['Business Model', 'Roadmap', 'Tokenomics', 'Revenue Stream', 'Team', 'Token Utilities','Investors and Partners', 'Investors', 'Partners']
     list_key_story ={
@@ -866,202 +858,202 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
     async with httpx.AsyncClient() as client:
         response = await client.get(url, headers=headers)
         response = response.json()
-    data = response["data"]
-    # Cryptorank
-    list_slug = []
-    list_slug.append(name);
-    if name.find("-") != -1:
-        slug1 = name.replace('-','')
-        list_slug.append(slug1)
-        slug2 = name.replace('-','_')
-        list_slug.append(slug2)
-    if name.find("_") != -1:
-        slug1 = name.replace('_','')
-        list_slug.append(slug1)
-        slug3 = name.replace('_','-')
-        list_slug.append(slug3);
-    async with httpx.AsyncClient() as client:
-        for slug in list_slug:
-            url = f'''https://api.cryptorank.io/v0/coins/{slug}'''
-            response = await client.get(url)
-            data_cryptorank = response.json()
-            if data_cryptorank.get('statusCode') is None or data_cryptorank.get('statusCode') != 404:
-                break
-   
-    project = {}
+    dt = response["data"]
+    data = {}
     # Take project by name
-    for prj in data:
+    for prj in dt:
         if prj.get("slug") == name:
-            project = prj
+            data = prj
             break
-    
-    # Add cryptorank data
-    if data_cryptorank.get('data') is not None:
-        if data_cryptorank['data'].get('icoFullyDilutedMarketCap') is not None:
-            project['fdv'] = data_cryptorank['data']['icoFullyDilutedMarketCap']
-        if data_cryptorank['data'].get('totalSupply') is not None:
-            project['total_supply'] = data_cryptorank['data']['totalSupply']
-        if data_cryptorank['data'].get('listingDate') is not None:
-            project['listing_date'] = data_cryptorank['data']['listingDate']
-        if data_cryptorank['data'].get('initialMarketCap') is not None:
-            project['initial_market_cap'] = data_cryptorank['data']['initialMarketCap']
-        if data_cryptorank['data'].get('initialSupply') is not None:
-            project['initial_circulating_supply'] = data_cryptorank['data']['initialSupply']
-    # ATH Roi
-    if data_cryptorank.get('data') is not None:
-        if data_cryptorank['data'].get('crowdsales') is not None:
-            for item in data_cryptorank['data']['crowdsales']:
-                if item.get('idoPlatformKey') == 'game-fi':
-                    if item.get('athRoi') is not None:
-                        project['ath'] = item['athRoi']['value']
-                        break
-    # Remove key of project
-    for key in list_remove_item:
-        project.pop(key, None)
-    # Remove key in token
-    for key in list_token_remove:
-        if project.get("token") is not None:
-            project["token"].pop(key, None)
-    # Remove key in currency
-    for key in list_token_remove:
-        if project.get("currency") is not None:
-            project["currency"].pop(key, None)
-    # Change time to date
-    for key in list_key_time:
-        if project.get('whitelist') is not None:
-            if project['whitelist'].get(key) is not None:
-                project['whitelist'][key] = to_date(project['whitelist'][key])
-    # Bying phases
-    if project.get('buying_phases') is not None:
-        for item in project['buying_phases']:
-            for key in list_key_time:
-                if item.get(key) is not None:
-                    item[key] = to_date(item[key])
-    # Refund policy
-    if project.get('refund_policy') is not None:
-        for key in list_key_time:
-            if project['refund_policy'].get(key) is not None:
-                project['refund_policy'][key] = to_date(project['refund_policy'][key])
-    # Claim schedule
-    if project.get('claim_schedule') is not None:
-        for item in project['claim_schedule']:
-            for key in list_key_time:
-                if item.get(key) is not None:
-                    item[key] = to_date(item[key])
-    # Cup story
+    # Cryptorank
+    data_cryptorank = await get_infor_cryptorank(name)
+    if data == {}:
+        return {
+            "description": {},
+            "data": {}
+        }
+            
+    # 1. Delete key
+    # 1.1. Remove key in data
+    key_remove_data = ['id', 'game_slug','excerpt', 'banner', 'logo',
+        'airdrop_chain_id','display', 'need_kyc', 'featured', 'deployed', 'winner_published',
+        'series_content', 'rule', 'box_types', 'sibling','contract_address', 'address_receiver',
+        'categories', 'created_at', 'backers', 'fcfs_policy', 'sort', 'type', 'bonus_progress', 'ath',
+        'forbidden_countries','currency'
+    ]
+    for key_remove in key_remove_data:
+        if key_remove in data:
+            data.pop(key_remove)
+    # 1.2. Remove key in token
+    key_remove_token = ['address', 'chain_id','logo', 'type', 'decimals']
+    if data.get('token') is not None:
+        for key_remove in key_remove_token:
+            if key_remove in data.get('token'):
+                data.get('token').pop(key_remove)   
+
+    # 2. Cup story to future
+    list_future = ['Business Model', 'Roadmap', 'Tokenomics', 'Revenue Stream', 
+                   'Team', 'Token Utilities','Investors and Partners', 'Investors', 'Partners']
+    list_key_story ={
+        "Business Model": "business_model",
+        "Roadmap": "roadmap",
+        "Tokenomics": "tokenomics",
+        "Revenue Stream": "revenue_streams",
+        "Team": "team",
+        "Token Utilities": "token_utilities",
+        "Investors and Partners": "investors_and_partners",
+        "Investors": "investors",
+        "Partners": "partners"
+    }
     story = ""
-    for item in project['story']['blocks']:
-        if item['data'].get('text') is not None:
-            if item['data'].get('level') == 1:
-                if story != "":
-                    is_not_highlight = False
-                    for key in list_future:
-                        if key in story:
-                            project[list_key_story[key]] = story
-                            story = ""
-                            is_not_highlight = True
-                            break
-                    # Check highlight
-                    if is_not_highlight == False:
-                        project['highlights'] = story
-                        story = ""
-        # Text
-        if item['data'].get('text') is not None:
-            story += item['data'].get('text') + "\n"
-        # Items
-        if item['data'].get('items') is not None:
-            for i in item['data'].get('items'):
-                story += i + "\n"
-        # Image url
-        if item['data'].get('file') is not None:
-            story += item['data']['file'].get('url') + "\n"
-    # Pop story
-    project.pop('story')
-    # Check story
+    # 2.1. Filter
+    if data.get('story') is not None:
+        if data.get('story').get('blocks') is not None:
+            for item in data.get('story').get('blocks'):
+                if item.get('data').get('text') is not None:
+                    if item.get('data').get('level') == 1:
+                        if story != "":
+                            is_not_highlight = False
+                            for key in list_future:
+                                if key in story:
+                                    data[list_key_story[key]] = story
+                                    story = ""
+                                    is_not_highlight = True
+                                    break
+                            # Check highlight
+                            if is_not_highlight == False:
+                                data['highlights'] = story
+                                story = ""
+                # Text
+                if item.get('data').get('text') is not None:
+                    story += item.get('data').get('text') + "\n"
+                # Items
+                if item.get('data').get('items') is not None:
+                    for i in item.get('data').get('items'):
+                        story += i + "\n"
+                # Image url
+                if item.get('data').get('file') is not None:
+                    story += item.get('data').get('file').get('url') + "\n"
+    # 2.2. Pop story
+    data.pop('story',None)
+    # 2.3. Check story
     for future in list_future:
         if future in story:
-            project[list_key_story[future]] = story
+            data[list_key_story[future]] = story
             story = ""
-            break
-    # Calculate total raise
-    if project['token'].get('price') is None:
-        token_price = 0
-    else:
-        token_price = project['token']['price']   
-    # Total raise
-    total_raise = project['total_token'] * token_price
-    # Total raise on GameFi
-    project['total_raise_gamefi'] = round(total_raise)
-    # Total raise all platforms
+            break 
+    
+    # 3. Total raise
+    # 3.1. Total raise gamefi
+    total_raise = data.get('total_token', 0) * data.get('token', {}).get('price', 0)
+    data['total_raise_gamefi'] = round(total_raise)
+    # 3.2. Total raise all platforms
     total_raise_all = 0
     if data_cryptorank.get('data') is not None:
-        for item in data_cryptorank['data']['crowdsales']:
-            total_raise_all += item['raise']['USD']
-    project['total_raise_all'] = round(total_raise_all)
+        for item in data_cryptorank['data'].get('crowdsales', []):
+            total_raise_all += item.get('raise', {}).get('USD', 0)
+    data['total_raise_all'] = round(total_raise_all)
 
-    # # Status
+    # 4. Status
     status = {
         "data": "Not announcement about the phases yet",
         'isNull': True
     }
-    if project.get('refund_policy') is not None:
-        phase = "REFUND PHASE"  
-        if project['refund_policy'] != {}:
-            if project['refund_policy'].get('from') is not None:
-                date_from = datetime.fromisoformat(project.get('refund_policy')['from'])
-                date_to = datetime.fromisoformat(project.get('refund_policy')['to'])
-                date_now = datetime.now(timezone.utc)
-                if date_now > date_from and date_now < date_to:
-                    status = {
-                        "phase": phase,
-                        "from": str(date_from),
-                        "to": str(date_to)
-                        }
-    
-    if project.get('buying_phases') is not None:
-        if len(project.get('buying_phases')) > 0:
-            for item in project.get('buying_phases'):
-                date_from = datetime.fromisoformat(item.get('from'))
-                date_to = datetime.fromisoformat(item.get('to'))
-                date_now = datetime.now(timezone.utc)
-                if date_now > date_from and date_now < date_to:
-                    status = {
-                        "phase": item['name'],
-                        "from": str(date_from),
-                        "to": str(date_to),
-                        "description": item['description']
-                    }
-                time_buy_end = date_to
-            if date_now > time_buy_end:
+    # 4.1. Check refund phase
+    if data.get('refund_policy') is not None:
+        phase = "REFUND PHASE"
+        if data.get('refund_policy').get('from') is not None:
+            date_from = data.get('refund_policy').get('from')
+            date_to = data.get('refund_policy').get('to')
+            date_now = datetime.now().timestamp()
+            if date_now > date_from and date_now < date_to:
                 status = {
-                    "data": "This IDO on GameFi.org is completed."
+                    "phase": phase,
+                    "from": to_date(date_from),
+                    "to": to_date(date_to)
+                    }
+    # 4.2. Check buying phase
+    if data.get('buying_phases') is not None:
+        for item in data.get('buying_phases'):
+            date_from = item.get('from')
+            date_to = item.get('to')
+            date_now = datetime.now().timestamp()
+            if date_now > date_from and date_now < date_to:
+                status = {
+                    "phase": item.get('name'),
+                    "from": to_date(date_from),
+                    "to": to_date(date_to),
+                    "description": item.get('description')
                 }
-    if project.get('whitelist') is not None:
-        if project['whitelist'].get('from') is not None:
-            date_from = datetime.fromisoformat(project.get('whitelist').get('from'))
-            date_to = datetime.fromisoformat(project.get('whitelist').get('to'))
-            date_from_nb = date_from.timestamp()
-            date_to_nb = date_to.timestamp()
-            date_now = datetime.now(timezone.utc)
-            date_now_nb = date_now.timestamp()
-            if date_now >= date_from and date_now <= date_to:
+            end_time_buy = date_to
+        if date_now > end_time_buy:
+            status = {
+                "data": "This IDO on GameFi.org is completed."
+            }
+    # 4.3. Check whitelist phase
+    if data.get('whitelist') is not None:
+        if data.get('whitelist').get('from') is not None:
+            date_from = data.get('whitelist').get('from')
+            date_to = data.get('whitelist').get('to')
+            date_now = datetime.now().timestamp()
+            if date_now > date_from and date_now < date_to:
                 status = {
                     "phase": "WHITELIST PHASE",
-                    "from": str(date_from),
-                    "to": str(date_to),
+                    "from": to_date(date_from),
+                    "to": to_date(date_to),
                 }
-    project['status'] = status
+    data['status'] = status
 
-    # 
+    # 5.Change the format of the date
+    list_key_time = ['from', 'to']
+    list_timeline = ['whitelist', 'buying_phases', 'refund_policy', 'claim_schedule']
+    for timeline in list_timeline: 
+        # Mảng
+        if isinstance(data.get(timeline), list):
+            for item in data.get(timeline):
+                for key in list_key_time:
+                    if item.get(key) is not None:
+                        item[key] = to_date(item.get(key))
+        # Dict
+        else:
+            for key in list_key_time:
+                if data.get(timeline) is not None:
+                    if data.get(timeline).get(key) is not None:
+                        data[timeline][key] = to_date(data.get(timeline).get(key))
 
-    # Replace claim policy with vesting schedule
-    if project.get('claim_policy') is not None:
-        project['vesting_schedule'] = project['claim_policy']
-        project.pop('claim_policy', None)
+
+    # 6. Replace claim policy with vesting schedule
+    if data.get('claim_policy') is not None:
+        data['vesting_schedule'] = data['claim_policy']
+        data.pop('claim_policy', None)
+
+    # 7. Data crytorank
+    # 7.1. ATH Roi
+    if data_cryptorank.get('data') is not None:
+        if data_cryptorank.get('data').get('crowdsales') is not None:
+            for item in data_cryptorank.get('data').get('crowdsales'):
+                if item.get('idoPlatformKey') == 'game-fi':
+                    if item.get('athRoi') is not None:
+                        data['ath'] = item.get('athRoi').get('value')
+                    break
+    # 7.2. Add cryptorank data
+    if data_cryptorank.get('data') is not None:
+        if data_cryptorank.get('data').get('fullyDilutedMarketCap') is not None:
+            data['fdv'] = data_cryptorank.get('data').get('fullyDilutedMarketCap')
+        if data_cryptorank.get('data').get('totalSupply') is not None:
+            data['total_supply'] = data_cryptorank.get('data').get('totalSupply')
+        if data_cryptorank.get('data').get('listingDate') is not None:
+            data['listing_date'] = data_cryptorank.get('data').get('listingDate')
+        if data_cryptorank.get('data').get('initialMarketCap') is not None:
+            data['initial_market_cap'] = data_cryptorank.get('data').get('initialMarketCap')
+        if data_cryptorank.get('data').get('initialSupply') is not None:
+            data['initial_circulating_supply'] = data_cryptorank.get('data').get('initialSupply')
+    
+    
     # Add description
     overview = {
         "description": description,
-        "data": project
+        "data": data
     }
     
     if len(keywords) == 0:
@@ -1074,16 +1066,27 @@ async def get_upcoming_IDO_overview(name, keywords=[]):
                 "social_networks": description['social_networks'],
             },
             "data": {
-                "name" : project['name'],
-                "description": project['description'],
-                "status": project['status'],
-                "token": project['token'],
-                "social_networks": project['social_networks'],
+                "name" : data['name'],
+                "description": data['description'],
+                "status": data['status'],
+                "token": data['token'],
+                "social_networks": data['social_networks'],
             }
         }
     
     return overview
 
+async def get_infor_overview_gamefi(name='', keywords=[]):
+    text = """ABOUT GAMEFI.ORG
+GameFi.org is a one-stop destination for Web3 explorers.
+
+We aim to build digital communities and manage virtual economies for mainstream adoption via Launchpad & Game World. We offer a suite of solutions covering the entire web3 projects' lifecycle.
+
+Visit gamefi.org for more information.
+
+[Twitter](https://twitter.com/GameFi_Official) | [Telegram Channel](http://t.me/GameFi_OfficialANN) | [Telegram Chat](http://t.me/GameFi_Official) |"""
+    
+    return text
 
 tools_info = [
     {
@@ -1120,11 +1123,15 @@ tools_info = [
     },
     {
         "name": "get_upcoming_IDO",
-        "tool_fn":get_upcoming_IDO
+        "tool_fn":get_upcoming_IDO_formated
     },
     {
         "name": "get_upcoming_IDO_overview",
         "tool_fn":get_upcoming_IDO_overview
+    },
+    {
+        "name": "get_infor_overview_gamefi.org",
+        "tool_fn":get_infor_overview_gamefi
     }
 ]
 
@@ -1153,7 +1160,8 @@ async def call_tools_async(feature_dict : dict) -> str:
             'backer_gamehub' : 'get_top_backers_gamehub',
             'tokenomic_gamehub' : 'get_tokenomics_gamehub',
             'overview_list_ido_upcoming': 'get_upcoming_IDO',
-            'overview_ido_upcoming': 'get_upcoming_IDO_overview'
+            'overview_ido_upcoming': 'get_upcoming_IDO_overview',
+            'overview_gamefi.org': 'get_infor_overview_gamefi.org',
         }
 
 
@@ -1267,36 +1275,9 @@ async def format_upcoming_IDO_overview(data):
     }
     list_key_time = ['from', 'to']
     name = data['slug']
-    # Cryptorank
-    list_slug = []
-    list_slug.append(data['slug'])
-    if name.find("-") != -1:
-        slug1 = name.replace('-','')
-        list_slug.append(slug1)
-        slug2 = name.replace('-','_')
-        list_slug.append(slug2)
-    if name.find("_") != -1:
-        slug1 = name.replace('_','')
-        list_slug.append(slug1)
-        slug3 = name.replace('_','-')
-        list_slug.append(slug3);
-    async with httpx.AsyncClient() as client:
-        for slug in list_slug:
-            url = f'''https://api.cryptorank.io/v0/coins/{slug}'''
-            response = await client.get(url)
-            data_cryptorank = response.json()
-            if data_cryptorank.get('statusCode') is None or data_cryptorank.get('statusCode') != 404:
-                break
-   
+        
     project = data
     
-    # Add cryptorank data
-    if data_cryptorank.get('data') is not None:
-        project['fdv'] = data_cryptorank['data']['icoFullyDilutedMarketCap']
-        project['total_supply'] = data_cryptorank['data']['totalSupply']
-        project['listing_date'] = data_cryptorank['data']['listingDate']
-        project['initial_market_cap'] = data_cryptorank['data']['initialMarketCap']
-        project['initial_circulating_supply'] = data_cryptorank['data']['initialSupply']
     # Remove key of project
     for key in list_remove_item:
         project.pop(key, None)

@@ -2971,255 +2971,290 @@
             ]
         },
         "ido": {
-            "legends-of-elysium": [
-                "Legends of Elysium",
-                "legends-of-elysium",
-                "LOE"
+            "project-seed": [
+                "Project SEED",
+                "project-seed",
+                "SHILL"
             ],
-            "trinity-of-the-fabled": [
-                "Trinity Of The Fabled",
-                "trinity-of-the-fabled",
-                "ABYS"
+            "gamefi": [
+                "GameFi.org",
+                "gamefi",
+                "GAFI"
             ],
-            "snapmuse": [
-                "Snapmuse.io",
-                "snapmuse",
-                "SMX"
+            "dreams-quest": [
+                "Dreams Quest",
+                "dreams-quest",
+                "DREAMS"
             ],
-            "brcstarter": [
-                "BRCStarter",
-                "brcstarter",
-                "BRCST"
+            "deathroad": [
+                "DeathRoad",
+                "deathroad",
+                "DRACE"
             ],
-            "codyfight": [
-                "Codyfight",
-                "codyfight",
-                "CTOK"
+            "metagods": [
+                "MetaGods",
+                "metagods",
+                "MGOD"
             ],
-            "moonboots": [
-                "MoonBoots DAO",
-                "moonboots",
-                "MBDAO"
+            "solice": [
+                "Solice",
+                "solice",
+                "SLC"
             ],
-            "petoshi": [
-                "Petoshi",
-                "petoshi",
-                "PETOSHI"
+            "the-killbox": [
+                "The Killbox",
+                "the-killbox",
+                "KBOX"
             ],
-            "agoradex": [
-                "Agora",
-                "agoradex",
-                "AGA"
+            "ftribe-fighters": [
+                "Ftribe Fighters",
+                "ftribe-fighters",
+                "F2C"
             ],
-            "exverse": [
-                "Exverse",
-                "exverse",
-                "EXVG"
+            "titan-hunters": [
+                "Titan Hunters",
+                "titan-hunters",
+                "TITA"
             ],
-            "laika": [
-                "Laika AI",
-                "laika",
-                "LKI"
+            "orbitau": [
+                "Orbitau",
+                "orbitau",
+                "TAUM"
             ],
-            "nexgami": [
-                "NexGami",
-                "nexgami",
-                "NEXG"
+            "mech-master": [
+                "Mech Master",
+                "mech-master",
+                "MECH"
             ],
-            "edu3labs": [
-                "Edu3Labs",
-                "edu3labs",
-                "NFE"
+            "meta-spatial": [
+                "Meta Spatial",
+                "meta-spatial",
+                "SPAT"
             ],
-            "cryptopia": [
-                "Cryptopia",
-                "cryptopia",
-                "TOS"
+            "gunstar-metaverse": [
+                "GunStar Metaverse",
+                "gunstar-metaverse",
+                "GSTS"
             ],
-            "metados": [
-                "MetaDOS",
-                "metados",
-                "SECOND"
+            "warena": [
+                "Warena",
+                "warena",
+                "RENA"
+            ],
+            "heroverse": [
+                "Heroverse",
+                "heroverse",
+                "HER"
+            ],
+            "ertha": [
+                "Ertha",
+                "ertha",
+                "ERTHA"
+            ],
+            "dark-frontiers": [
+                "Dark Frontiers",
+                "dark-frontiers",
+                "DARK"
+            ],
+            "kaby-arena": [
+                "Kaby Arena",
+                "kaby-arena",
+                "KABY"
+            ],
+            "aspo-world": [
+                "Aspo World",
+                "aspo-world",
+                "ASPO"
+            ],
+            "planet-sandbox": [
+                "Planet Sandbox",
+                "planet-sandbox",
+                "PSB"
+            ],
+            "polygonum-online": [
+                "Polygonum Online",
+                "polygonum-online",
+                "POG"
+            ],
+            "legends-of-mitra": [
+                "Legends of Mitra",
+                "legends-of-mitra",
+                "MITA"
             ],
             "crypto-hunters": [
                 "Crypto Hunters",
                 "crypto-hunters",
                 "CRH"
             ],
-            "unibit": [
-                "Unibit",
-                "unibit",
-                "UIBT"
-            ],
-            "web3war": [
-                "Web3War",
-                "web3war",
-                "FPS"
-            ],
-            "pecland-private": [
-                "PECland Private Sale",
-                "pecland-private",
-                "PECL"
-            ],
-            "eclipse-fi": [
-                "Eclipse Fi",
-                "eclipse-fi",
-                "ECLIP "
-            ],
-            "vendetta": [
-                "Vendetta",
-                "vendetta",
-                "VDT"
-            ],
-            "pecland": [
-                "PECland Exclusive Pool",
-                "pecland",
-                "PECL"
-            ],
-            "devomon": [
-                "Devomon",
-                "devomon",
-                "EVO"
-            ],
-            "oval3": [
-                "Oval3",
-                "oval3",
-                "OVL3"
-            ],
-            "uforika": [
-                "UFORIKA",
-                "uforika",
-                "FORA"
-            ],
-            "bowled": [
-                "Bowled.io",
-                "bowled",
-                "BWLD"
-            ],
-            "the-unfettered": [
-                "The Unfettered",
-                "the-unfettered",
-                "SOULS"
-            ],
-            "kunji-finance": [
-                "Kunji Finance",
-                "kunji-finance",
-                "KNJ"
-            ],
-            "patex": [
-                "Patex Private",
-                "patex",
-                "PATEX"
-            ],
-            "orbofi": [
-                "Orbofi AI",
-                "orbofi",
-                "OBI"
+            "placewar": [
+                "PlaceWar",
+                "placewar",
+                "PLACE"
             ],
             "earn-network": [
                 "Earn Network",
                 "earn-network",
                 "EARN"
             ],
-            "flowx": [
-                "FlowX Presale",
-                "flowx",
-                "FLX"
+            "legends-of-elysium": [
+                "Legends of Elysium",
+                "legends-of-elysium",
+                "LOE"
             ],
-            "arbipad-community": [
-                "Arbipad Community",
-                "arbipad-community",
-                "ARBI"
+            "gemuni": [
+                "GemUni",
+                "gemuni",
+                "GENI"
             ],
-            "arbipad": [
-                "Arbipad Public",
-                "arbipad",
-                "ARBI"
+            "xana": [
+                "XANA",
+                "xana",
+                "XETA"
+            ],
+            "oly-sport": [
+                "Oly Sport",
+                "oly-sport",
+                "OLY"
+            ],
+            "drunk-robots": [
+                "Badmad Robots",
+                "drunk-robots",
+                "METAL"
+            ],
+            "metados": [
+                "MetaDOS",
+                "metados",
+                "SECOND"
+            ],
+            "prometheus": [
+                "Prometheus",
+                "prometheus",
+                "MGA"
+            ],
+            "brcstarter": [
+                "BRCStarter",
+                "brcstarter",
+                "BRCST"
+            ],
+            "orbofi": [
+                "Orbofi AI ",
+                "orbofi",
+                "OBI"
+            ],
+            "devomon": [
+                "Devomon",
+                "devomon",
+                "EVO"
+            ],
+            "exverse": [
+                "Exverse",
+                "exverse",
+                "EXVG"
+            ],
+            "eclipse-fi": [
+                "Eclipse Fi",
+                "eclipse-fi",
+                "ECLIP"
             ],
             "animalia": [
                 "Animalia",
                 "animalia",
                 "ANIM"
             ],
-            "plexus": [
-                "Plexus",
-                "plexus",
-                "PLX"
+            "bullieverse": [
+                "Bullieverse",
+                "bullieverse",
+                "BULL"
             ],
-            "gpt-guru": [
-                "GPT Guru",
-                "gpt-guru",
-                "GPTG"
+            "petoshi": [
+                "Petoshi",
+                "petoshi",
+                "PETOSHI"
             ],
-            "klubcoin": [
-                "KlubCoin",
-                "klubcoin",
-                "KLUB"
+            "arbipad": [
+                "Arbipad",
+                "arbipad",
+                "ARBI"
+            ],
+            "uforika": [
+                "UFORIKA",
+                "uforika",
+                "FORA"
+            ],
+            "cyber-arena": [
+                "Cyber Arena",
+                "cyber-arena",
+                "CAT"
+            ],
+            "eldarune": [
+                "Eldarune",
+                "eldarune",
+                "ELDA"
+            ],
+            "snapmuse": [
+                "Snapmuse",
+                "snapmuse",
+                "SMX"
+            ],
+            "pecland": [
+                "PopBRC",
+                "pecland",
+                "PECL"
+            ],
+            "cryptopia": [
+                "Cryptopia",
+                "cryptopia",
+                "TOS"
+            ],
+            "kingdom-karnage": [
+                "Kingdom Karnage",
+                "kingdom-karnage",
+                "KKT"
+            ],
+            "nexgami": [
+                "NexGami",
+                "nexgami",
+                "NEXG"
+            ],
+            "ethlas": [
+                "Ethlas",
+                "ethlas",
+                "ELS"
+            ],
+            "legends-of-elumia": [
+                "Legends of Elumia",
+                "legends-of-elumia",
+                "ELU"
+            ],
+            "monsterra": [
+                "Monsterra",
+                "monsterra",
+                "MSTR"
             ],
             "paysenger": [
                 "Paysenger",
                 "paysenger",
                 "EGO"
             ],
-            "eldarune-community": [
-                "Eldarune Community",
-                "eldarune-community",
-                "ELDA"
+            "unibit": [
+                "Unibit",
+                "unibit",
+                "UIBT"
             ],
-            "eldarune": [
-                "Eldarune Public",
-                "eldarune",
-                "ELDA"
+            "oceanland": [
+                "Oceanland",
+                "oceanland",
+                "OLAND"
             ],
-            "atem": [
-                "Atem",
-                "atem",
-                "ATEM"
+            "x-metaverse": [
+                "X-Metaverse",
+                "x-metaverse",
+                "XMETA"
             ],
-            "project-seed": [
-                "Project SEED IGO",
-                "project-seed",
-                "SHILL"
-            ],
-            "project-seed-communty": [
-                "Project SEED Community",
-                "project-seed-communty",
-                "SHILL"
-            ],
-            "gamefi-community": [
-                "GameFi Community",
-                "gamefi-community",
-                "GAFI"
-            ],
-            "gamefi": [
-                "GameFi IGO",
-                "gamefi",
-                "GAFI"
-            ],
-            "dreams-quest": [
-                "Dream Quest IGO",
-                "dreams-quest",
-                "DREAMS"
-            ],
-            "dreams-quest-private": [
-                "Dreams Quest Community Sale",
-                "dreams-quest-private",
-                "DREAMS"
-            ],
-            "spacecrypto-community": [
-                "SpaceCrypto Community",
-                "spacecrypto-community",
-                "SPG"
-            ],
-            "space-crypto": [
-                "SpaceCrypto IGO",
-                "space-crypto",
-                "SPG"
-            ],
-            "sidus-heroes-sidus-token": [
-                "SIDUS HEROES IGO",
-                "sidus-heroes-sidus-token",
-                "SIDUS"
+            "agoradex": [
+                "Agoradex",
+                "agoradex",
+                "AGA"
             ]
         },
         "ido_upcoming": {
@@ -3336,6 +3371,12 @@
                 "approaching digital currency seminar",
                 "up-and-coming token launch",
                 "upcoming"
+            ]
+        },
+        "gamefi.org": {
+            "general_information": [
+                "What is GameFi.org",
+                "Tell me about GameFi.org"
             ]
         }
     }
