@@ -2986,15 +2986,45 @@
                 "dreams-quest",
                 "DREAMS"
             ],
+            "sidus-heroes-sidus-token": [
+                "Sidus",
+                "sidus-heroes",
+                "SIDUS",
+                "sidus-heroes-sidus-token"
+            ],
+            "space-crypto": [
+                "SpaceCrypto",
+                "spacecrypto",
+                "SPG",
+                "space-crypto"
+            ],
+            "spacey": [
+                "SpaceY2025",
+                "spacey-2025",
+                "SPAY",
+                "spacey"
+            ],
             "deathroad": [
                 "DeathRoad",
                 "deathroad",
                 "DRACE"
             ],
+            "metawars": [
+                "MetaWars",
+                "meta-wars",
+                "WARS",
+                "metawars"
+            ],
             "metagods": [
                 "MetaGods",
                 "metagods",
                 "MGOD"
+            ],
+            "bemil-coin": [
+                "Bemil Coin",
+                "bemil",
+                "BEM",
+                "bemil-coin"
             ],
             "solice": [
                 "Solice",
@@ -3005,6 +3035,12 @@
                 "The Killbox",
                 "the-killbox",
                 "KBOX"
+            ],
+            "gamestation": [
+                "GameStation",
+                "game-station",
+                "GAMER",
+                "gamestation"
             ],
             "ftribe-fighters": [
                 "Ftribe Fighters",
@@ -3026,6 +3062,12 @@
                 "mech-master",
                 "MECH"
             ],
+            "my-master-war": [
+                "MyMasterWar",
+                "mymasterwar",
+                "MAT",
+                "my-master-war"
+            ],
             "meta-spatial": [
                 "Meta Spatial",
                 "meta-spatial",
@@ -3037,9 +3079,9 @@
                 "GSTS"
             ],
             "warena": [
-                "Warena",
-                "warena",
-                "RENA"
+                "WAM",
+                "wam",
+                "WAM"
             ],
             "heroverse": [
                 "Heroverse",
@@ -3081,6 +3123,11 @@
                 "legends-of-mitra",
                 "MITA"
             ],
+            "rebel-bots": [
+                "Rebel Bots",
+                "rebelbots",
+                "RBLS"
+            ],
             "crypto-hunters": [
                 "Crypto Hunters",
                 "crypto-hunters",
@@ -3106,6 +3153,11 @@
                 "gemuni",
                 "GENI"
             ],
+            "befitter-igo": [
+                "beFITTER",
+                "befitter",
+                "FIU"
+            ],
             "xana": [
                 "XANA",
                 "xana",
@@ -3116,20 +3168,55 @@
                 "oly-sport",
                 "OLY"
             ],
+            "edu3labs": [
+                "Edu3Labs",
+                "edu-3-labs",
+                "NFE",
+                "edu3labs"
+            ],
+            "hyper-gpt": [
+                "HyperGPT",
+                "hypergpt",
+                "HGPT",
+                "hyper-gpt"
+            ],
             "drunk-robots": [
                 "Badmad Robots",
                 "drunk-robots",
                 "METAL"
+            ],
+            "oval3": [
+                "OVAL3",
+                "oval-3",
+                "OVL3",
+                "oval3"
             ],
             "metados": [
                 "MetaDOS",
                 "metados",
                 "SECOND"
             ],
+            "spellfire-re-master-the-magic": [
+                "Spellfire",
+                "spellfire",
+                "SPELLFIRE",
+                "spellfire-re-master-the-magic"
+            ],
+            "unbound": [
+                "Unbound Finance",
+                "unbound-finance",
+                "UNB"
+            ],
             "prometheus": [
                 "Prometheus",
                 "prometheus",
                 "MGA"
+            ],
+            "web3war": [
+                "web3war",
+                "web-3-war",
+                "FPS",
+                "web3war"
             ],
             "brcstarter": [
                 "BRCStarter",
@@ -3161,6 +3248,12 @@
                 "animalia",
                 "ANIM"
             ],
+            "vendetta": [
+                "Vendetta Games",
+                "vendetta-games",
+                "VDT",
+                "vendetta"
+            ],
             "bullieverse": [
                 "Bullieverse",
                 "bullieverse",
@@ -3171,10 +3264,28 @@
                 "petoshi",
                 "PETOSHI"
             ],
+            "laika": [
+                "Laika AI",
+                "laika-ai",
+                "LKI",
+                "laika"
+            ],
             "arbipad": [
                 "Arbipad",
                 "arbipad",
                 "ARBI"
+            ],
+            "playzap-public": [
+                "PlayZap",
+                "playzap",
+                "PZP",
+                "playzap-public"
+            ],
+            "the-unfettered": [
+                "The Unfettered Ecosystem",
+                "theunfettered",
+                "SOULS",
+                "the-unfettered"
             ],
             "uforika": [
                 "UFORIKA",
@@ -3196,7 +3307,14 @@
                 "snapmuse",
                 "SMX"
             ],
+            "plexus": [
+                "PLEXUS",
+                "plexus-app",
+                "PLX",
+                "plexus"
+            ],
             "pecland": [
+                "PECLAND EXCLUSIVE POOL",
                 "PopBRC",
                 "pecland",
                 "PECL"
@@ -3241,6 +3359,23 @@
                 "unibit",
                 "UIBT"
             ],
+            "kunji-finance": [
+                "Kunji Finance",
+                "kunji",
+                "KNJ",
+                "kunji-finance"
+            ],
+            "bowled": [
+                "Bowled",
+                "bowled-io",
+                "BWLD"
+            ],
+            "atem": [
+                "Atem Network",
+                "atem-network",
+                "ATEM",
+                "atem"
+            ],
             "oceanland": [
                 "Oceanland",
                 "oceanland",
@@ -3251,12 +3386,24 @@
                 "x-metaverse",
                 "XMETA"
             ],
+            "trinity-of-the-fabled": [
+                "Trinity Of The Fabled",
+                "thefabled",
+                "ABYS",
+                "trinity-of-the-fabled"
+            ],
             "agoradex": [
                 "Agoradex",
                 "agoradex",
                 "AGA"
+            ],
+            "moonboots": [
+                "moonboots DAO",
+                "moonbootsdao",
+                "MBDAO",
+                "moonboots"
             ]
-        },
+        },        
         "ido_upcoming": {
             "snapmuse": [
                 "blockchain music platform",

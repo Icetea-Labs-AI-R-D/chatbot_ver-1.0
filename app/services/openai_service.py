@@ -240,6 +240,7 @@ Response in a JSON format like this:
 }}
 
 Note:
+- If the topic is mentioned in the user's message, set "is_mentioned" to "True" and set "topic_index" to the index of the topic in the list of topics.
 - Let check very carefully.
 - You will be penalized if you make a wrong answer.
         """
@@ -251,7 +252,7 @@ Note:
         ]
 
         response = await openai_client.chat.completions.create(
-            model="gpt-3.5-turbo-0125",
+            model="gpt-4o",
             temperature=0,
             response_format={"type": "json_object"},
             messages=messages,

@@ -74,21 +74,7 @@ class ChromaService:
         return (result[0], index)
 
     async def validate_change_topic(self, new_topic: list, user_message: str, openai_client):
-        pattern = r'[ \-_]+' 
-        # list_words = []
-        # for topic in new_topic:
-        #     words = re.split(pattern=pattern, string=topic[0]['metadata']['source'])
-        #     words.extend(re.split(pattern=pattern, string=topic[0]['page_content']))
-        #     list_words.append(words)
-        # reject_bow = ['of', 'in', 'on', 'at']
-        # for index, words in enumerate(list_words):
-        #     for word in words:
-        #         if (word in user_message.lower()) and (word not in reject_bow):
-        #             return {
-        #                 "is_valid": True,
-        #                 "topic_index": index
-        #             }
-
+        
         list_topic = [topic[0]['page_content'] for topic in new_topic]
         for i in range(len(list_topic)):
             list_topic[i] = ' '.join([word.capitalize() for word in list_topic[i].split('-')])
@@ -132,20 +118,20 @@ class ChromaService:
             topics = retrieved_topics
           
             if len(topics) > 0:
-                topic = topics[0]
-                
-                keywords = list(filter(lambda x: x[1] != topic[1], keywords))
+                # topic = topics[0]
+                # keywords = list(filter(lambda x: x[1] != topic[1], keywords))
                 if global_topic not in topics:
                     check = await self.validate_change_topic(new_topic=topics, user_message=user_message, openai_client=openai_client)
-                    # print(check)
+                    print(check)
                     if check['is_valid'] == True or check['is_valid'] == "True":
                         index = check['topic_index']
-                        topic = topics[index]
-                        topic = topic[0]["metadata"]
-                        global_topic = topic
-                    
-                
-                
+                        if type(index) != str and index >= 0: 
+                            topic = topics[index]
+                            topic = topic[0]["metadata"]
+                            global_topic = topic
+                            # print(topic)  
+                      
+            # print(global_topic)
                 
             if  global_topic.get("topic", "") == 'end_phrase':
                 return {

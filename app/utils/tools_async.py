@@ -20,6 +20,12 @@ path_to_json = os.path.join(
 with open(path_to_json, 'r') as filename:
     slug_id = json.load(filename)
 
+# Load file crypto_slug.json   
+path_crypto_slug = os.path.join(
+    os.path.dirname(__file__), "../../data/json/crypto_slug.json"
+)
+with open(path_crypto_slug, 'r') as filename:
+    crypto_slug = json.load(filename)
 # OpenAI embeddings
 embedding_function = OpenAIEmbeddingFunction(api_key=os.getenv('OPENAI_API_KEY3'))
 chroma_client = chromadb.HttpClient(host=os.getenv('CHROMA_HOST'))  
@@ -441,6 +447,7 @@ def round_up(number):
 
 @alru_cache(maxsize=32, ttl=60**2)
 async def get_overview_ido(name, keywords=[]):
+    global crypto_slug
     description = {
         "name": "Name of project.",
         "description": "Providing an overview of the project",
@@ -450,7 +457,10 @@ async def get_overview_ido(name, keywords=[]):
         "refund_policy": "The policy regarding refunding funds in case the IDO is unsuccessful or if any issues arise.",
         "buying_phases": "The time or period during which users can purchase tokens or participate in the project's IDO.",
         "token": {
-            "price": "The IDO price for this token on GameFi.org, announced at IDO's launch, unit of calculation is USDT.",
+            "ido_price": "The IDO price for this token on GameFi.org, announced at IDO's launch, unit of calculation is currency symbol.",
+        },
+        "currency": {
+            "symbol": "The currency symbol used to calculate the IDO price of the token.",
         },
         "social_networks": "Information about the links to the project's social media pages of IDO project.",
         "roadmap": "The project's roadmap, which outlines the key milestones and objectives that the project aims to achieve in the future.",
@@ -471,7 +481,8 @@ async def get_overview_ido(name, keywords=[]):
         "initial_circulating_supply": "Circulating supply of IDO project at initial public offering",
         "ath-roi": "Information about ATH ROI: measures maximum investment return of the IDO project.",
         "total_raise_gamefi": "Total funds raise during token sale event of IDO on GameFi.org, unit of calculation is USD.", 
-        "total_raise_all": "Total funds raise during token sale event of IDO on all platforms, unit of calculation is USD."
+        "total_raise_all": "Total funds raise during token sale event of IDO on all platforms, unit of calculation is USD.",
+        "current_price": "Current price of the token of IDO project, unit of calculation is USD.",
     }
 
     url = f'''https://ido.gamefi.org/api/v3/pool/{name}'''
@@ -483,7 +494,7 @@ async def get_overview_ido(name, keywords=[]):
         response = response.json()
     data = response.get('data', {})
     
-    data_cryptorank = await get_infor_cryptorank(name)
+    data_cryptorank = await get_infor_cryptorank(crypto_slug.get(name, ''))
     if data == None:
         return {
             "description": {},
@@ -495,7 +506,7 @@ async def get_overview_ido(name, keywords=[]):
         'airdrop_chain_id','display', 'need_kyc', 'featured', 'deployed', 'winner_published',
         'series_content', 'rule', 'box_types', 'sibling','contract_address', 'address_receiver',
         'categories', 'created_at', 'backers', 'fcfs_policy', 'sort', 'type', 'bonus_progress', 'ath',
-        'forbidden_countries','currency'
+        'forbidden_countries'
     ]
     for key_remove in key_remove_data:
         if key_remove in data:
@@ -664,13 +675,16 @@ async def get_overview_ido(name, keywords=[]):
             data['initial_market_cap'] = data_cryptorank.get('data').get('initialMarketCap')
         if data_cryptorank.get('data').get('initialSupply') is not None:
             data['initial_circulating_supply'] = data_cryptorank.get('data').get('initialSupply')
+        if data_cryptorank.get('data').get('price') is not None:
+            if data_cryptorank.get('data').get('price').get('USD') is not None:
+                data['current_price'] = data_cryptorank.get('data').get('price').get('USD')
     
-
+    data['token']['ido_price'] = data['token']['price']
+    data.get('token').pop('price', None)
     overview = {
         "description": description,
         "data": data
     }
-
     if len(keywords) == 0:
         overview = {
             "description": {
